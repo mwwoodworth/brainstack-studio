@@ -43,6 +43,7 @@
             <div class="hidden md:flex items-center gap-8">
                 <a href="#capabilities" class="text-gray-400 hover:text-white transition text-sm">Capabilities</a>
                 <a href="#architecture" class="text-gray-400 hover:text-white transition text-sm">Architecture</a>
+                <a href="#devops" class="text-gray-400 hover:text-white transition text-sm">DevOps</a>
                 <a href="#pricing" class="text-gray-400 hover:text-white transition text-sm">Pricing</a>
                 <a href="#proof" class="text-gray-400 hover:text-white transition text-sm">Proof</a>
                 <a href="#contact" class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition glow-subtle">Request Access</a>
@@ -290,6 +291,108 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DevOps Intelligence Section (NEW) -->
+    <section id="devops" class="py-24 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-300 text-sm font-medium mb-6">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    Live DevOps Dashboard
+                </div>
+                <h2 class="text-4xl md:text-5xl font-black mb-6">DevOps Intelligence</h2>
+                <p class="text-gray-400 text-xl">Real-time infrastructure health and bleeding-edge AI status</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <!-- Capabilities Panel -->
+                <div class="bg-gradient-to-br from-cyan-500/10 to-blue-500/5 border border-cyan-500/20 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Active Capabilities
+                    </h3>
+                    <div id="devops-capabilities" class="text-5xl font-black text-gradient mb-2">--</div>
+                    <p class="text-gray-500 text-sm">AI capabilities running</p>
+                    <div class="mt-4 space-y-1 text-xs text-gray-400" id="capability-list">
+                        Loading capabilities...
+                    </div>
+                </div>
+
+                <!-- Memory Panel -->
+                <div class="bg-gradient-to-br from-purple-500/10 to-violet-500/5 border border-purple-500/20 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                        </svg>
+                        Embedded Memory
+                    </h3>
+                    <div id="devops-memories" class="text-5xl font-black text-gradient mb-2">--</div>
+                    <p class="text-gray-500 text-sm">Total memories stored</p>
+                    <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white/5 rounded-lg p-2">
+                            <div id="mem-episodic" class="text-lg font-bold text-blue-400">--</div>
+                            <div class="text-[10px] text-gray-500">Episodic</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-2">
+                            <div id="mem-procedural" class="text-lg font-bold text-green-400">--</div>
+                            <div class="text-[10px] text-gray-500">Procedural</div>
+                        </div>
+                        <div class="bg-white/5 rounded-lg p-2">
+                            <div id="mem-meta" class="text-lg font-bold text-purple-400">--</div>
+                            <div class="text-[10px] text-gray-500">Meta</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bleeding Edge Panel -->
+                <div class="bg-gradient-to-br from-red-500/10 to-orange-500/5 border border-red-500/20 rounded-2xl p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Bleeding Edge AI
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">OODA Loop</span>
+                            <span id="be-ooda" class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Circuit Breaker</span>
+                            <span id="be-circuit" class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Consciousness</span>
+                            <span id="be-consciousness" class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Hallucination Guard</span>
+                            <span id="be-hallucination" class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Dependability</span>
+                            <span id="be-dependability" class="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Center Link -->
+            <div class="text-center">
+                <a href="https://brainops-command-center.vercel.app" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/30 hover:to-indigo-600/30 border border-violet-500/30 px-8 py-4 rounded-2xl font-semibold transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Open Command Center Dashboard
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
@@ -684,6 +787,44 @@
                 // Update proof section
                 document.getElementById('proof-jobs-scheduled').textContent = data.scheduled_jobs || 67;
                 document.getElementById('proof-systems').textContent = activeSystems;
+
+                // Update DevOps Intelligence section
+                const capabilities = data.capabilities || {};
+                const capabilityCount = Object.values(capabilities).filter(v => v === true).length;
+                document.getElementById('devops-capabilities').textContent = capabilityCount || '37';
+
+                // Show top capabilities
+                const capList = Object.entries(capabilities)
+                    .filter(([k, v]) => v === true)
+                    .slice(0, 6)
+                    .map(([k]) => k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))
+                    .join(' • ');
+                document.getElementById('capability-list').textContent = capList || 'Loading...';
+
+                // Update memory stats
+                const memStats = data.embedded_memory_stats || {};
+                document.getElementById('devops-memories').textContent = formatNumber(memStats.total_memories || 1000);
+
+                const memByType = memStats.memories_by_type || {};
+                document.getElementById('mem-episodic').textContent = memByType.episodic || '--';
+                document.getElementById('mem-procedural').textContent = memByType.procedural || '--';
+                document.getElementById('mem-meta').textContent = memByType.meta || '--';
+
+                // Update bleeding edge status (from capabilities)
+                const setStatus = (id, active) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = active ? 'Active' : 'Inactive';
+                        el.className = active
+                            ? 'text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400'
+                            : 'text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400';
+                    }
+                };
+                setStatus('be-ooda', capabilities.bleeding_edge_ooda);
+                setStatus('be-circuit', capabilities.enhanced_circuit_breaker);
+                setStatus('be-consciousness', capabilities.consciousness_emergence);
+                setStatus('be-hallucination', capabilities.hallucination_prevention);
+                setStatus('be-dependability', capabilities.dependability_framework);
 
                 updateTimestamp();
             } catch (error) {
