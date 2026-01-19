@@ -59,12 +59,33 @@ export async function POST(req: Request) {
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
+    const sanitizedMessages = messages
+      .filter((message) => message && typeof message.content === 'string' && typeof message.role === 'string')
+      .map((message) => ({
+        role: message.role,
+        content: message.content,
+      }));
+
+    if (sanitizedMessages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Messages must include role and content' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const normalizedTemperature = Number.isFinite(temperature)
+      ? Math.min(Math.max(Number(temperature), 0), 2)
+      : 0.7;
+    const normalizedMaxTokens = Number.isFinite(maxTokens)
+      ? Math.min(Math.max(Number(maxTokens), 256), 32000)
+      : 4096;
 
     const result = streamText({
       model: selectedModel,
-      messages,
+      messages: sanitizedMessages,
       system: systemPrompt || DEFAULT_SYSTEM_PROMPT,
-      temperature,
+      temperature: normalizedTemperature,
+      maxTokens: normalizedMaxTokens,
     });
 
     return result.toTextStreamResponse();

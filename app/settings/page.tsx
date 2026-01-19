@@ -8,10 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { Badge } from '@/components/ui/Badge';
 import { usePreferences } from '@/hooks/usePreferences';
+import { useConversations } from '@/hooks/useConversations';
 import { AI_MODELS, DEFAULT_PREFERENCES } from '@/lib/constants';
-import { exportAllData, clearAllConversations } from '@/lib/storage';
+import { exportAllData, clearAllConversations, clearAllData } from '@/lib/storage';
 import {
   Settings,
   Brain,
@@ -27,6 +27,7 @@ import {
 
 export default function SettingsPage() {
   const { preferences, isLoaded, updatePreferences, resetToDefaults } = usePreferences();
+  const { reloadConversations } = useConversations();
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -69,10 +70,27 @@ export default function SettingsPage() {
 
   const handleDeleteAll = () => {
     clearAllConversations();
+    reloadConversations();
     setShowDeleteConfirm(false);
   };
 
   const handleReset = () => {
+    resetToDefaults();
+    setFormData({
+      defaultModel: DEFAULT_PREFERENCES.defaultModel,
+      systemPrompt: DEFAULT_PREFERENCES.systemPrompt,
+      temperature: DEFAULT_PREFERENCES.temperature,
+      maxTokens: DEFAULT_PREFERENCES.maxTokens,
+      streamingEnabled: DEFAULT_PREFERENCES.streamingEnabled,
+    });
+  };
+
+  const handleResetAll = () => {
+    if (!window.confirm('This will erase all conversations and reset preferences. Continue?')) {
+      return;
+    }
+    clearAllData();
+    reloadConversations();
     resetToDefaults();
     setFormData({
       defaultModel: DEFAULT_PREFERENCES.defaultModel,
@@ -282,6 +300,10 @@ export default function SettingsPage() {
                     <Button variant="secondary" onClick={handleReset} className="flex-1">
                       <RotateCcw className="w-4 h-4" />
                       Reset to Defaults
+                    </Button>
+                    <Button variant="danger" onClick={handleResetAll} className="flex-1">
+                      <RotateCcw className="w-4 h-4" />
+                      Full Reset
                     </Button>
                   </div>
 

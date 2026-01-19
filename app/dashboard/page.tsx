@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -23,7 +23,6 @@ import {
   ChevronRight,
   Sparkles,
   TrendingUp,
-  Calendar,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -48,11 +47,16 @@ export default function DashboardPage() {
   // Stats
   const totalConversations = conversations.length;
   const totalMessages = conversations.reduce((acc, c) => acc + c.messages.length, 0);
-  const modelUsage = AI_MODELS.map((model) => ({
-    ...model,
-    count: conversations.filter((c) => c.model === model.id).length,
-  }));
-  const mostUsedModel = modelUsage.sort((a, b) => b.count - a.count)[0];
+  const modelUsage = useMemo(() => (
+    AI_MODELS.map((model) => ({
+      ...model,
+      count: conversations.filter((c) => c.model === model.id).length,
+    }))
+  ), [conversations]);
+  const mostUsedModel = useMemo(
+    () => modelUsage.reduce((top, model) => (model.count > top.count ? model : top), modelUsage[0]),
+    [modelUsage]
+  );
 
   const handleNewConversation = () => {
     const conv = createConversation();

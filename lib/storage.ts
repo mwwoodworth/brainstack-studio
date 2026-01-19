@@ -51,6 +51,7 @@ export function deleteConversation(id: string): void {
 export function clearAllConversations(): void {
   if (!isBrowser) return;
   localStorage.removeItem(STORAGE_KEYS.CONVERSATIONS);
+  localStorage.removeItem(STORAGE_KEYS.CURRENT_CONVERSATION);
 }
 
 // Current conversation
@@ -91,6 +92,13 @@ export function savePreferences(preferences: Partial<UserPreferences>): void {
 
 export function resetPreferences(): void {
   if (!isBrowser) return;
+  localStorage.removeItem(STORAGE_KEYS.PREFERENCES);
+}
+
+export function clearAllData(): void {
+  if (!isBrowser) return;
+  localStorage.removeItem(STORAGE_KEYS.CONVERSATIONS);
+  localStorage.removeItem(STORAGE_KEYS.CURRENT_CONVERSATION);
   localStorage.removeItem(STORAGE_KEYS.PREFERENCES);
 }
 

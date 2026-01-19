@@ -8,31 +8,25 @@ import {
   Brain,
   Send,
   Loader2,
-  Sparkles,
-  ArrowLeft,
   Bot,
   User,
   Plus,
   Trash2,
   Settings,
-  ChevronDown,
-  ChevronUp,
   Menu,
   X,
   MessageSquare,
   Copy,
   Check,
-  RotateCcw,
   Pencil,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
-import { Badge } from '@/components/ui/Badge';
 import { MessageContent } from '@/components/MessageContent';
 import { useConversations } from '@/hooks/useConversations';
 import { usePreferences } from '@/hooks/usePreferences';
 import { AI_MODELS } from '@/lib/constants';
-import { cn, formatDate, generateId, copyToClipboard } from '@/lib/utils';
+import { cn, copyToClipboard } from '@/lib/utils';
 import { Message } from '@/types';
 
 function PlaygroundContent() {
@@ -66,6 +60,7 @@ function PlaygroundContent() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const isLoaded = conversationsLoaded && preferencesLoaded;
 
@@ -173,6 +168,9 @@ function PlaygroundContent() {
 
     setInput('');
     setIsLoading(true);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
       // Get current messages for context
@@ -192,15 +190,13 @@ function PlaygroundContent() {
           temperature: preferences.temperature,
           maxTokens: preferences.maxTokens,
         }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.error || 'Failed to get response');
       }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
 
       // Add initial assistant message
       const assistantMsg = addMessage(convId, {
@@ -209,20 +205,31 @@ function PlaygroundContent() {
         model: selectedModel,
       });
 
-      if (reader) {
-        let fullContent = '';
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      if (preferences.streamingEnabled) {
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
 
-          const chunk = decoder.decode(value);
-          fullContent += chunk;
+        if (reader) {
+          let fullContent = '';
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          // Update message with accumulated content
-          updateMessage(convId, assistantMsg.id, fullContent);
+            const chunk = decoder.decode(value);
+            fullContent += chunk;
+
+            // Update message with accumulated content
+            updateMessage(convId, assistantMsg.id, fullContent);
+          }
         }
+      } else {
+        const fullContent = await response.text();
+        updateMessage(convId, assistantMsg.id, fullContent);
       }
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
       console.error('Chat error:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
 
@@ -234,6 +241,11 @@ function PlaygroundContent() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleStopGeneration = () => {
+    abortRef.current?.abort();
+    setIsLoading(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -554,17 +566,28 @@ function PlaygroundContent() {
                 disabled={isLoading}
                 rows={1}
               />
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="absolute right-2 bottom-2 p-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
+              <div className="absolute right-2 bottom-2 flex items-center gap-2">
+                {isLoading && (
+                  <button
+                    type="button"
+                    onClick={handleStopGeneration}
+                    className="px-3 py-2 text-xs font-semibold rounded-xl border border-white/10 text-slate-200 hover:bg-white/10 transition-colors"
+                  >
+                    Stop
+                  </button>
                 )}
-              </button>
+                <button
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  className="p-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
             </div>
             <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
               <span>Press Enter to send, Shift+Enter for new line</span>
