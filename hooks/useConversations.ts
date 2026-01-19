@@ -166,6 +166,19 @@ export function useConversations() {
     setCurrentConversationId(null);
   }, []);
 
+  const reloadConversations = useCallback(() => {
+    const stored = getConversations();
+    setConversations(stored);
+
+    const currentId = getCurrentConversationId();
+    if (currentId) {
+      const current = stored.find((c) => c.id === currentId) || null;
+      setCurrentConversation(current);
+    } else {
+      setCurrentConversation(null);
+    }
+  }, []);
+
   return {
     conversations,
     currentConversation,
@@ -177,5 +190,6 @@ export function useConversations() {
     updateMessage,
     deleteConversation,
     clearCurrentConversation,
+    reloadConversations,
   };
 }
