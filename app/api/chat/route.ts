@@ -78,7 +78,11 @@ async function proxyToBackend(
     : lastUserMessage;
 
   try {
-    // Use non-streaming mode for edge runtime compatibility
+    console.log('Proxying to backend:', BACKEND_PROXY_URL);
+    console.log('API Key present:', !!BACKEND_API_KEY);
+    console.log('Message:', fullMessage.substring(0, 100));
+
+    // Use non-streaming mode for compatibility
     const response = await fetch(`${BACKEND_PROXY_URL}/aurea/chat/message`, {
       method: 'POST',
       headers: {
@@ -87,29 +91,28 @@ async function proxyToBackend(
       },
       body: JSON.stringify({
         message: fullMessage,
-        stream: false,  // Non-streaming for edge compatibility
+        stream: false,
       }),
     });
 
+    console.log('Backend response status:', response.status);
+
     if (!response.ok) {
       const error = await response.text();
-      console.error(`Backend proxy error: ${error}`);
-      throw new Error(`Backend proxy error: ${response.status}`);
+      console.error(`Backend proxy error (${response.status}):`, error);
+      // Return error as JSON instead of throwing
+      return new Response(
+        JSON.stringify({ error: `Backend error: ${response.status}`, details: error }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
+    console.log('Backend response data keys:', Object.keys(data));
     const responseText = data.response || 'No response from AI';
 
-    // Return as streaming-compatible format for useChat hook
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(encoder.encode(responseText));
-        controller.close();
-      }
-    });
-
-    return new Response(stream, {
+    // Return as text for useChat hook
+    return new Response(responseText, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
@@ -117,7 +120,10 @@ async function proxyToBackend(
     });
   } catch (error) {
     console.error('Proxy to backend failed:', error);
-    throw error;
+    return new Response(
+      JSON.stringify({ error: 'Proxy failed', details: String(error) }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
 
@@ -207,13 +213,22 @@ export async function POST(req: Request) {
   }
 }
 
-// Health check endpoint
+// Health check endpoint with config status
 export async function GET() {
   return new Response(
     JSON.stringify({
       status: 'ok',
       models: Object.keys(MODELS),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      config: {
+        hasAnthropicKey,
+        hasOpenAIKey,
+        hasGoogleKey,
+        hasPerplexityKey,
+        backendUrl: BACKEND_PROXY_URL,
+        apiKeyConfigured: !!BACKEND_API_KEY,
+        runtime: 'nodejs',
+      }
     }),
     { headers: { 'Content-Type': 'application/json' } }
   );
