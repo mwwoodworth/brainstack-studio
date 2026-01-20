@@ -75,72 +75,48 @@ async function proxyToBackend(
     ? `Context from conversation:\n${contextMessages}\n\nCurrent message: ${lastUserMessage}`
     : lastUserMessage;
 
-  const response = await fetch(`${BACKEND_PROXY_URL}/aurea/chat/message`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': BACKEND_API_KEY,
-    },
-    body: JSON.stringify({
-      message: fullMessage,
-      stream: true,
-    }),
-  });
+  try {
+    // Use non-streaming mode for edge runtime compatibility
+    const response = await fetch(`${BACKEND_PROXY_URL}/aurea/chat/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': BACKEND_API_KEY,
+      },
+      body: JSON.stringify({
+        message: fullMessage,
+        stream: false,  // Non-streaming for edge compatibility
+      }),
+    });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Backend proxy error: ${error}`);
-  }
-
-  // Transform the SSE stream from AUREA format to AI SDK format
-  const reader = response.body?.getReader();
-  const encoder = new TextEncoder();
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      if (!reader) {
-        controller.close();
-        return;
-      }
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.chunk) {
-                  // Send as plain text for AI SDK compatibility
-                  controller.enqueue(encoder.encode(data.chunk));
-                }
-              } catch {
-                // Ignore parse errors
-              }
-            }
-          }
-        }
-      } finally {
-        controller.close();
-      }
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`Backend proxy error: ${error}`);
+      throw new Error(`Backend proxy error: ${response.status}`);
     }
-  });
 
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'no-cache',
-    },
-  });
+    const data = await response.json();
+    const responseText = data.response || 'No response from AI';
+
+    // Return as streaming-compatible format for useChat hook
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(responseText));
+        controller.close();
+      }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-cache',
+      },
+    });
+  } catch (error) {
+    console.error('Proxy to backend failed:', error);
+    throw error;
+  }
 }
 
 export async function POST(req: Request) {
