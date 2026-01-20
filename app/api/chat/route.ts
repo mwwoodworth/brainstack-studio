@@ -4,7 +4,9 @@ import { openai } from '@ai-sdk/openai';
 import { google } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 
-export const runtime = 'edge';
+// Use nodejs runtime for compatibility with backend proxy
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // Backend proxy URL for when local API keys are not configured
 const BACKEND_PROXY_URL = process.env.BACKEND_PROXY_URL || 'https://brainops-ai-agents.onrender.com';
