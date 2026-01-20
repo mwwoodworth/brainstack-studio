@@ -171,9 +171,11 @@ export async function POST(req: Request) {
 
     const finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
 
-    // Check if we have the API key for this model
-    if (!hasApiKeyForModel(modelKey)) {
-      console.log(`No API key for model ${modelKey}, proxying through backend`);
+    // ALWAYS use proxy for now - direct API keys not reliably working on Vercel
+    // TODO: Enable direct mode once Vercel env vars are properly configured with valid keys
+    const useProxy = true; // Force proxy until API keys are verified
+    if (useProxy) {
+      console.log(`Using backend proxy for model ${modelKey} (force=${process.env.FORCE_PROXY}, hasKey=${hasApiKeyForModel(modelKey)})`);
       return proxyToBackend(
         sanitizedMessages,
         modelKey,
