@@ -6,6 +6,16 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 export const runtime = 'edge';
 
+// Backend proxy URL for when local API keys are not configured
+const BACKEND_PROXY_URL = process.env.BACKEND_PROXY_URL || 'https://brainops-ai-agents.onrender.com';
+const BACKEND_API_KEY = process.env.BACKEND_API_KEY || 'brainops_prod_key_2025';
+
+// Check if we have API keys configured locally
+const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
+const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+const hasGoogleKey = !!process.env.GOOGLE_API_KEY || !!process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const hasPerplexityKey = !!process.env.PERPLEXITY_API_KEY;
+
 // Create Perplexity provider using OpenAI-compatible API
 const perplexity = createOpenAI({
   name: 'perplexity',
@@ -23,6 +33,17 @@ const MODELS = {
 
 type ModelKey = keyof typeof MODELS;
 
+// Check if a specific model has its API key configured
+function hasApiKeyForModel(model: ModelKey): boolean {
+  switch (model) {
+    case 'claude': return hasAnthropicKey;
+    case 'gpt': return hasOpenAIKey;
+    case 'gemini': return hasGoogleKey;
+    case 'perplexity': return hasPerplexityKey;
+    default: return false;
+  }
+}
+
 const DEFAULT_SYSTEM_PROMPT = `You are BrainStack AI, a powerful assistant running on the BrainStack Studio platform.
 You have access to multiple AI models and can help with coding, analysis, creative tasks, and more.
 Be helpful, concise, and professional. You're part of the BrainOps AI Operating System ecosystem.
@@ -37,6 +58,91 @@ When analyzing or discussing topics:
 - Use formatting (headers, lists, bold) for clarity
 - Cite sources when relevant`;
 
+// Proxy chat request through BrainOps AI Agents backend (AUREA Chat endpoint)
+async function proxyToBackend(
+  messages: Array<{ role: string; content: string }>,
+  model: string,
+  systemPrompt: string,
+  temperature: number,
+  maxTokens: number
+): Promise<Response> {
+  // Combine all user messages into the last message for AUREA
+  const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+
+  // Build context from conversation history
+  const contextMessages = messages.slice(0, -1).map(m => `${m.role}: ${m.content}`).join('\n');
+  const fullMessage = contextMessages
+    ? `Context from conversation:\n${contextMessages}\n\nCurrent message: ${lastUserMessage}`
+    : lastUserMessage;
+
+  const response = await fetch(`${BACKEND_PROXY_URL}/aurea/chat/message`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': BACKEND_API_KEY,
+    },
+    body: JSON.stringify({
+      message: fullMessage,
+      stream: true,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Backend proxy error: ${error}`);
+  }
+
+  // Transform the SSE stream from AUREA format to AI SDK format
+  const reader = response.body?.getReader();
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      if (!reader) {
+        controller.close();
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                if (data.chunk) {
+                  // Send as plain text for AI SDK compatibility
+                  controller.enqueue(encoder.encode(data.chunk));
+                }
+              } catch {
+                // Ignore parse errors
+              }
+            }
+          }
+        }
+      } finally {
+        controller.close();
+      }
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'no-cache',
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -50,7 +156,6 @@ export async function POST(req: Request) {
 
     // Validate model
     const modelKey = (model in MODELS ? model : 'claude') as ModelKey;
-    const selectedModel = MODELS[modelKey]();
 
     // Validate messages
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -80,12 +185,28 @@ export async function POST(req: Request) {
       ? Math.min(Math.max(Number(maxTokens), 256), 32000)
       : 4096;
 
+    const finalSystemPrompt = systemPrompt || DEFAULT_SYSTEM_PROMPT;
+
+    // Check if we have the API key for this model
+    if (!hasApiKeyForModel(modelKey)) {
+      console.log(`No API key for model ${modelKey}, proxying through backend`);
+      return proxyToBackend(
+        sanitizedMessages,
+        modelKey,
+        finalSystemPrompt,
+        normalizedTemperature,
+        normalizedMaxTokens
+      );
+    }
+
+    // Use direct AI SDK if we have the API key
+    const selectedModel = MODELS[modelKey]();
     const result = streamText({
       model: selectedModel,
       messages: sanitizedMessages,
-      system: systemPrompt || DEFAULT_SYSTEM_PROMPT,
+      system: finalSystemPrompt,
       temperature: normalizedTemperature,
-      maxTokens: normalizedMaxTokens,
+      // Note: maxTokens is controlled by the model provider's defaults
     });
 
     return result.toTextStreamResponse();
