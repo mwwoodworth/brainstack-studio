@@ -91,6 +91,42 @@ const FEATURES_COMPARISON = [
   { feature: 'Support', free: 'Community', pro: 'Priority', enterprise: 'Dedicated' },
 ];
 
+const INDIVIDUAL_PRODUCTS = [
+  {
+    name: 'SaaS ERP Starter Kit',
+    description: 'Production-ready multi-tenant foundation with auth, CRM, jobs, invoicing & AI features',
+    price: '$197',
+    tags: ['Next.js 14', 'Supabase', 'TypeScript'],
+    href: 'https://woodworthia.gumroad.com/l/gr-erp-start',
+    icon: Building2,
+  },
+  {
+    name: 'AI Content Production Pipeline',
+    description: 'Scale your content 10x with multi-stage pipeline, SEO optimization & publishing integrations',
+    price: '$347',
+    tags: ['Python', 'FastAPI', 'OpenAI/Anthropic'],
+    href: 'https://woodworthia.gumroad.com/l/gr-content',
+    icon: Brain,
+    popular: true,
+  },
+  {
+    name: 'Intelligent Client Onboarding',
+    description: 'Automate intake & delight clients with smart flows, e-signatures & CRM integrations',
+    price: '$297',
+    tags: ['Next.js', 'TypeScript', 'Make.com'],
+    href: 'https://woodworthia.gumroad.com/l/gr-onboard',
+    icon: MessageSquare,
+  },
+  {
+    name: 'AI Project Command Center',
+    description: 'Complete Notion workspace with 8 linked databases, executive dashboard & 30+ automations',
+    price: '$197',
+    tags: ['Notion', 'Make/Zapier', 'AI-Ready'],
+    href: 'https://woodworthia.gumroad.com/l/gr-pmcmd',
+    icon: Globe,
+  },
+];
+
 const FAQ = [
   {
     question: 'Can I switch plans at any time?',
@@ -107,6 +143,10 @@ const FAQ = [
   {
     question: 'Is there a discount for annual billing?',
     answer: 'Yes! Annual billing saves you 20%. Pro annual is $279/year instead of $348.',
+  },
+  {
+    question: 'What\'s included in the individual products?',
+    answer: 'Each product includes full source code, documentation, setup guides, and lifetime updates. No subscriptions required.',
   },
 ];
 
@@ -185,6 +225,74 @@ export default function PricingPage() {
                         size="lg"
                       >
                         {plan.cta}
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Individual Products */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <Badge variant="purple" className="mb-4">
+              <Code className="w-3 h-3 mr-1" />
+              Individual Products
+            </Badge>
+            <h2 className="text-3xl font-bold mb-4">Buy What You Need</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              Don&apos;t need the full bundle? Get individual products with full source code and lifetime updates.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {INDIVIDUAL_PRODUCTS.map((product, i) => (
+              <motion.div
+                key={product.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className={`h-full ${product.popular ? 'border-cyan-500/50' : ''}`}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
+                          <product.icon className="w-5 h-5 text-cyan-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold flex items-center gap-2">
+                            {product.name}
+                            {product.popular && (
+                              <Badge variant="primary" className="text-xs">Popular</Badge>
+                            )}
+                          </h3>
+                          <span className="text-2xl font-bold text-cyan-400">{product.price}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-slate-400 text-sm mb-4">{product.description}</p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {product.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 text-xs rounded-md bg-white/5 text-slate-300"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <Link href={product.href} target="_blank">
+                      <Button variant="secondary" size="sm" className="w-full">
+                        Get {product.name.split(' ')[0]}
                       </Button>
                     </Link>
                   </CardContent>
