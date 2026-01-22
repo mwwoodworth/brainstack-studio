@@ -9,6 +9,7 @@ import { Button } from './ui/Button';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
+  { href: '/technology', label: 'AI OS' },
   { href: '/playground', label: 'Playground' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/docs', label: 'Docs' },
