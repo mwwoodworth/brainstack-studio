@@ -38,57 +38,56 @@ const PLANS = [
     popular: false,
   },
   {
-    name: 'Pro (Lifetime)',
-    description: 'Get the complete BrainOps source code & tools',
-    price: '$997',
-    period: 'one-time',
+    name: 'Pro',
+    description: 'For serious developers & entrepreneurs',
+    price: '$49',
+    period: '/month',
     features: [
       'Everything in Free',
-      'Full Source Code Access',
-      'AI Orchestrator Framework',
-      'SaaS ERP Starter Kit',
-      'Automation Pack (Make.com)',
+      'Perplexity Sonar access',
+      'Cloud conversation sync',
+      'Custom system prompts',
+      'API access (100K tokens/mo)',
       'Priority support',
-      'Lifetime updates',
+      'Early feature access',
     ],
-    cta: 'Get Lifetime Access',
-    href: 'https://gumroad.com/l/gr-ultimate',
+    cta: 'Start Pro Trial',
+    href: 'https://woodworthia.gumroad.com/l/brainops-pro',
     popular: true,
   },
   {
-    name: 'Enterprise',
-    description: 'For teams and organizations',
-    price: 'Custom',
-    period: '',
+    name: 'Lifetime',
+    description: 'One-time payment, own forever',
+    price: '$497',
+    period: 'one-time',
     features: [
-      'Everything in Pro',
-      'Unlimited API access',
-      'Team collaboration',
-      'SSO & SAML',
-      'Custom model fine-tuning',
-      'Dedicated support',
-      'SLA guarantees',
-      'On-premise deployment',
+      'Everything in Pro forever',
+      'Full source code access',
+      'AI Orchestrator Framework',
+      'SaaS Starter Kit included',
+      'Automation templates',
+      'Lifetime updates',
+      'No recurring fees',
     ],
-    cta: 'Contact Sales',
-    href: 'mailto:sales@brainops.io?subject=Enterprise%20Inquiry',
+    cta: 'Get Lifetime Access',
+    href: 'https://woodworthia.gumroad.com/l/brainops-lifetime',
     popular: false,
   },
 ];
 
 const FEATURES_COMPARISON = [
-  { feature: 'AI Playground', free: true, pro: true, enterprise: true },
-  { feature: 'Claude Opus 4.5', free: true, pro: true, enterprise: true },
-  { feature: 'GPT-5.2', free: true, pro: true, enterprise: true },
-  { feature: 'Gemini 3 Pro', free: true, pro: true, enterprise: true },
-  { feature: 'Perplexity Sonar', free: false, pro: true, enterprise: true },
-  { feature: 'Local Storage', free: true, pro: true, enterprise: true },
-  { feature: 'Cloud Sync', free: false, pro: true, enterprise: true },
-  { feature: 'API Access', free: false, pro: '100K tokens', enterprise: 'Unlimited' },
-  { feature: 'Custom System Prompts', free: false, pro: true, enterprise: true },
-  { feature: 'Team Collaboration', free: false, pro: false, enterprise: true },
-  { feature: 'SSO/SAML', free: false, pro: false, enterprise: true },
-  { feature: 'Support', free: 'Community', pro: 'Priority', enterprise: 'Dedicated' },
+  { feature: 'AI Playground', free: true, pro: true, lifetime: true },
+  { feature: 'Claude Opus 4.5', free: true, pro: true, lifetime: true },
+  { feature: 'GPT-5.2', free: true, pro: true, lifetime: true },
+  { feature: 'Gemini 3 Pro', free: true, pro: true, lifetime: true },
+  { feature: 'Perplexity Sonar', free: false, pro: true, lifetime: true },
+  { feature: 'Local Storage', free: true, pro: true, lifetime: true },
+  { feature: 'Cloud Sync', free: false, pro: true, lifetime: true },
+  { feature: 'API Access', free: false, pro: '100K/mo', lifetime: 'Unlimited' },
+  { feature: 'Custom System Prompts', free: false, pro: true, lifetime: true },
+  { feature: 'Source Code Access', free: false, pro: false, lifetime: true },
+  { feature: 'SaaS Starter Kit', free: false, pro: false, lifetime: true },
+  { feature: 'Support', free: 'Community', pro: 'Priority', lifetime: 'Priority' },
 ];
 
 const INDIVIDUAL_PRODUCTS = [
@@ -321,8 +320,8 @@ export default function PricingPage() {
                 <tr className="border-b border-white/10">
                   <th className="text-left py-4 px-4 font-medium text-slate-400">Feature</th>
                   <th className="text-center py-4 px-4 font-medium">Free</th>
-                  <th className="text-center py-4 px-4 font-medium text-cyan-400">Pro</th>
-                  <th className="text-center py-4 px-4 font-medium">Enterprise</th>
+                  <th className="text-center py-4 px-4 font-medium text-cyan-400">Pro $49/mo</th>
+                  <th className="text-center py-4 px-4 font-medium text-purple-400">Lifetime $497</th>
                 </tr>
               </thead>
               <tbody>
@@ -351,15 +350,15 @@ export default function PricingPage() {
                         <span className="text-cyan-400 text-sm">{row.pro}</span>
                       )}
                     </td>
-                    <td className="py-4 px-4 text-center">
-                      {typeof row.enterprise === 'boolean' ? (
-                        row.enterprise ? (
+                    <td className="py-4 px-4 text-center bg-purple-500/5">
+                      {typeof row.lifetime === 'boolean' ? (
+                        row.lifetime ? (
                           <Check className="w-5 h-5 text-emerald-400 mx-auto" />
                         ) : (
                           <span className="text-slate-600">—</span>
                         )
                       ) : (
-                        <span className="text-slate-400 text-sm">{row.enterprise}</span>
+                        <span className="text-purple-400 text-sm">{row.lifetime}</span>
                       )}
                     </td>
                   </tr>
