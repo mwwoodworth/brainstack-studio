@@ -25,7 +25,7 @@ const PLANS = [
     name: 'Free',
     description: 'Perfect for trying out BrainStack Studio',
     price: '$0',
-    period: 'forever',
+    period: '/forever',
     features: [
       'Access to AI Playground',
       'Claude, GPT, Gemini models',
@@ -33,61 +33,59 @@ const PLANS = [
       'Basic code highlighting',
       'Community support',
     ],
-    cta: 'Get Started',
+    cta: 'Get Started Free',
     href: '/playground',
     popular: false,
   },
   {
-    name: 'Pro',
-    description: 'For serious developers & entrepreneurs',
-    price: '$49',
+    name: 'Starter',
+    description: 'For individuals getting serious',
+    price: '$19',
     period: '/month',
     features: [
       'Everything in Free',
       'Perplexity Sonar access',
       'Cloud conversation sync',
-      'Custom system prompts',
-      'API access (100K tokens/mo)',
-      'Priority support',
-      'Early feature access',
+      '50K API tokens/month',
+      'Email support',
+      'Cancel anytime',
     ],
-    cta: 'Start Pro Trial',
-    href: 'https://woodworthia.gumroad.com/l/brainops-pro',
-    popular: true,
+    cta: 'Start 7-Day Free Trial',
+    href: 'https://woodworthia.gumroad.com/l/brainops-starter',
+    popular: false,
   },
   {
-    name: 'Lifetime',
-    description: 'One-time payment, own forever',
-    price: '$497',
-    period: 'one-time',
+    name: 'Pro',
+    description: 'For power users & businesses',
+    price: '$49',
+    period: '/month',
     features: [
-      'Everything in Pro forever',
-      'Full source code access',
-      'AI Orchestrator Framework',
-      'SaaS Starter Kit included',
-      'Automation templates',
-      'Lifetime updates',
-      'No recurring fees',
+      'Everything in Starter',
+      'Custom system prompts',
+      '200K API tokens/month',
+      'Priority support',
+      'Early feature access',
+      'API integrations',
     ],
-    cta: 'Get Lifetime Access',
-    href: 'https://woodworthia.gumroad.com/l/brainops-lifetime',
-    popular: false,
+    cta: 'Start 7-Day Free Trial',
+    href: 'https://woodworthia.gumroad.com/l/brainops-pro',
+    popular: true,
   },
 ];
 
 const FEATURES_COMPARISON = [
-  { feature: 'AI Playground', free: true, pro: true, lifetime: true },
-  { feature: 'Claude Opus 4.5', free: true, pro: true, lifetime: true },
-  { feature: 'GPT-5.2', free: true, pro: true, lifetime: true },
-  { feature: 'Gemini 3 Pro', free: true, pro: true, lifetime: true },
-  { feature: 'Perplexity Sonar', free: false, pro: true, lifetime: true },
-  { feature: 'Local Storage', free: true, pro: true, lifetime: true },
-  { feature: 'Cloud Sync', free: false, pro: true, lifetime: true },
-  { feature: 'API Access', free: false, pro: '100K/mo', lifetime: 'Unlimited' },
-  { feature: 'Custom System Prompts', free: false, pro: true, lifetime: true },
-  { feature: 'Source Code Access', free: false, pro: false, lifetime: true },
-  { feature: 'SaaS Starter Kit', free: false, pro: false, lifetime: true },
-  { feature: 'Support', free: 'Community', pro: 'Priority', lifetime: 'Priority' },
+  { feature: 'AI Playground', free: true, starter: true, pro: true },
+  { feature: 'Claude Opus 4.5', free: true, starter: true, pro: true },
+  { feature: 'GPT-5.2', free: true, starter: true, pro: true },
+  { feature: 'Gemini 3 Pro', free: true, starter: true, pro: true },
+  { feature: 'Perplexity Sonar', free: false, starter: true, pro: true },
+  { feature: 'Local Storage', free: true, starter: true, pro: true },
+  { feature: 'Cloud Sync', free: false, starter: true, pro: true },
+  { feature: 'API Tokens', free: false, starter: '50K/mo', pro: '200K/mo' },
+  { feature: 'Custom System Prompts', free: false, starter: false, pro: true },
+  { feature: 'API Integrations', free: false, starter: false, pro: true },
+  { feature: 'Early Feature Access', free: false, starter: false, pro: true },
+  { feature: 'Support', free: 'Community', starter: 'Email', pro: 'Priority' },
 ];
 
 const INDIVIDUAL_PRODUCTS = [
@@ -320,8 +318,8 @@ export default function PricingPage() {
                 <tr className="border-b border-white/10">
                   <th className="text-left py-4 px-4 font-medium text-slate-400">Feature</th>
                   <th className="text-center py-4 px-4 font-medium">Free</th>
+                  <th className="text-center py-4 px-4 font-medium text-blue-400">Starter $19/mo</th>
                   <th className="text-center py-4 px-4 font-medium text-cyan-400">Pro $49/mo</th>
-                  <th className="text-center py-4 px-4 font-medium text-purple-400">Lifetime $497</th>
                 </tr>
               </thead>
               <tbody>
@@ -339,6 +337,17 @@ export default function PricingPage() {
                         <span className="text-slate-400 text-sm">{row.free}</span>
                       )}
                     </td>
+                    <td className="py-4 px-4 text-center bg-blue-500/5">
+                      {typeof row.starter === 'boolean' ? (
+                        row.starter ? (
+                          <Check className="w-5 h-5 text-emerald-400 mx-auto" />
+                        ) : (
+                          <span className="text-slate-600">—</span>
+                        )
+                      ) : (
+                        <span className="text-blue-400 text-sm">{row.starter}</span>
+                      )}
+                    </td>
                     <td className="py-4 px-4 text-center bg-cyan-500/5">
                       {typeof row.pro === 'boolean' ? (
                         row.pro ? (
@@ -348,17 +357,6 @@ export default function PricingPage() {
                         )
                       ) : (
                         <span className="text-cyan-400 text-sm">{row.pro}</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center bg-purple-500/5">
-                      {typeof row.lifetime === 'boolean' ? (
-                        row.lifetime ? (
-                          <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )
-                      ) : (
-                        <span className="text-purple-400 text-sm">{row.lifetime}</span>
                       )}
                     </td>
                   </tr>
