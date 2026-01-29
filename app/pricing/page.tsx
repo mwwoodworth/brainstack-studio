@@ -22,69 +22,65 @@ import Link from 'next/link';
 
 const PLANS = [
   {
-    name: 'Free',
-    description: 'Perfect for trying out BrainStack Studio',
-    price: '$0',
-    period: '/forever',
+    name: 'AI Playground',
+    description: 'Full access to our multi-AI platform',
+    price: 'Free',
+    period: ' forever',
     features: [
-      'Access to AI Playground',
-      'Claude, GPT, Gemini models',
+      'Claude Opus 4.5 access',
+      'GPT-5.2 & Gemini 3 Pro',
       'Local conversation storage',
-      'Basic code highlighting',
-      'Community support',
+      'Syntax highlighting',
+      'Bring your own API keys',
     ],
-    cta: 'Get Started Free',
+    cta: 'Launch Playground',
     href: '/playground',
-    popular: false,
-  },
-  {
-    name: 'Starter',
-    description: 'For individuals getting serious',
-    price: '$19',
-    period: '/month',
-    features: [
-      'Everything in Free',
-      'Perplexity Sonar access',
-      'Cloud conversation sync',
-      '50K API tokens/month',
-      'Email support',
-      'Cancel anytime',
-    ],
-    cta: 'Start 7-Day Free Trial',
-    href: 'https://woodworthia.gumroad.com/l/brainops-starter',
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    description: 'For power users & businesses',
-    price: '$49',
-    period: '/month',
-    features: [
-      'Everything in Starter',
-      'Custom system prompts',
-      '200K API tokens/month',
-      'Priority support',
-      'Early feature access',
-      'API integrations',
-    ],
-    cta: 'Start 7-Day Free Trial',
-    href: 'https://woodworthia.gumroad.com/l/brainops-pro',
     popular: true,
+  },
+  {
+    name: 'MCP Starter Kit',
+    description: 'Build AI tool integrations fast',
+    price: '$97',
+    period: ' one-time',
+    features: [
+      'MCP Server patterns',
+      'Full source code',
+      'Tool integration examples',
+      'Documentation & guides',
+      'Lifetime updates',
+    ],
+    cta: 'Get Starter Kit',
+    href: 'https://woodworthia.gumroad.com/l/hjhmsm',
+    popular: false,
+  },
+  {
+    name: 'AI Orchestrator',
+    description: 'Multi-LLM smart routing system',
+    price: '$147',
+    period: ' one-time',
+    features: [
+      'Multi-LLM orchestration',
+      'Smart model routing',
+      'Production-ready code',
+      'Full documentation',
+      'Priority support',
+    ],
+    cta: 'Get Orchestrator',
+    href: 'https://woodworthia.gumroad.com/l/gsaavb',
+    popular: false,
   },
 ];
 
 const FEATURES_COMPARISON = [
-  { feature: 'AI Playground', free: true, starter: true, pro: true },
-  { feature: 'Claude Opus 4.5', free: true, starter: true, pro: true },
-  { feature: 'GPT-5.2', free: true, starter: true, pro: true },
-  { feature: 'Gemini 3 Pro', free: true, starter: true, pro: true },
-  { feature: 'Perplexity Sonar', free: false, starter: true, pro: true },
+  { feature: 'AI Playground Access', free: true, starter: true, pro: true },
+  { feature: 'Claude, GPT, Gemini', free: true, starter: true, pro: true },
   { feature: 'Local Storage', free: true, starter: true, pro: true },
-  { feature: 'Cloud Sync', free: false, starter: true, pro: true },
-  { feature: 'API Tokens', free: false, starter: '50K/mo', pro: '200K/mo' },
-  { feature: 'Custom System Prompts', free: false, starter: false, pro: true },
-  { feature: 'API Integrations', free: false, starter: false, pro: true },
-  { feature: 'Early Feature Access', free: false, starter: false, pro: true },
+  { feature: 'Full Source Code', free: false, starter: true, pro: true },
+  { feature: 'MCP Server Patterns', free: false, starter: true, pro: true },
+  { feature: 'Multi-LLM Routing', free: false, starter: false, pro: true },
+  { feature: 'AI Orchestration', free: false, starter: false, pro: true },
+  { feature: 'Lifetime Updates', free: false, starter: true, pro: true },
+  { feature: 'Documentation', free: 'Basic', starter: 'Full', pro: 'Full' },
   { feature: 'Support', free: 'Community', starter: 'Email', pro: 'Priority' },
 ];
 
@@ -126,24 +122,24 @@ const INDIVIDUAL_PRODUCTS = [
 
 const FAQ = [
   {
-    question: 'Can I switch plans at any time?',
-    answer: 'Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.',
+    question: 'Is the AI Playground really free?',
+    answer: 'Yes! The AI Playground is completely free. You bring your own API keys (from OpenAI, Anthropic, Google) and get full access to all features.',
   },
   {
-    question: 'Do I need API keys for the Free plan?',
-    answer: 'For self-hosted deployments, yes. For our hosted version, we provide API access through your BrainStack account.',
+    question: 'What are the developer kits?',
+    answer: 'The MCP Starter Kit and AI Orchestrator are one-time purchases that include full source code, documentation, and lifetime updates. Use them to build your own AI tools.',
   },
   {
-    question: 'What happens to my data if I downgrade?',
-    answer: 'Your data remains intact. Cloud-synced conversations will become read-only on the Free plan until you upgrade again.',
+    question: 'Do I need coding experience?',
+    answer: 'The AI Playground works for everyone. The developer kits are designed for developers who want to build custom AI integrations and tools.',
   },
   {
-    question: 'Is there a discount for annual billing?',
-    answer: 'Yes! Annual billing saves you 20%. Pro annual is $279/year instead of $348.',
+    question: 'What models are supported?',
+    answer: 'Claude Opus 4.5, GPT-5.2, Gemini 3 Pro, and more. We regularly add new models as they become available.',
   },
   {
-    question: 'What\'s included in the individual products?',
-    answer: 'Each product includes full source code, documentation, setup guides, and lifetime updates. No subscriptions required.',
+    question: 'What\'s included in the products?',
+    answer: 'Each product includes full source code, comprehensive documentation, setup guides, and lifetime updates. No subscriptions required.',
   },
 ];
 
@@ -317,9 +313,9 @@ export default function PricingPage() {
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left py-4 px-4 font-medium text-slate-400">Feature</th>
-                  <th className="text-center py-4 px-4 font-medium">Free</th>
-                  <th className="text-center py-4 px-4 font-medium text-blue-400">Starter $19/mo</th>
-                  <th className="text-center py-4 px-4 font-medium text-cyan-400">Pro $49/mo</th>
+                  <th className="text-center py-4 px-4 font-medium text-emerald-400">Playground (Free)</th>
+                  <th className="text-center py-4 px-4 font-medium text-blue-400">MCP Kit $97</th>
+                  <th className="text-center py-4 px-4 font-medium text-cyan-400">Orchestrator $147</th>
                 </tr>
               </thead>
               <tbody>
