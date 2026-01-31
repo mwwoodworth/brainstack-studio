@@ -10,7 +10,14 @@ export const dynamic = 'force-dynamic';
 
 // Backend proxy URL for when local API keys are not configured
 const BACKEND_PROXY_URL = process.env.BACKEND_PROXY_URL || 'https://brainops-ai-agents.onrender.com';
-const BACKEND_API_KEY = process.env.BACKEND_API_KEY || 'brainops_prod_key_2025';
+// Never ship a default API key in code. If proxy auth isn't configured, proxy mode is disabled.
+const BACKEND_API_KEY = process.env.BACKEND_API_KEY || process.env.BACKEND_INTERNAL_API_KEY || '';
+
+// Keep model names env-configurable to avoid redeploys and to prevent invalid model strings from breaking prod.
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const PERPLEXITY_MODEL = process.env.PERPLEXITY_MODEL || 'sonar-pro';
 
 // Check if we have API keys configured locally
 const hasAnthropicKey = !!process.env.ANTHROPIC_API_KEY;
@@ -27,10 +34,10 @@ const perplexity = createOpenAI({
 
 // Model configurations with proper typing
 const MODELS = {
-  claude: () => anthropic('claude-opus-4-5-20251101'),
-  gpt: () => openai('gpt-5.2'),
-  gemini: () => google('gemini-3.0-pro'),
-  perplexity: () => perplexity('sonar-pro'),
+  claude: () => anthropic(ANTHROPIC_MODEL),
+  gpt: () => openai(OPENAI_MODEL),
+  gemini: () => google(GEMINI_MODEL),
+  perplexity: () => perplexity(PERPLEXITY_MODEL),
 } as const;
 
 type ModelKey = keyof typeof MODELS;
@@ -68,6 +75,13 @@ async function proxyToBackend(
   temperature: number,
   maxTokens: number
 ): Promise<Response> {
+  if (!BACKEND_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'Backend proxy is not configured (missing BACKEND_API_KEY).' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   // Combine all user messages into the last message for AUREA
   const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
 
