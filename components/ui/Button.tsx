@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import { cloneElement, forwardRef, isValidElement } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
@@ -35,13 +35,24 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
+  asChild?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, isLoading, children, disabled, ...props }, ref) => {
+  ({ className, variant, size, isLoading, children, disabled, asChild, ...props }, ref) => {
+    const classes = cn(buttonVariants({ variant, size, className }));
+
+    if (asChild && isValidElement(children)) {
+      return cloneElement(children, {
+        className: cn(classes, (children.props as { className?: string })?.className),
+        ...(disabled ? { 'aria-disabled': true } : {}),
+        ...props,
+      });
+    }
+
     return (
       <button
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={classes}
         ref={ref}
         disabled={disabled || isLoading}
         {...props}

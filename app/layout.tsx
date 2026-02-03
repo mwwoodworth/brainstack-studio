@@ -2,13 +2,15 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BrainStack Studio - Multi-AI Platform',
-  description: 'The worldwide tech platform powered by Claude, GPT, Gemini, and Perplexity. Access multiple AI models in one unified interface.',
-  keywords: ['AI', 'Claude', 'GPT', 'Gemini', 'Perplexity', 'Multi-AI', 'Chat', 'Platform'],
+  title: 'BrainStack Studio - Operational AI, Built for Trust',
+  description:
+    'BrainStack Studio is the public interface for BrainOps, showcasing deterministic operational AI workflows without exposing proprietary systems.',
+  keywords: ['Operational AI', 'Deterministic', 'AI Studio', 'Workflow Automation', 'BrainOps'],
   authors: [{ name: 'BrainOps' }],
   openGraph: {
-    title: 'BrainStack Studio - Multi-AI Platform',
-    description: 'Access Claude, GPT, Gemini, and Perplexity in one unified platform.',
+    title: 'BrainStack Studio - Operational AI, Built for Trust',
+    description:
+      'Deterministic operational AI workflows with clear boundaries and confidence scoring.',
     type: 'website',
   },
 };

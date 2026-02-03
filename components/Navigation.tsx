@@ -9,12 +9,11 @@ import { Button } from './ui/Button';
 import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
-  { href: '/technology', label: 'AI OS' },
-  { href: '/playground', label: 'Playground' },
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/api-docs', label: 'API' },
+  { href: '/explorer', label: 'Explorer' },
+  { href: '/solutions', label: 'Solutions' },
+  { href: '/technology', label: 'Platform' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/docs', label: 'Docs' },
   { href: '/about', label: 'About' },
 ];
 
@@ -52,11 +51,11 @@ export function Navigation() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/settings">
-              <Button variant="ghost" size="sm">Settings</Button>
+            <Link href="/pricing">
+              <Button variant="ghost" size="sm">Subscribe</Button>
             </Link>
-            <Link href="/playground">
-              <Button size="sm">Launch App</Button>
+            <Link href="/contact">
+              <Button size="sm">Request Implementation</Button>
             </Link>
           </div>
 
@@ -93,11 +92,11 @@ export function Navigation() {
               </Link>
             ))}
             <div className="pt-2 border-t border-white/10 flex gap-2">
-              <Link href="/settings" className="flex-1">
-                <Button variant="secondary" className="w-full" size="sm">Settings</Button>
+              <Link href="/pricing" className="flex-1">
+                <Button variant="secondary" className="w-full" size="sm">Subscribe</Button>
               </Link>
-              <Link href="/playground" className="flex-1">
-                <Button className="w-full" size="sm">Launch App</Button>
+              <Link href="/contact" className="flex-1">
+                <Button className="w-full" size="sm">Request Implementation</Button>
               </Link>
             </div>
           </motion.div>

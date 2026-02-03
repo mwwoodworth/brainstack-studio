@@ -1,67 +1,64 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
-import { useConversations } from '@/hooks/useConversations';
-import { AI_MODELS } from '@/lib/constants';
+import { useExplorerSessions } from '@/hooks/useExplorerSessions';
+import { INDUSTRIES, PAIN_POINTS, ROLES } from '@/lib/explorer';
 import { formatDate, truncateText } from '@/lib/utils';
-import Link from 'next/link';
 import {
   LayoutDashboard,
-  MessageSquare,
   Search,
-  Plus,
   Trash2,
   Clock,
-  Brain,
-  ChevronRight,
-  Sparkles,
-  TrendingUp,
+  Target,
+  ClipboardList,
+  ArrowRight,
 } from 'lucide-react';
 
+const getLabel = (list: Array<{ id: string; label: string }>, id?: string) =>
+  list.find((item) => item.id === id)?.label ?? 'Unspecified';
+
 export default function DashboardPage() {
-  const {
-    conversations,
-    isLoaded,
-    createConversation,
-    deleteConversation,
-  } = useConversations();
-
+  const { sessions, isLoaded, deleteSession, clearSessions } = useExplorerSessions();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
-  const filteredConversations = conversations.filter((conv) => {
-    const matchesSearch = !searchQuery ||
-      conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.messages.some((m) => m.content.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesModel = !selectedModel || conv.model === selectedModel;
-    return matchesSearch && matchesModel;
-  });
+  const filteredSessions = useMemo(() => {
+    if (!searchQuery) return sessions;
+    const query = searchQuery.toLowerCase();
+    return sessions.filter((session) => {
+      const industry = getLabel(INDUSTRIES, session.input.industry).toLowerCase();
+      const role = getLabel(ROLES, session.input.role).toLowerCase();
+      const pain = getLabel(PAIN_POINTS, session.input.painPoint).toLowerCase();
+      const summary = session.result.identifiedPain.toLowerCase();
+      return (
+        industry.includes(query) ||
+        role.includes(query) ||
+        pain.includes(query) ||
+        summary.includes(query)
+      );
+    });
+  }, [sessions, searchQuery]);
 
-  // Stats
-  const totalConversations = conversations.length;
-  const totalMessages = conversations.reduce((acc, c) => acc + c.messages.length, 0);
-  const modelUsage = useMemo(() => (
-    AI_MODELS.map((model) => ({
-      ...model,
-      count: conversations.filter((c) => c.model === model.id).length,
-    }))
-  ), [conversations]);
-  const mostUsedModel = useMemo(
-    () => modelUsage.reduce((top, model) => (model.count > top.count ? model : top), modelUsage[0]),
-    [modelUsage]
-  );
+  const totalSessions = sessions.length;
+  const lastSession = sessions[0];
+  const lastRun = lastSession ? formatDate(Date.parse(lastSession.createdAt)) : 'No runs yet';
 
-  const handleNewConversation = () => {
-    const conv = createConversation();
-    window.location.href = `/playground?id=${conv.id}`;
-  };
+  const topIndustry = useMemo(() => {
+    const counts = sessions.reduce<Record<string, number>>((acc, session) => {
+      const key = session.input.industry ?? 'unknown';
+      acc[key] = (acc[key] ?? 0) + 1;
+      return acc;
+    }, {});
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+    return top ? getLabel(INDUSTRIES, top[0]) : 'N/A';
+  }, [sessions]);
 
   if (!isLoaded) {
     return (
@@ -80,7 +77,6 @@ export default function DashboardPage() {
 
       <div className="pt-24 pb-20 px-6">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -89,47 +85,42 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <LayoutDashboard className="w-10 h-10 text-cyan-400" />
-                <h1 className="text-4xl font-bold">Dashboard</h1>
+                <h1 className="text-4xl font-bold">Explorer Dashboard</h1>
               </div>
               <p className="text-slate-400">
-                Manage your conversations and track your AI usage.
+                Review saved Guided Explorer sessions and reuse them for implementation scope.
               </p>
             </div>
-            <Button onClick={handleNewConversation} size="lg">
-              <Plus className="w-5 h-5" />
-              New Conversation
-            </Button>
+            <div className="flex gap-3">
+              <Link href="/explorer">
+                <Button size="lg">
+                  Run Explorer
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              {sessions.length > 0 && (
+                <Button variant="secondary" size="lg" onClick={clearSessions}>
+                  Clear All
+                </Button>
+              )}
+            </div>
           </motion.div>
 
-          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8"
           >
             <Card>
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-cyan-500/10 rounded-lg">
-                    <MessageSquare className="w-5 h-5 text-cyan-400" />
+                    <ClipboardList className="w-5 h-5 text-cyan-400" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{totalConversations}</div>
-                    <div className="text-xs text-slate-400">Conversations</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="py-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{totalMessages}</div>
-                    <div className="text-xs text-slate-400">Total Messages</div>
+                    <div className="text-2xl font-bold">{totalSessions}</div>
+                    <div className="text-xs text-slate-400">Saved Sessions</div>
                   </div>
                 </div>
               </CardContent>
@@ -138,11 +129,11 @@ export default function DashboardPage() {
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
-                    <Brain className="w-5 h-5 text-emerald-400" />
+                    <Target className="w-5 h-5 text-emerald-400" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold">{AI_MODELS.length}</div>
-                    <div className="text-xs text-slate-400">AI Models</div>
+                    <div className="text-2xl font-bold truncate">{topIndustry}</div>
+                    <div className="text-xs text-slate-400">Top Industry</div>
                   </div>
                 </div>
               </CardContent>
@@ -151,148 +142,124 @@ export default function DashboardPage() {
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-amber-500/10 rounded-lg">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    <Clock className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold truncate">{mostUsedModel?.name.split(' ')[0] || 'N/A'}</div>
-                    <div className="text-xs text-slate-400">Most Used</div>
+                    <div className="text-2xl font-bold">{lastRun}</div>
+                    <div className="text-xs text-slate-400">Last Run</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Filters */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-col md:flex-row gap-4 mb-6"
+            className="mb-6"
           >
-            <div className="relative flex-1">
+            <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search conversations..."
+                placeholder="Search by industry, role, pain point, or summary..."
                 className="pl-12"
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-              <Button
-                variant={selectedModel === null ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setSelectedModel(null)}
-              >
-                All
-              </Button>
-              {AI_MODELS.map((model) => (
-                <Button
-                  key={model.id}
-                  variant={selectedModel === model.id ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => setSelectedModel(model.id)}
-                >
-                  {model.name.split(' ')[0]}
-                </Button>
-              ))}
-            </div>
           </motion.div>
 
-          {/* Conversations List */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            {filteredConversations.length === 0 ? (
+            {filteredSessions.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                  <ClipboardList className="w-12 h-12 text-slate-600 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">
-                    {conversations.length === 0 ? 'No conversations yet' : 'No matching conversations'}
+                    {sessions.length === 0 ? 'No sessions saved yet' : 'No matching sessions'}
                   </h3>
                   <p className="text-slate-400 mb-6">
-                    {conversations.length === 0
-                      ? 'Start a new conversation to get started with BrainStack Studio.'
-                      : 'Try adjusting your search or filters.'}
+                    {sessions.length === 0
+                      ? 'Run the Guided Explorer and save a session to build a deployment plan.'
+                      : 'Try a different search term.'}
                   </p>
-                  {conversations.length === 0 && (
-                    <Button onClick={handleNewConversation}>
-                      <Plus className="w-4 h-4" />
-                      Start Your First Conversation
-                    </Button>
+                  {sessions.length === 0 && (
+                    <Link href="/explorer">
+                      <Button>
+                        Run Explorer
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
                   )}
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <AnimatePresence>
-                  {filteredConversations.map((conversation) => {
-                    const model = AI_MODELS.find((m) => m.id === conversation.model);
-                    const lastMessage = conversation.messages[conversation.messages.length - 1];
+                  {filteredSessions.map((session) => {
+                    const industry = getLabel(INDUSTRIES, session.input.industry);
+                    const role = getLabel(ROLES, session.input.role);
+                    const pain = getLabel(PAIN_POINTS, session.input.painPoint);
 
                     return (
                       <motion.div
-                        key={conversation.id}
+                        key={session.id}
                         layout
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                       >
-                        <Card variant="interactive" className="group">
-                          <CardContent className="py-4">
-                            <div className="flex items-start gap-4">
-                              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${model?.gradientColor || 'from-cyan-500 to-blue-500'} flex items-center justify-center shrink-0`}>
-                                <Brain className="w-5 h-5 text-white" />
+                        <Card variant="interactive">
+                          <CardContent className="py-4 space-y-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <div>
+                                <div className="text-sm text-slate-400">{industry}</div>
+                                <div className="text-lg font-semibold">{role} · {pain}</div>
                               </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-semibold truncate">{conversation.title}</h3>
-                                  <Badge variant="default" className="shrink-0">
-                                    {model?.name.split(' ')[0] || conversation.model}
-                                  </Badge>
-                                </div>
-
-                                {lastMessage && (
-                                  <p className="text-sm text-slate-400 truncate">
-                                    {truncateText(lastMessage.content, 100)}
-                                  </p>
-                                )}
-
-                                <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
-                                  <span className="flex items-center gap-1">
-                                    <MessageSquare className="w-3.5 h-3.5" />
-                                    {conversation.messages.length} messages
-                                  </span>
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    {formatDate(conversation.updatedAt)}
-                                  </span>
-                                </div>
+                              <div className="flex items-center gap-3">
+                                <Badge variant="default">
+                                  Confidence {Math.round(session.result.confidence * 100)}%
+                                </Badge>
+                                <span className="text-xs text-slate-500">
+                                  {formatDate(Date.parse(session.createdAt))}
+                                </span>
                               </div>
+                            </div>
 
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Link href={`/playground?id=${conversation.id}`}>
-                                  <Button variant="secondary" size="sm">
-                                    Open
-                                    <ChevronRight className="w-4 h-4" />
-                                  </Button>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    deleteConversation(conversation.id);
-                                  }}
-                                  className="text-slate-400 hover:text-red-400"
-                                >
-                                  <Trash2 className="w-4 h-4" />
+                            <p className="text-sm text-slate-300">
+                              {truncateText(session.result.identifiedPain, 140)}
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                              {session.result.outputs.map((output) => (
+                                <Badge key={output} variant="default" className="text-xs">
+                                  {output}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <Link href="/explorer">
+                                <Button variant="secondary" size="sm">
+                                  Open Explorer
+                                  <ArrowRight className="w-4 h-4" />
                                 </Button>
-                              </div>
+                              </Link>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  deleteSession(session.id);
+                                }}
+                                className="text-slate-400 hover:text-red-400"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>

@@ -6,47 +6,42 @@ import { Footer } from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import {
-  Brain,
-  Rocket,
-  Users,
-  Globe,
-  Sparkles,
-  Target,
-  Heart,
-  Zap,
   Shield,
-  Code,
+  Target,
+  Users,
+  Compass,
+  ClipboardCheck,
+  HeartHandshake,
 } from 'lucide-react';
 import Link from 'next/link';
 
-const TEAM_VALUES = [
+const VALUES = [
   {
-    icon: Sparkles,
-    title: 'Innovation First',
-    description: 'We push the boundaries of what\'s possible with AI, constantly exploring new frontiers.',
+    icon: Shield,
+    title: 'Trust by Design',
+    description: 'We default to safety, boundaries, and explicit uncertainty.',
+  },
+  {
+    icon: Target,
+    title: 'Operational Clarity',
+    description: 'We map real workflows, not generic promises.',
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Deterministic First',
+    description: 'Outputs are bounded, repeatable, and audit-friendly.',
   },
   {
     icon: Users,
-    title: 'User-Centric',
-    description: 'Every feature we build starts with understanding what our users truly need.',
-  },
-  {
-    icon: Shield,
-    title: 'Trust & Safety',
-    description: 'We prioritize responsible AI development and user data protection.',
-  },
-  {
-    icon: Globe,
-    title: 'Global Impact',
-    description: 'We\'re building technology that empowers people worldwide.',
+    title: 'Human-Centered',
+    description: 'We augment operators instead of replacing judgment.',
   },
 ];
 
 const MILESTONES = [
-  { year: '2024', event: 'BrainOps AI Operating System concept initiated' },
-  { year: '2025', event: 'BrainStack Studio v1.0 launched with Claude integration' },
-  { year: '2025', event: 'Multi-AI support added (GPT, Gemini)' },
-  { year: '2026', event: 'v3.0 release with Perplexity and advanced features' },
+  { year: '2024', event: 'BrainOps operational AI framework initiated' },
+  { year: '2025', event: 'Industry pilots validated deterministic workflows' },
+  { year: '2026', event: 'BrainStack Studio launched as the public interface' },
 ];
 
 export default function AboutPage() {
@@ -54,7 +49,6 @@ export default function AboutPage() {
     <main className="min-h-screen">
       <Navigation />
 
-      {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
@@ -62,39 +56,34 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10 mb-6">
-              <Brain className="w-5 h-5 text-cyan-400" />
+              <Compass className="w-5 h-5 text-cyan-400" />
               <span className="text-sm text-slate-300">About BrainStack Studio</span>
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient">Building the Future</span>
+              Operational AI,
               <br />
-              <span className="text-white">of AI Interaction</span>
+              built for trust.
             </h1>
 
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-              BrainStack Studio is the flagship product of the BrainOps AI Operating System ecosystem,
-              designed to make the world's most powerful AI models accessible to everyone.
+              BrainStack Studio is the public face of BrainOps — a calm, credible showcase of
+              operational AI capabilities without exposing proprietary systems. We focus on
+              specific problems, measurable value, and deterministic outcomes.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/playground">
-                <Button size="xl">
-                  <Rocket className="w-5 h-5" />
-                  Try the Playground
-                </Button>
+              <Link href="/explorer">
+                <Button size="xl">Run Guided Explorer</Button>
               </Link>
-              <Link href="/docs">
-                <Button variant="secondary" size="xl">
-                  Read the Docs
-                </Button>
+              <Link href="/solutions">
+                <Button variant="secondary" size="xl">View Solutions</Button>
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Mission Section */}
       <section className="py-20 px-6 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -104,14 +93,12 @@ export default function AboutPage() {
             >
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-slate-400 mb-6">
-                We believe that access to advanced AI should not be limited by technical complexity
-                or vendor lock-in. BrainStack Studio brings together the best AI models from
-                Anthropic, OpenAI, Google, and Perplexity into a single, unified platform.
+                We believe operational AI should be dependable, explainable, and safe to deploy.
+                BrainStack Studio shows what is possible without revealing internal infrastructure.
               </p>
               <p className="text-lg text-slate-400">
-                Our goal is to democratize AI by providing a seamless interface that lets anyone
-                harness the power of multiple AI systems without needing to understand the
-                underlying infrastructure.
+                Every workflow preview is deterministic, bounded, and built to reflect real
+                operational constraints.
               </p>
             </motion.div>
 
@@ -122,26 +109,26 @@ export default function AboutPage() {
             >
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">4</div>
-                  <div className="text-slate-400">AI Providers</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">5</div>
+                  <div className="text-slate-400">Industries Live</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">∞</div>
-                  <div className="text-slate-400">Possibilities</div>
-                </CardContent>
-              </Card>
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">1</div>
-                  <div className="text-slate-400">Unified Platform</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">100%</div>
+                  <div className="text-slate-400">Deterministic Mode</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
                   <div className="text-4xl font-bold text-cyan-400 mb-2">0</div>
-                  <div className="text-slate-400">Vendor Lock-in</div>
+                  <div className="text-slate-400">IP Leakage</div>
+                </CardContent>
+              </Card>
+              <Card className="text-center">
+                <CardContent className="pt-6">
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">1</div>
+                  <div className="text-slate-400">Unified Studio</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -149,7 +136,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -159,12 +145,12 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-4">Our Values</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              The principles that guide everything we build at BrainStack Studio.
+              The principles that guide every decision we make.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM_VALUES.map((value, i) => (
+            {VALUES.map((value, i) => (
               <motion.div
                 key={value.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -184,7 +170,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Timeline Section */}
       <section className="py-20 px-6 bg-white/[0.02]">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -193,14 +178,14 @@ export default function AboutPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold mb-4">Our Journey</h2>
-            <p className="text-slate-400">Key milestones in the BrainStack story.</p>
+            <p className="text-slate-400">Key milestones that shaped BrainStack Studio.</p>
           </motion.div>
 
           <div className="relative">
             <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/10" />
             {MILESTONES.map((milestone, i) => (
               <motion.div
-                key={i}
+                key={milestone.year}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
@@ -218,77 +203,42 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* BrainOps Ecosystem */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-3xl font-bold mb-6">Part of BrainOps</h2>
+            <h2 className="text-3xl font-bold mb-6">The BrainOps Relationship</h2>
             <p className="text-lg text-slate-400 mb-8">
-              BrainStack Studio is a core component of the BrainOps AI Operating System,
-              a comprehensive suite of tools designed to augment human intelligence with AI.
+              BrainStack Studio is the interface to BrainOps capabilities. We expose safe, bounded
+              facades while keeping internal orchestration private.
             </p>
-
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
-              <Card variant="interactive">
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              <Card>
                 <CardContent className="text-center">
-                  <Code className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-                  <h3 className="font-semibold">BrainStack Studio</h3>
-                  <p className="text-sm text-slate-400">Multi-AI Platform</p>
+                  <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
+                  <h3 className="font-semibold">Public Facade</h3>
+                  <p className="text-sm text-slate-400">Deterministic workflows and safe previews.</p>
                 </CardContent>
               </Card>
-              <Card variant="interactive">
+              <Card>
                 <CardContent className="text-center">
-                  <Target className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-                  <h3 className="font-semibold">Command Center</h3>
-                  <p className="text-sm text-slate-400">AI Operations Hub</p>
-                </CardContent>
-              </Card>
-              <Card variant="interactive">
-                <CardContent className="text-center">
-                  <Zap className="w-8 h-8 text-amber-400 mx-auto mb-3" />
-                  <h3 className="font-semibold">AutoPilot</h3>
-                  <p className="text-sm text-slate-400">AI Automation</p>
+                  <HeartHandshake className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
+                  <h3 className="font-semibold">Private Engine</h3>
+                  <p className="text-sm text-slate-400">Proprietary systems stay protected.</p>
                 </CardContent>
               </Card>
             </div>
-
-            <a
-              href="https://brainops-command-center.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="secondary" size="lg">
-                <Globe className="w-5 h-5" />
-                Explore BrainOps Ecosystem
-              </Button>
-            </a>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/contact">
+                <Button size="lg">Request Implementation</Button>
+              </Link>
+              <Link href="/technology">
+                <Button variant="secondary" size="lg">Platform Trust</Button>
+              </Link>
+            </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <Card variant="gradient">
-            <CardContent className="text-center py-12">
-              <Heart className="w-12 h-12 text-pink-400 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-4">Join the AI Revolution</h2>
-              <p className="text-slate-300 mb-8 max-w-xl mx-auto">
-                Start using BrainStack Studio today and experience the future of AI interaction.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/playground">
-                  <Button size="lg">Get Started Free</Button>
-                </Link>
-                <Link href="/docs">
-                  <Button variant="secondary" size="lg">View Documentation</Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
 

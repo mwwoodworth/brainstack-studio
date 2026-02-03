@@ -1,37 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import {
   Book,
   Zap,
-  Code,
+  Target,
+  ClipboardList,
   Terminal,
-  MessageSquare,
-  Settings,
-  Database,
   Shield,
-  ChevronRight,
-  Search,
+  Compass,
 } from 'lucide-react';
 
 const SECTIONS = [
   { id: 'getting-started', label: 'Getting Started', icon: Zap },
-  { id: 'playground', label: 'AI Playground', icon: MessageSquare },
-  { id: 'models', label: 'AI Models', icon: Code },
-  { id: 'api', label: 'API Reference', icon: Terminal },
-  { id: 'configuration', label: 'Configuration', icon: Settings },
-  { id: 'storage', label: 'Data & Storage', icon: Database },
-  { id: 'security', label: 'Security', icon: Shield },
+  { id: 'explorer', label: 'Guided Explorer', icon: Target },
+  { id: 'solutions', label: 'Solution Gallery', icon: ClipboardList },
+  { id: 'capability-api', label: 'Capability API', icon: Terminal },
+  { id: 'telemetry', label: 'Telemetry & Privacy', icon: Shield },
+  { id: 'implementation', label: 'Implementation', icon: Compass },
 ];
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('getting-started');
+
+  useEffect(() => {
+    const setFromHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (SECTIONS.some((section) => section.id === hash)) {
+        setActiveSection(hash);
+      }
+    };
+    setFromHash();
+    window.addEventListener('hashchange', setFromHash);
+    return () => window.removeEventListener('hashchange', setFromHash);
+  }, []);
+
+  const handleSectionChange = (id: string) => {
+    setActiveSection(id);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `#${id}`);
+    }
+  };
 
   return (
     <main className="min-h-screen">
@@ -39,7 +53,6 @@ export default function DocsPage() {
 
       <div className="pt-24 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -50,18 +63,19 @@ export default function DocsPage() {
               <h1 className="text-4xl font-bold">Documentation</h1>
             </div>
             <p className="text-xl text-slate-400 max-w-2xl">
-              Everything you need to know about BrainStack Studio, from getting started to advanced API usage.
+              BrainStack Studio is a deterministic, safety-first interface to operational AI
+              capabilities. This guide explains how the Explorer, Solution Gallery, and capability
+              facades work.
             </p>
           </motion.div>
 
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar */}
             <aside className="lg:w-64 shrink-0">
               <div className="sticky top-24 space-y-2">
                 {SECTIONS.map((section) => (
                   <button
                     key={section.id}
-                    onClick={() => setActiveSection(section.id)}
+                    onClick={() => handleSectionChange(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left transition-all ${
                       activeSection === section.id
                         ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20'
@@ -75,15 +89,13 @@ export default function DocsPage() {
               </div>
             </aside>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
               {activeSection === 'getting-started' && <GettingStartedSection />}
-              {activeSection === 'playground' && <PlaygroundSection />}
-              {activeSection === 'models' && <ModelsSection />}
-              {activeSection === 'api' && <APISection />}
-              {activeSection === 'configuration' && <ConfigurationSection />}
-              {activeSection === 'storage' && <StorageSection />}
-              {activeSection === 'security' && <SecuritySection />}
+              {activeSection === 'explorer' && <ExplorerSection />}
+              {activeSection === 'solutions' && <SolutionsSection />}
+              {activeSection === 'capability-api' && <CapabilityAPISection />}
+              {activeSection === 'telemetry' && <TelemetrySection />}
+              {activeSection === 'implementation' && <ImplementationSection />}
             </div>
           </div>
         </div>
@@ -96,16 +108,12 @@ export default function DocsPage() {
 
 function GettingStartedSection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div>
         <h2 className="text-3xl font-bold mb-4">Getting Started</h2>
         <p className="text-slate-400 mb-6">
-          BrainStack Studio is a multi-AI platform that lets you access Claude, GPT, Gemini, and Perplexity
-          through a unified interface. Get started in minutes.
+          Start with the Guided Explorer to map your operational context to a deterministic
+          workflow preview. No login required for the public experience.
         </p>
       </div>
 
@@ -116,22 +124,22 @@ function GettingStartedSection() {
             <li className="flex gap-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500 text-white font-bold shrink-0">1</span>
               <div>
-                <p className="font-medium">Launch the Playground</p>
-                <p className="text-slate-400 text-sm">Navigate to the AI Playground to start chatting with AI models.</p>
+                <p className="font-medium">Open Guided Explorer</p>
+                <p className="text-slate-400 text-sm">Select your industry, role, and primary pain point.</p>
               </div>
             </li>
             <li className="flex gap-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500 text-white font-bold shrink-0">2</span>
               <div>
-                <p className="font-medium">Select Your Model</p>
-                <p className="text-slate-400 text-sm">Choose from Claude Opus 4.5, GPT-5.2, Gemini 3 Pro, or Sonar Pro.</p>
+                <p className="font-medium">Review Deterministic Outputs</p>
+                <p className="text-slate-400 text-sm">See workflow steps, automation logic, and confidence scoring.</p>
               </div>
             </li>
             <li className="flex gap-4">
               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500 text-white font-bold shrink-0">3</span>
               <div>
-                <p className="font-medium">Start Chatting</p>
-                <p className="text-slate-400 text-sm">Type your message and get streaming AI responses in real-time.</p>
+                <p className="font-medium">Request Implementation</p>
+                <p className="text-slate-400 text-sm">Convert the preview into a scoped deployment plan.</p>
               </div>
             </li>
           </ol>
@@ -140,37 +148,19 @@ function GettingStartedSection() {
 
       <Card>
         <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Environment Setup</h3>
+          <h3 className="text-xl font-semibold mb-4">Local Development</h3>
           <p className="text-slate-400 mb-4">
-            To run BrainStack Studio locally, you'll need to configure your API keys:
+            BrainStack Studio runs as a standard Next.js application. No private APIs are required for
+            the public experience.
           </p>
           <CodeBlock
             language="bash"
-            code={`# Create a .env.local file with your API keys
-ANTHROPIC_API_KEY=your_anthropic_key
-OPENAI_API_KEY=your_openai_key
-GOOGLE_GENERATIVE_AI_API_KEY=your_google_key
-PERPLEXITY_API_KEY=your_perplexity_key`}
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Installation</h3>
-          <CodeBlock
-            language="bash"
-            code={`# Clone the repository
-git clone https://github.com/your-org/brainstack-studio.git
-
-# Install dependencies
-npm install
-
-# Start development server
+            code={`npm install
 npm run dev
 
-# Build for production
-npm run build`}
+# Optional feature flags
+NEXT_PUBLIC_BSS_TELEMETRY=false
+NEXT_PUBLIC_BSS_LEAD_CAPTURE=true`}
           />
         </CardContent>
       </Card>
@@ -178,234 +168,95 @@ npm run build`}
   );
 }
 
-function PlaygroundSection() {
+function ExplorerSection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-4">AI Playground</h2>
+        <h2 className="text-3xl font-bold mb-4">Guided Explorer</h2>
         <p className="text-slate-400 mb-6">
-          The AI Playground is your interactive workspace for conversing with multiple AI models.
+          The Guided Explorer is a deterministic flow that maps operational context to a bounded
+          workflow preview. Every output includes confidence scoring and decision trails.
         </p>
       </div>
 
       <Card>
         <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Features</h3>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <ChevronRight className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <div>
-                <p className="font-medium">Real-time Streaming</p>
-                <p className="text-slate-400 text-sm">Watch AI responses stream in character by character.</p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <ChevronRight className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <div>
-                <p className="font-medium">Model Switching</p>
-                <p className="text-slate-400 text-sm">Switch between AI models mid-conversation without losing context.</p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <ChevronRight className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <div>
-                <p className="font-medium">Code Highlighting</p>
-                <p className="text-slate-400 text-sm">Syntax highlighting for code blocks with one-click copy.</p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <ChevronRight className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <div>
-                <p className="font-medium">Conversation History</p>
-                <p className="text-slate-400 text-sm">Your conversations are automatically saved locally.</p>
-              </div>
-            </li>
+          <h3 className="text-xl font-semibold mb-4">Deterministic Outputs</h3>
+          <p className="text-slate-400 mb-4">
+            Outputs are generated from pre-defined scaffolds. If confidence falls below threshold, the
+            Explorer asks for more context instead of guessing.
+          </p>
+          <CodeBlock
+            language="json"
+            code={`{
+  "identifiedPain": "Margin leakage from estimate drift",
+  "workflow": ["Capture change orders", "Trigger approvals", "Publish variance report"],
+  "confidence": 0.82,
+  "confidenceLabel": "High"
+}`}
+          />
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+function SolutionsSection() {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+      <div>
+        <h2 className="text-3xl font-bold mb-4">Solution Gallery</h2>
+        <p className="text-slate-400 mb-6">
+          Each solution page is a bounded preview: workflows, outputs, and sandboxed steps that
+          demonstrate value without exposing proprietary systems.
+        </p>
+      </div>
+
+      <Card>
+        <CardContent>
+          <h3 className="text-xl font-semibold mb-4">What You Will See</h3>
+          <ul className="space-y-2 text-slate-300">
+            <li>Operational problem statement and deterministic workflow</li>
+            <li>Example outputs and decision trails</li>
+            <li>Explicit boundaries on what is hidden</li>
           </ul>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Keyboard Shortcuts</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <span className="text-slate-400">Send message</span>
-              <kbd className="px-2 py-1 bg-slate-800 rounded text-xs font-mono">Enter</kbd>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <span className="text-slate-400">New line</span>
-              <kbd className="px-2 py-1 bg-slate-800 rounded text-xs font-mono">Shift+Enter</kbd>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <span className="text-slate-400">New conversation</span>
-              <kbd className="px-2 py-1 bg-slate-800 rounded text-xs font-mono">Ctrl+N</kbd>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-              <span className="text-slate-400">Toggle sidebar</span>
-              <kbd className="px-2 py-1 bg-slate-800 rounded text-xs font-mono">Ctrl+B</kbd>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </motion.div>
   );
 }
 
-function ModelsSection() {
-  const models = [
-    {
-      name: 'Claude Opus 4.5',
-      provider: 'Anthropic',
-      badge: 'primary',
-      description: 'Most capable model for complex reasoning, analysis, and creative tasks.',
-      strengths: ['Advanced reasoning', 'Long context (200K)', 'Code generation', 'Analysis'],
-    },
-    {
-      name: 'GPT-5.2',
-      provider: 'OpenAI',
-      badge: 'success',
-      description: 'Versatile model with strong general-purpose capabilities.',
-      strengths: ['Multi-modal', 'Function calling', 'Code interpreter', 'Plugins'],
-    },
-    {
-      name: 'Gemini 3 Pro',
-      provider: 'Google',
-      badge: 'primary',
-      description: 'Multimodal AI with native Google ecosystem integration.',
-      strengths: ['1M context window', 'Multimodal', 'Google Search', 'Code execution'],
-    },
-    {
-      name: 'Sonar Pro',
-      provider: 'Perplexity',
-      badge: 'purple',
-      description: 'Real-time web search with AI-powered synthesis.',
-      strengths: ['Real-time search', 'Citations', 'Web browsing', 'Fact checking'],
-    },
-  ];
-
+function CapabilityAPISection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-4">AI Models</h2>
+        <h2 className="text-3xl font-bold mb-4">Capability API</h2>
         <p className="text-slate-400 mb-6">
-          BrainStack Studio provides access to four leading AI models, each with unique strengths.
-        </p>
-      </div>
-
-      <div className="grid gap-6">
-        {models.map((model) => (
-          <Card key={model.name}>
-            <CardContent>
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-xl font-semibold">{model.name}</h3>
-                  <p className="text-slate-400 text-sm">{model.provider}</p>
-                </div>
-                <Badge variant={model.badge as any}>{model.provider}</Badge>
-              </div>
-              <p className="text-slate-300 mb-4">{model.description}</p>
-              <div className="flex flex-wrap gap-2">
-                {model.strengths.map((strength) => (
-                  <span key={strength} className="px-3 py-1 bg-white/5 rounded-full text-sm text-slate-400">
-                    {strength}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-function APISection() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
-      <div>
-        <h2 className="text-3xl font-bold mb-4">API Reference</h2>
-        <p className="text-slate-400 mb-6">
-          Use the BrainStack API to integrate AI capabilities into your own applications.
+          BrainStack Studio exposes capability facades rather than internal systems. The Explorer API
+          is deterministic and safe to use for previews.
         </p>
       </div>
 
       <Card>
         <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Chat Endpoint</h3>
-          <div className="flex items-center gap-3 mb-4">
-            <Badge variant="success">POST</Badge>
-            <code className="text-cyan-400">/api/chat</code>
-          </div>
-          <p className="text-slate-400 mb-4">Send messages to AI models and receive streaming responses.</p>
-          <CodeBlock
-            language="typescript"
-            code={`// Request body
-{
-  "messages": [
-    { "role": "user", "content": "Hello, how are you?" }
-  ],
-  "model": "claude", // claude | gpt | gemini | perplexity
-  "systemPrompt": "You are a helpful assistant",
-  "temperature": 0.7,
-  "maxTokens": 4096
-}`}
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Example: Fetch API</h3>
-          <CodeBlock
-            language="javascript"
-            code={`const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    messages: [{ role: 'user', content: 'Explain quantum computing' }],
-    model: 'claude'
-  })
-});
-
-const reader = response.body.getReader();
-const decoder = new TextDecoder();
-
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break;
-  console.log(decoder.decode(value));
-}`}
-          />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Health Check</h3>
-          <div className="flex items-center gap-3 mb-4">
-            <Badge variant="primary">GET</Badge>
-            <code className="text-cyan-400">/api/chat</code>
-          </div>
-          <p className="text-slate-400 mb-4">Check API status and available models.</p>
+          <h3 className="text-xl font-semibold mb-4">POST /api/capability/explorer</h3>
           <CodeBlock
             language="json"
-            code={`// Response
-{
+            code={`{
+  "industry": "construction",
+  "role": "ops-manager",
+  "painPoint": "money"
+}`}
+          />
+          <CodeBlock
+            language="json"
+            code={`{
   "status": "ok",
-  "models": ["claude", "gpt", "gemini", "perplexity"],
-  "timestamp": "2026-01-19T12:00:00.000Z"
+  "confidenceThreshold": 0.65,
+  "result": {
+    "identifiedPain": "Margin erosion from estimate drift",
+    "workflow": ["Capture change orders", "Escalate approvals", "Publish variance report"]
+  }
 }`}
           />
         </CardContent>
@@ -414,101 +265,26 @@ while (true) {
   );
 }
 
-function ConfigurationSection() {
+function TelemetrySection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-4">Configuration</h2>
+        <h2 className="text-3xl font-bold mb-4">Telemetry & Privacy</h2>
         <p className="text-slate-400 mb-6">
-          Customize BrainStack Studio to fit your needs.
+          Telemetry is minimal and anonymous. You can disable it in Settings.
         </p>
       </div>
 
       <Card>
         <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Environment Variables</h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-white/5 rounded-lg">
-              <code className="text-cyan-400">ANTHROPIC_API_KEY</code>
-              <p className="text-slate-400 text-sm mt-1">Your Anthropic API key for Claude models</p>
-            </div>
-            <div className="p-4 bg-white/5 rounded-lg">
-              <code className="text-cyan-400">OPENAI_API_KEY</code>
-              <p className="text-slate-400 text-sm mt-1">Your OpenAI API key for GPT models</p>
-            </div>
-            <div className="p-4 bg-white/5 rounded-lg">
-              <code className="text-cyan-400">GOOGLE_GENERATIVE_AI_API_KEY</code>
-              <p className="text-slate-400 text-sm mt-1">Your Google API key for Gemini models</p>
-            </div>
-            <div className="p-4 bg-white/5 rounded-lg">
-              <code className="text-cyan-400">PERPLEXITY_API_KEY</code>
-              <p className="text-slate-400 text-sm mt-1">Your Perplexity API key for Sonar models</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">User Preferences</h3>
-          <p className="text-slate-400 mb-4">Configure default settings in the Settings page:</p>
-          <ul className="space-y-2 text-slate-300">
-            <li>• Default AI model</li>
-            <li>• System prompt customization</li>
-            <li>• Temperature (creativity level)</li>
-            <li>• Max tokens per response</li>
-            <li>• Streaming enabled/disabled</li>
-          </ul>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
-function StorageSection() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
-      <div>
-        <h2 className="text-3xl font-bold mb-4">Data & Storage</h2>
-        <p className="text-slate-400 mb-6">
-          Understanding how BrainStack Studio handles your data.
-        </p>
-      </div>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Local Storage</h3>
-          <p className="text-slate-400 mb-4">
-            All conversation data is stored locally in your browser using localStorage:
-          </p>
-          <ul className="space-y-2 text-slate-300">
-            <li>• <code className="text-cyan-400">brainstack_conversations</code> - Your chat history</li>
-            <li>• <code className="text-cyan-400">brainstack_preferences</code> - Your settings</li>
-            <li>• <code className="text-cyan-400">brainstack_current_conversation</code> - Active session</li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Data Export</h3>
-          <p className="text-slate-400 mb-4">
-            You can export all your data from the Dashboard:
-          </p>
+          <h3 className="text-xl font-semibold mb-4">Telemetry Event Shape</h3>
           <CodeBlock
             language="json"
             code={`{
-  "conversations": [...],
-  "preferences": {...},
-  "exportedAt": "2026-01-19T12:00:00.000Z"
+  "name": "explorer_run",
+  "payload": { "industry": "operations" },
+  "ts": "2026-02-03T02:00:00.000Z",
+  "path": "/explorer"
 }`}
           />
         </CardContent>
@@ -517,58 +293,25 @@ function StorageSection() {
   );
 }
 
-function SecuritySection() {
+function ImplementationSection() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-8"
-    >
+    <motion.div id="implementation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-4">Security</h2>
+        <h2 className="text-3xl font-bold mb-4">Implementation</h2>
         <p className="text-slate-400 mb-6">
-          Security best practices for using BrainStack Studio.
+          We convert a Guided Explorer session into a scoped deployment plan, then ship with clear
+          guardrails and deterministic outputs.
         </p>
       </div>
 
       <Card>
         <CardContent>
-          <h3 className="text-xl font-semibold mb-4">API Key Security</h3>
-          <ul className="space-y-3 text-slate-300">
-            <li className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <span>Never expose API keys in client-side code</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <span>Use environment variables for all secrets</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <span>Rotate API keys regularly</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Shield className="w-5 h-5 text-cyan-400 mt-0.5" />
-              <span>Set up usage limits with your AI providers</span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent>
-          <h3 className="text-xl font-semibold mb-4">Security Headers</h3>
-          <p className="text-slate-400 mb-4">
-            BrainStack Studio includes security headers by default:
-          </p>
-          <CodeBlock
-            language="json"
-            code={`{
-  "X-Content-Type-Options": "nosniff",
-  "X-Frame-Options": "DENY",
-  "X-XSS-Protection": "1; mode=block"
-}`}
-          />
+          <h3 className="text-xl font-semibold mb-4">Deployment Flow</h3>
+          <ol className="space-y-3 text-slate-300">
+            <li>1. Intake: capture operational context and success criteria.</li>
+            <li>2. Scope: define workflows, data boundaries, and reliability targets.</li>
+            <li>3. Implement: deploy with audit trails and operator oversight.</li>
+          </ol>
         </CardContent>
       </Card>
     </motion.div>

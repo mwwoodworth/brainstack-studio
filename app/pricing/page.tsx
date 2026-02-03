@@ -1,145 +1,80 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import {
-  Check,
-  Sparkles,
-  Zap,
-  Building2,
-  MessageSquare,
-  Brain,
-  Globe,
-  Shield,
-  Headphones,
-  Code,
-} from 'lucide-react';
-import Link from 'next/link';
+import { Check, Lock, ArrowRight } from 'lucide-react';
 
 const PLANS = [
   {
-    name: 'AI Playground',
-    description: 'Full access to our multi-AI platform',
-    price: 'Free',
-    period: ' forever',
+    name: 'Free',
+    description: 'Guided Explorer with deterministic outputs',
+    price: '$0',
+    period: ' / forever',
     features: [
-      'Claude Opus 4.5 access',
-      'GPT-5.2 & Gemini 3 Pro',
-      'Local conversation storage',
-      'Syntax highlighting',
-      'Bring your own API keys',
+      'Guided AI Explorer (bounded)',
+      'Solution previews',
+      'Confidence scoring + decision trail',
+      'Local-only saved sessions',
     ],
-    cta: 'Launch Playground',
-    href: '/playground',
-    popular: true,
+    cta: 'Start Free',
+    href: '/explorer',
   },
   {
-    name: 'MCP Starter Kit',
-    description: 'Build AI tool integrations fast',
-    price: '$97',
-    period: ' one-time',
+    name: 'Pro',
+    description: 'Advanced workflows + saved sessions',
+    price: '$99',
+    period: ' / month',
     features: [
-      'MCP Server patterns',
-      'Full source code',
-      'Tool integration examples',
-      'Documentation & guides',
-      'Lifetime updates',
-    ],
-    cta: 'Get Starter Kit',
-    href: 'https://woodworthia.gumroad.com/l/hjhmsm',
-    popular: false,
-  },
-  {
-    name: 'AI Orchestrator',
-    description: 'Multi-LLM smart routing system',
-    price: '$147',
-    period: ' one-time',
-    features: [
-      'Multi-LLM orchestration',
-      'Smart model routing',
-      'Production-ready code',
-      'Full documentation',
+      'Advanced workflow templates',
+      'Team-shared saved sessions',
+      'Exportable decision trails',
       'Priority support',
     ],
-    cta: 'Get Orchestrator',
-    href: 'https://woodworthia.gumroad.com/l/gsaavb',
-    popular: false,
-  },
-];
-
-const FEATURES_COMPARISON = [
-  { feature: 'AI Playground Access', free: true, starter: true, pro: true },
-  { feature: 'Claude, GPT, Gemini', free: true, starter: true, pro: true },
-  { feature: 'Local Storage', free: true, starter: true, pro: true },
-  { feature: 'Full Source Code', free: false, starter: true, pro: true },
-  { feature: 'MCP Server Patterns', free: false, starter: true, pro: true },
-  { feature: 'Multi-LLM Routing', free: false, starter: false, pro: true },
-  { feature: 'AI Orchestration', free: false, starter: false, pro: true },
-  { feature: 'Lifetime Updates', free: false, starter: true, pro: true },
-  { feature: 'Documentation', free: 'Basic', starter: 'Full', pro: 'Full' },
-  { feature: 'Support', free: 'Community', starter: 'Email', pro: 'Priority' },
-];
-
-const INDIVIDUAL_PRODUCTS = [
-  {
-    name: 'SaaS ERP Starter Kit',
-    description: 'Production-ready multi-tenant foundation with auth, CRM, jobs, invoicing & AI features',
-    price: '$197',
-    tags: ['Next.js 14', 'Supabase', 'TypeScript'],
-    href: 'https://woodworthia.gumroad.com/l/gr-erp-start',
-    icon: Building2,
-  },
-  {
-    name: 'AI Content Production Pipeline',
-    description: 'Scale your content 10x with multi-stage pipeline, SEO optimization & publishing integrations',
-    price: '$347',
-    tags: ['Python', 'FastAPI', 'OpenAI/Anthropic'],
-    href: 'https://woodworthia.gumroad.com/l/gr-content',
-    icon: Brain,
+    cta: 'Subscribe to Pro',
+    href: '/contact',
     popular: true,
   },
   {
-    name: 'Intelligent Client Onboarding',
-    description: 'Automate intake & delight clients with smart flows, e-signatures & CRM integrations',
-    price: '$297',
-    tags: ['Next.js', 'TypeScript', 'Make.com'],
-    href: 'https://woodworthia.gumroad.com/l/gr-onboard',
-    icon: MessageSquare,
-  },
-  {
-    name: 'AI Project Command Center',
-    description: 'Complete Notion workspace with 8 linked databases, executive dashboard & 30+ automations',
-    price: '$197',
-    tags: ['Notion', 'Make/Zapier', 'AI-Ready'],
-    href: 'https://woodworthia.gumroad.com/l/gr-pmcmd',
-    icon: Globe,
+    name: 'Enterprise',
+    description: 'Custom ops solutions + deployment',
+    price: 'Custom',
+    period: '',
+    features: [
+      'Dedicated implementation team',
+      'System integration & onboarding',
+      'Compliance-ready audit trails',
+      'SLA-backed reliability',
+    ],
+    cta: 'Request Implementation',
+    href: '/contact',
   },
 ];
 
-const FAQ = [
+const CAPABILITIES = [
   {
-    question: 'Is the AI Playground really free?',
-    answer: 'Yes! The AI Playground is completely free. You bring your own API keys (from OpenAI, Anthropic, Google) and get full access to all features.',
+    name: 'Advanced Forecasting',
+    description: '13-week cash flow, demand forecasting, and scenario sensitivity.',
+    price: '$1,500 / module',
   },
   {
-    question: 'What are the developer kits?',
-    answer: 'The MCP Starter Kit and AI Orchestrator are one-time purchases that include full source code, documentation, and lifetime updates. Use them to build your own AI tools.',
+    name: 'Process Automation Builder',
+    description: 'Deterministic workflow builders with guardrails.',
+    price: '$2,000 / module',
   },
   {
-    question: 'Do I need coding experience?',
-    answer: 'The AI Playground works for everyone. The developer kits are designed for developers who want to build custom AI integrations and tools.',
+    name: 'Compliance Logic Pack',
+    description: 'Audit-ready controls and exception handling.',
+    price: '$1,200 / module',
   },
   {
-    question: 'What models are supported?',
-    answer: 'Claude Opus 4.5, GPT-5.2, Gemini 3 Pro, and more. We regularly add new models as they become available.',
-  },
-  {
-    question: 'What\'s included in the products?',
-    answer: 'Each product includes full source code, comprehensive documentation, setup guides, and lifetime updates. No subscriptions required.',
+    name: 'Scenario Modeling',
+    description: 'Operational what-if modeling with safe constraints.',
+    price: '$1,800 / module',
   },
 ];
 
@@ -148,272 +83,89 @@ export default function PricingPage() {
     <main className="min-h-screen">
       <Navigation />
 
-      {/* Hero */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient">Simple, Transparent</span>
-              <br />
-              <span className="text-white">Pricing</span>
-            </h1>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Start free and scale as you grow. No hidden fees, no surprises.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Pricing Cards */}
-      <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            {PLANS.map((plan, i) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="relative"
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                    <Badge variant="primary" className="px-4 py-1">
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                <Card
-                  className={`h-full flex flex-col ${
-                    plan.popular ? 'border-cyan-500 ring-1 ring-cyan-500' : ''
-                  }`}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <p className="text-slate-400 text-sm">{plan.description}</p>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex flex-col">
-                    <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-slate-400">{plan.period}</span>
-                    </div>
-
-                    <ul className="space-y-3 mb-8 flex-1">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
-                          <span className="text-slate-300 text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Link href={plan.href}>
-                      <Button
-                        className="w-full"
-                        variant={plan.popular ? 'primary' : 'secondary'}
-                        size="lg"
-                      >
-                        {plan.cta}
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Individual Products */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <Badge variant="purple" className="mb-4">
-              <Code className="w-3 h-3 mr-1" />
-              Individual Products
-            </Badge>
-            <h2 className="text-3xl font-bold mb-4">Buy What You Need</h2>
+      <section className="pt-28 pb-16 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <Badge variant="primary" className="mb-4">Pricing</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Revenue paths without pressure.</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Don&apos;t need the full bundle? Get individual products with full source code and lifetime updates.
+              Start free. Upgrade when the workflows prove value. Enterprise deployments are scoped
+              with clear boundaries and deterministic outcomes.
             </p>
           </motion.div>
+        </div>
+      </section>
 
+      <section className="pb-20 px-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
+          {PLANS.map((plan) => (
+            <Card key={plan.name} className={plan.popular ? 'border-cyan-500 ring-1 ring-cyan-500' : ''}>
+              <CardHeader>
+                {plan.popular && (
+                  <Badge variant="primary" className="w-fit">Most Chosen</Badge>
+                )}
+                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <p className="text-sm text-slate-400">{plan.description}</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-3xl font-bold">
+                  {plan.price}
+                  <span className="text-sm text-slate-400">{plan.period}</span>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-300">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex gap-2">
+                      <Check className="w-4 h-4 text-emerald-400 mt-0.5" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button asChild size="lg" className="w-full">
+                  <Link href={plan.href}>
+                    {plan.cta}
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="pb-20 px-6 bg-white/[0.02]">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <Lock className="w-5 h-5 text-cyan-400" />
+            <h2 className="text-2xl font-bold">Pay-per-capability</h2>
+          </div>
           <div className="grid md:grid-cols-2 gap-6">
-            {INDIVIDUAL_PRODUCTS.map((product, i) => (
-              <motion.div
-                key={product.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <Card className={`h-full ${product.popular ? 'border-cyan-500/50' : ''}`}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-purple-500/20 flex items-center justify-center">
-                          <product.icon className="w-5 h-5 text-cyan-400" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold flex items-center gap-2">
-                            {product.name}
-                            {product.popular && (
-                              <Badge variant="primary" className="text-xs">Popular</Badge>
-                            )}
-                          </h3>
-                          <span className="text-2xl font-bold text-cyan-400">{product.price}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-slate-400 text-sm mb-4">{product.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {product.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs rounded-md bg-white/5 text-slate-300"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <Link href={product.href} target="_blank">
-                      <Button variant="secondary" size="sm" className="w-full">
-                        Get {product.name.split(' ')[0]}
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
+            {CAPABILITIES.map((capability) => (
+              <Card key={capability.name}>
+                <CardContent>
+                  <h3 className="font-semibold text-lg">{capability.name}</h3>
+                  <p className="text-sm text-slate-400 mt-2">{capability.description}</p>
+                  <div className="mt-4 text-sm font-semibold text-cyan-300">{capability.price}</div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Feature Comparison */}
-      <section className="py-20 px-6 bg-white/[0.02]">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-4">Compare Plans</h2>
-            <p className="text-slate-400">See what's included in each plan</p>
-          </motion.div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left py-4 px-4 font-medium text-slate-400">Feature</th>
-                  <th className="text-center py-4 px-4 font-medium text-emerald-400">Playground (Free)</th>
-                  <th className="text-center py-4 px-4 font-medium text-blue-400">MCP Kit $97</th>
-                  <th className="text-center py-4 px-4 font-medium text-cyan-400">Orchestrator $147</th>
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURES_COMPARISON.map((row) => (
-                  <tr key={row.feature} className="border-b border-white/5">
-                    <td className="py-4 px-4 text-slate-300">{row.feature}</td>
-                    <td className="py-4 px-4 text-center">
-                      {typeof row.free === 'boolean' ? (
-                        row.free ? (
-                          <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )
-                      ) : (
-                        <span className="text-slate-400 text-sm">{row.free}</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center bg-blue-500/5">
-                      {typeof row.starter === 'boolean' ? (
-                        row.starter ? (
-                          <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )
-                      ) : (
-                        <span className="text-blue-400 text-sm">{row.starter}</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center bg-cyan-500/5">
-                      {typeof row.pro === 'boolean' ? (
-                        row.pro ? (
-                          <Check className="w-5 h-5 text-emerald-400 mx-auto" />
-                        ) : (
-                          <span className="text-slate-600">—</span>
-                        )
-                      ) : (
-                        <span className="text-cyan-400 text-sm">{row.pro}</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <section className="pb-20 px-6">
+        <div className="max-w-5xl mx-auto text-center space-y-4">
+          <h2 className="text-3xl font-bold">Lead → Implementation Pipeline</h2>
+          <p className="text-slate-400">
+            High-intent users enter through Guided Explorer or Solutions, then move to scoped implementation.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg">
+              <Link href="/contact">Request Implementation</Link>
+            </Button>
+            <Button asChild variant="secondary" size="lg">
+              <Link href="/solutions">Explore Solutions</Link>
+            </Button>
           </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-          </motion.div>
-
-          <div className="space-y-4">
-            {FAQ.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <Card>
-                  <CardContent>
-                    <h3 className="font-semibold mb-2">{item.question}</h3>
-                    <p className="text-slate-400 text-sm">{item.answer}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <Card variant="gradient">
-            <CardContent className="text-center py-12">
-              <Zap className="w-12 h-12 text-amber-400 mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-              <p className="text-slate-300 mb-8 max-w-xl mx-auto">
-                Join thousands of developers using BrainStack Studio to build amazing AI-powered applications.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/playground">
-                  <Button size="lg">Start Free Today</Button>
-                </Link>
-                <Link href="/docs">
-                  <Button variant="secondary" size="lg">View Documentation</Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
 

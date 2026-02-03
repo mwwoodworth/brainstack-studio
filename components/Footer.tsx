@@ -5,21 +5,19 @@ import { Brain, Github, Twitter, Linkedin } from 'lucide-react';
 
 const FOOTER_LINKS = {
   Product: [
-    { label: 'Playground', href: '/playground' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'API', href: '/api-docs' },
+    { label: 'Guided Explorer', href: '/explorer' },
+    { label: 'Solutions', href: '/solutions' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Enterprise Intake', href: '/contact' },
   ],
   Resources: [
     { label: 'Documentation', href: '/docs' },
-    { label: 'API Reference', href: '/api-docs' },
-    { label: 'Examples', href: '/docs#examples' },
-    { label: 'Changelog', href: '/docs#changelog' },
+    { label: 'API Facades', href: '/api-docs' },
+    { label: 'Platform Trust', href: '/technology' },
+    { label: 'Implementation Guide', href: '/docs#implementation' },
   ],
   Company: [
     { label: 'About', href: '/about' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Careers', href: '/careers' },
     { label: 'Contact', href: '/contact' },
   ],
   Legal: [
@@ -41,7 +39,8 @@ export function Footer() {
               <span className="text-xl font-bold">BrainStack Studio</span>
             </Link>
             <p className="text-slate-400 text-sm mb-4 max-w-xs">
-              The multi-AI platform for the future. Access Claude, GPT, Gemini, and Perplexity in one unified interface.
+              BrainStack Studio is the public interface for BrainOps — a calm, trustworthy showcase of operational AI
+              capabilities without exposing proprietary infrastructure.
             </p>
             <div className="flex items-center gap-4">
               <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">
@@ -82,7 +81,7 @@ export function Footer() {
             © {new Date().getFullYear()} BrainStack Studio. Part of the BrainOps AI Operating System.
           </p>
           <p className="text-sm text-slate-500">
-            Built with Next.js, Vercel AI SDK, and love.
+            Built for operational trust. Deterministic outputs, clear boundaries.
           </p>
         </div>
       </div>
