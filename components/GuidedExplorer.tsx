@@ -42,26 +42,36 @@ export function GuidedExplorer() {
   const runExplorer = async () => {
     if (!canRun) return;
     setHasRun(true);
-    await trackEvent({
-      name: 'explorer_run',
-      payload: input,
-    });
+    try {
+      await trackEvent({
+        name: 'explorer_run',
+        payload: input,
+      });
+    } catch (error) {
+      // Telemetry failure should not break UI functionality
+      console.error('Failed to track explorer run:', error);
+    }
   };
 
   const handleSave = async () => {
     if (!result || !canRun) return;
     if (!preferences.saveSessions) return;
-    const session = {
-      id: `sess_${Date.now().toString(36)}_${Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(16).padStart(2, '0')).join('')}`,
-      createdAt: new Date().toISOString(),
-      input,
-      result,
-    };
-    saveSession(session);
-    await trackEvent({
-      name: 'explorer_save',
-      payload: { ...input, confidence: result.confidence },
-    });
+    try {
+      const session = {
+        id: `sess_${Date.now().toString(36)}_${Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(16).padStart(2, '0')).join('')}`,
+        createdAt: new Date().toISOString(),
+        input,
+        result,
+      };
+      saveSession(session);
+      await trackEvent({
+        name: 'explorer_save',
+        payload: { ...input, confidence: result.confidence },
+      });
+    } catch (error) {
+      // Save/telemetry failure should not break UI functionality
+      console.error('Failed to save explorer session:', error);
+    }
   };
 
   return (

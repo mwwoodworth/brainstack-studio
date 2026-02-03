@@ -15,10 +15,11 @@ export function executePricingOptimizer(inputs: Record<string, string | number>)
   const currentPrice = parseNumericInput(inputs.currentPrice, 0);
   const competitorLowPrice = parseNumericInput(inputs.competitorLowPrice, 0);
   const competitorHighPrice = parseNumericInput(inputs.competitorHighPrice, 0);
-  const targetMargin = parseNumericInput(inputs.targetMargin, 70) / 100;
+  // Cap target margin at 95% to prevent division by zero (1 - 1.0 = 0)
+  const targetMargin = Math.min(0.95, parseNumericInput(inputs.targetMargin, 70) / 100);
   const monthlyVolume = parseNumericInput(inputs.monthlyVolume, 100);
 
-  // Calculate price points
+  // Calculate price points (targetMargin is capped at 95% to ensure valid division)
   const minViablePrice = unitCost / (1 - targetMargin); // Price needed for target margin
   const marketMidpoint = (competitorLowPrice + competitorHighPrice) / 2;
 

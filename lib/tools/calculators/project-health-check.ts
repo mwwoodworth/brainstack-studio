@@ -103,13 +103,19 @@ export function executeProjectHealthCheck(
   decisionTrail.push(`Project status: ${projectStatus}`);
 
   // Calculate projected completion
-  const velocityRatio = percentComplete / Math.max(1, expectedProgress);
-  const projectedDays = totalDays / velocityRatio;
+  // Handle edge case: if no progress yet, use linear projection based on time elapsed
+  const velocityRatio = percentComplete > 0 && expectedProgress > 0
+    ? percentComplete / expectedProgress
+    : 1; // Default to 1:1 velocity when no data
+  const projectedDays = velocityRatio > 0 ? totalDays / velocityRatio : totalDays;
   const daysRemaining = totalDays - daysElapsed;
   const projectedOverrun = projectedDays - totalDays;
 
   // Calculate projected budget at completion
-  const costPerPercent = budgetSpent / Math.max(1, percentComplete);
+  // Handle edge case: if no progress yet, project based on budget vs time ratio
+  const costPerPercent = percentComplete > 0
+    ? budgetSpent / percentComplete
+    : (daysElapsed > 0 ? (budgetSpent / (daysElapsed / totalDays)) / 100 : totalBudget / 100);
   const projectedTotalCost = costPerPercent * 100;
   const projectedBudgetOverrun = projectedTotalCost - totalBudget;
 

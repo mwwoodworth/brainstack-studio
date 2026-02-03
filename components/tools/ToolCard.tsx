@@ -1,18 +1,23 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import * as Icons from 'lucide-react';
+import { ArrowRight, Wrench } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { Tool, INDUSTRY_LABELS, PAIN_POINT_LABELS } from '@/lib/tools';
+
+// Type for dynamic icon lookup
+type IconComponent = React.ComponentType<{ className?: string }>;
 
 interface ToolCardProps {
   tool: Tool;
   featured?: boolean;
 }
 
-export function ToolCard({ tool, featured = false }: ToolCardProps) {
+export const ToolCard = memo(function ToolCard({ tool, featured = false }: ToolCardProps) {
   // Dynamic icon lookup - use type assertion via unknown for dynamic access
-  const IconComponent = (Icons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[tool.icon] || Icons.Wrench;
+  const IconComponent = (LucideIcons as unknown as Record<string, IconComponent>)[tool.icon] || Wrench;
 
   const colorClasses: Record<string, { bg: string; border: string; text: string; glow: string }> = {
     cyan: {
@@ -108,11 +113,11 @@ export function ToolCard({ tool, featured = false }: ToolCardProps) {
 
         {/* Arrow indicator */}
         <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
-          <Icons.ArrowRight className={`w-5 h-5 ${colors.text}`} />
+          <ArrowRight className={`w-5 h-5 ${colors.text}`} />
         </div>
       </motion.div>
     </Link>
   );
-}
+});
 
 export default ToolCard;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { ExplorerInput, ExplorerResult } from '@/lib/explorer';
 
 export type ExplorerSession = {
@@ -37,22 +37,26 @@ export function useExplorerSessions() {
     setIsLoaded(true);
   }, []);
 
-  const saveSession = (session: ExplorerSession) => {
-    const next = [session, ...sessions].slice(0, 50);
-    setSessions(next);
-    persistSessions(next);
-  };
+  const saveSession = useCallback((session: ExplorerSession) => {
+    setSessions((prevSessions) => {
+      const next = [session, ...prevSessions].slice(0, 50);
+      persistSessions(next);
+      return next;
+    });
+  }, []);
 
-  const deleteSession = (id: string) => {
-    const next = sessions.filter((session) => session.id !== id);
-    setSessions(next);
-    persistSessions(next);
-  };
+  const deleteSession = useCallback((id: string) => {
+    setSessions((prevSessions) => {
+      const next = prevSessions.filter((session) => session.id !== id);
+      persistSessions(next);
+      return next;
+    });
+  }, []);
 
-  const clearSessions = () => {
+  const clearSessions = useCallback(() => {
     setSessions([]);
     persistSessions([]);
-  };
+  }, []);
 
   return {
     sessions,
