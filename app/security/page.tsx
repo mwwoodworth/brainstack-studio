@@ -7,7 +7,7 @@ import { Shield, Lock, Eye } from 'lucide-react';
 
 export default function SecurityPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-28 pb-20 px-6">

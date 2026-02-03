@@ -48,7 +48,7 @@ export default function APIDocsPage() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <div className="pt-24 pb-20 px-6">

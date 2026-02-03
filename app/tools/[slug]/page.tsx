@@ -37,7 +37,7 @@ export default function ToolDetailPage({ params }: Props) {
   const IconComponent = (LucideIcons as any)[tool.icon] || LucideIcons.Calculator;
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-28 pb-16 px-6">

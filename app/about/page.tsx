@@ -46,7 +46,7 @@ const MILESTONES = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-32 pb-20 px-6">

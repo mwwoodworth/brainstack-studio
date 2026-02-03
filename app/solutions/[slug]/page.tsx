@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { notFound } from 'next/navigation';
@@ -14,11 +14,11 @@ import { trackEvent } from '@/lib/telemetry';
 import { ArrowLeft, ArrowRight, Shield } from 'lucide-react';
 
 type Props = {
-  params: any;
+  params: Promise<{ slug: string }>;
 };
 
 export default function SolutionDetailPage({ params }: Props) {
-  const slug = typeof params?.slug === 'string' ? params.slug : '';
+  const { slug } = use(params);
   const solution = getSolutionBySlug(slug);
   const [activeStep, setActiveStep] = useState(0);
 
@@ -36,7 +36,7 @@ export default function SolutionDetailPage({ params }: Props) {
   const preview = solution.preview[activeStep];
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-28 pb-16 px-6">

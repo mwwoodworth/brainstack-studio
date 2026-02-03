@@ -63,7 +63,7 @@ export default function SettingsPage() {
 
   if (!isLoaded) {
     return (
-      <main className="min-h-screen">
+      <main id="main-content" className="min-h-screen">
         <Navigation />
         <div className="pt-32 pb-20 px-6 flex items-center justify-center">
           <div className="animate-pulse text-slate-400">Loading settings...</div>
@@ -73,7 +73,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <div className="pt-24 pb-20 px-6">

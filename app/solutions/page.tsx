@@ -12,7 +12,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function SolutionsPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-28 pb-20 px-6">

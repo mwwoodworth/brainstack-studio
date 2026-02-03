@@ -44,7 +44,7 @@ const SAFETY_RAILS = [
 
 export default function TechnologyPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <section className="pt-28 pb-16 px-6">

@@ -6,7 +6,7 @@ import { GuidedExplorer } from '@/components/GuidedExplorer';
 
 export default function ExplorerPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
       <GuidedExplorer />
       <Footer />
