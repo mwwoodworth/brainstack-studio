@@ -81,36 +81,43 @@ export default function ContactPage() {
             <CardContent>
               <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Name</label>
+                  <label htmlFor="contact-name" className="text-sm font-medium">Name</label>
                   <input
+                    id="contact-name"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.name}
                     onChange={(e) => updateField('name', e.target.value)}
                     required
+                    autoComplete="name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Work Email</label>
+                  <label htmlFor="contact-email" className="text-sm font-medium">Work Email</label>
                   <input
+                    id="contact-email"
                     type="email"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.email}
                     onChange={(e) => updateField('email', e.target.value)}
                     required
+                    autoComplete="email"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Company</label>
+                  <label htmlFor="contact-company" className="text-sm font-medium">Company</label>
                   <input
+                    id="contact-company"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.company}
                     onChange={(e) => updateField('company', e.target.value)}
                     required
+                    autoComplete="organization"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Industry</label>
+                  <label htmlFor="contact-industry" className="text-sm font-medium">Industry</label>
                   <select
+                    id="contact-industry"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.industry}
                     onChange={(e) => updateField('industry', e.target.value)}
@@ -125,8 +132,9 @@ export default function ContactPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Role</label>
+                  <label htmlFor="contact-role" className="text-sm font-medium">Role</label>
                   <select
+                    id="contact-role"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.role}
                     onChange={(e) => updateField('role', e.target.value)}
@@ -141,8 +149,9 @@ export default function ContactPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Primary Pain Point</label>
+                  <label htmlFor="contact-painpoint" className="text-sm font-medium">Primary Pain Point</label>
                   <select
+                    id="contact-painpoint"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.painPoint}
                     onChange={(e) => updateField('painPoint', e.target.value)}
@@ -157,8 +166,9 @@ export default function ContactPage() {
                   </select>
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium">Budget Range (optional)</label>
+                  <label htmlFor="contact-budget" className="text-sm font-medium">Budget Range (optional)</label>
                   <input
+                    id="contact-budget"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                     value={form.budget}
                     onChange={(e) => updateField('budget', e.target.value)}
@@ -166,8 +176,9 @@ export default function ContactPage() {
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium">Describe the workflow you want improved</label>
+                  <label htmlFor="contact-message" className="text-sm font-medium">Describe the workflow you want improved</label>
                   <textarea
+                    id="contact-message"
                     className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm min-h-[140px]"
                     value={form.message}
                     onChange={(e) => updateField('message', e.target.value)}

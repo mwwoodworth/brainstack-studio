@@ -102,7 +102,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
       <div className="space-y-6">
         <div className="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
           <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-            <ListChecks className="w-5 h-5 text-cyan-400" />
+            <ListChecks className="w-5 h-5 text-cyan-400" aria-hidden="true" />
             Inputs
           </h3>
 
@@ -134,18 +134,19 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
                     className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    aria-hidden="true"
                   />
                   Calculating...
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4" />
+                  <Play className="w-4 h-4" aria-hidden="true" />
                   Calculate
                 </>
               )}
             </Button>
-            <Button variant="secondary" onClick={handleReset}>
-              <RotateCcw className="w-4 h-4" />
+            <Button variant="secondary" onClick={handleReset} aria-label="Reset to default values">
+              <RotateCcw className="w-4 h-4" aria-hidden="true" />
             </Button>
           </div>
         </div>
@@ -180,11 +181,11 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
                   level={result.confidenceLevel}
                 />
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleShare}>
-                    <Share2 className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" onClick={handleShare} aria-label="Share results link">
+                    <Share2 className="w-4 h-4" aria-hidden="true" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <Download className="w-4 h-4" />
+                  <Button variant="ghost" size="sm" aria-label="Download results">
+                    <Download className="w-4 h-4" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
@@ -209,7 +210,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
               {result.recommendations.length > 0 && (
                 <div className="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
                   <h4 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4 text-amber-400" />
+                    <Lightbulb className="w-4 h-4 text-amber-400" aria-hidden="true" />
                     Recommendations
                   </h4>
                   <ul className="space-y-2">
@@ -227,7 +228,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
               {result.decisionTrail.length > 0 && (
                 <details className="group">
                   <summary className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer hover:text-slate-400">
-                    <GitBranch className="w-4 h-4" />
+                    <GitBranch className="w-4 h-4" aria-hidden="true" />
                     Decision Trail
                     <span className="text-xs opacity-50">(click to expand)</span>
                   </summary>
@@ -252,7 +253,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
               exit={{ opacity: 0 }}
               className="h-96 flex flex-col items-center justify-center text-center p-8 rounded-xl bg-slate-900/30 border border-dashed border-slate-700"
             >
-              <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4" aria-hidden="true">
                 <Play className="w-8 h-8 text-slate-600" />
               </div>
               <h4 className="text-lg font-medium text-slate-400 mb-2">

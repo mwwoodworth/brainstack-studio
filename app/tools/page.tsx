@@ -113,9 +113,11 @@ export default function ToolsPage() {
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             {/* Search */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <label htmlFor="tools-search" className="sr-only">Search tools</label>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" aria-hidden="true" />
               <input
-                type="text"
+                id="tools-search"
+                type="search"
                 placeholder="Search tools by name, industry, or problem..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -124,10 +126,11 @@ export default function ToolsPage() {
             </div>
 
             {/* Category Filter */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-              <Filter className="w-5 h-5 text-slate-500 flex-shrink-0" />
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0" role="group" aria-label="Filter tools by category">
+              <Filter className="w-5 h-5 text-slate-500 flex-shrink-0" aria-hidden="true" />
               <button
                 onClick={() => setSelectedCategory('all')}
+                aria-pressed={selectedCategory === 'all'}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   selectedCategory === 'all'
                     ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
@@ -140,13 +143,14 @@ export default function ToolsPage() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
+                  aria-pressed={selectedCategory === cat}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
                     selectedCategory === cat
                       ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700 hover:border-slate-600'
                   }`}
                 >
-                  {CATEGORY_INFO[cat].icon}
+                  <span aria-hidden="true">{CATEGORY_INFO[cat].icon}</span>
                   {CATEGORY_INFO[cat].label}
                 </button>
               ))}

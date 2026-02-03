@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
 const WEBHOOK_URL = process.env.BSS_LEAD_WEBHOOK_URL;
 
@@ -34,6 +35,17 @@ const isValidLength = (value: string, maxLength: number): boolean => {
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const clientIP = getClientIP(request);
+    const rateLimitResult = checkRateLimit(`lead:${clientIP}`, RATE_LIMITS.form);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429, headers: rateLimitHeaders(rateLimitResult) }
+      );
+    }
+
     // Check content length to prevent DoS
     const contentLength = request.headers.get('content-length');
     if (contentLength && parseInt(contentLength, 10) > 100000) {

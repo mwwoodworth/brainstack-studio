@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { ClientProviders } from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
   title: 'BrainStack Studio - Operational AI, Built for Trust',
@@ -53,7 +54,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <ClientProviders>{children}</ClientProviders>
+      </body>
     </html>
   );
 }

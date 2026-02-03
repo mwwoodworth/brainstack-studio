@@ -21,13 +21,26 @@ const LANGUAGE_KEYWORDS: Record<string, { keywords: string[]; color: string }> =
   bash: { keywords: ['if', 'then', 'else', 'fi', 'for', 'do', 'done', 'while', 'case', 'esac', 'function', 'return', 'export', 'echo', 'cd', 'ls', 'cat', 'grep', 'sed', 'awk'], color: 'text-purple-400' },
 };
 
+// Escape HTML to prevent XSS attacks
+function escapeHtml(text: string): string {
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char] || char);
+}
+
 function highlightCode(code: string, language: string): string {
+  // First escape HTML to prevent XSS
+  let highlighted = escapeHtml(code);
+
   const langConfig = LANGUAGE_KEYWORDS[language.toLowerCase()];
-  if (!langConfig) return code;
+  if (!langConfig) return highlighted;
 
-  let highlighted = code;
-
-  // Highlight strings
+  // Highlight strings (using escaped quotes)
   highlighted = highlighted.replace(/(["'`])(?:(?!\1)[^\\]|\\.)*\1/g, '<span class="text-emerald-400">$&</span>');
 
   // Highlight comments
@@ -58,9 +71,15 @@ export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true
     const success = await copyToClipboard(code);
     if (success) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Clean up the copied state after timeout
+  React.useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, [copied]);
 
   const lines = code.split('\n');
   // Only apply highlighting after hydration to prevent mismatch
@@ -77,15 +96,16 @@ export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-2 py-1 text-xs text-slate-400 hover:text-white rounded transition-colors"
+          aria-label={copied ? 'Code copied to clipboard' : 'Copy code to clipboard'}
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
               <span className="text-emerald-400">Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5" />
+              <Copy className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Copy</span>
             </>
           )}

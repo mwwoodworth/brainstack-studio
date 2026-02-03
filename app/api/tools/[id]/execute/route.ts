@@ -2,11 +2,23 @@
 import { NextResponse } from 'next/server';
 import { getToolById, executeTool } from '@/lib/tools/registry';
 import { trackEvent } from '@/lib/telemetry';
+import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Rate limiting
+  const clientIP = getClientIP(request);
+  const rateLimitResult = checkRateLimit(`toolExec:${clientIP}`, RATE_LIMITS.toolExecution);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { success: false, error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: rateLimitHeaders(rateLimitResult) }
+    );
+  }
+
   const { id } = await params;
 
   // Verify tool exists

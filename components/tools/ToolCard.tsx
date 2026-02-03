@@ -72,7 +72,7 @@ export function ToolCard({ tool, featured = false }: ToolCardProps) {
         )}
 
         {/* Icon */}
-        <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`}>
+        <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center mb-4`} aria-hidden="true">
           <IconComponent className={`w-6 h-6 ${colors.text}`} />
         </div>
 
@@ -107,7 +107,7 @@ export function ToolCard({ tool, featured = false }: ToolCardProps) {
         </div>
 
         {/* Arrow indicator */}
-        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
           <Icons.ArrowRight className={`w-5 h-5 ${colors.text}`} />
         </div>
       </motion.div>

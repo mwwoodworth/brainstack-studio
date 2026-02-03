@@ -6,6 +6,7 @@ import { ConfidenceLevel, ToolOutput, ChartData } from './types';
  * Format a number as currency
  */
 export function formatCurrency(value: number, decimals = 0): string {
+  if (!Number.isFinite(value) || Number.isNaN(value)) return 'N/A';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -18,6 +19,7 @@ export function formatCurrency(value: number, decimals = 0): string {
  * Format a number as percentage
  */
 export function formatPercentage(value: number, decimals = 1): string {
+  if (!Number.isFinite(value) || Number.isNaN(value)) return 'N/A';
   return `${value.toFixed(decimals)}%`;
 }
 
@@ -25,6 +27,7 @@ export function formatPercentage(value: number, decimals = 1): string {
  * Format a number with commas
  */
 export function formatNumber(value: number, decimals = 0): string {
+  if (!Number.isFinite(value) || Number.isNaN(value)) return 'N/A';
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -32,10 +35,25 @@ export function formatNumber(value: number, decimals = 0): string {
 }
 
 /**
+ * Check if a number is safe for display (not Infinity, -Infinity, or NaN)
+ */
+export function isSafeNumber(value: number): boolean {
+  return Number.isFinite(value) && !Number.isNaN(value);
+}
+
+/**
  * Format output value based on format type
  */
 export function formatOutputValue(value: string | number, format?: ToolOutput['format']): string {
   if (typeof value === 'string') return value;
+
+  // Handle edge cases for numbers
+  if (!isSafeNumber(value)) {
+    if (Number.isNaN(value)) return 'N/A';
+    if (value === Infinity) return '∞';
+    if (value === -Infinity) return '-∞';
+    return 'N/A';
+  }
 
   switch (format) {
     case 'currency':

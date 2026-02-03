@@ -94,8 +94,9 @@ export function GuidedExplorer() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Industry</label>
+                <label htmlFor="explorer-industry" className="block text-sm font-medium mb-2">Industry</label>
                 <select
+                  id="explorer-industry"
                   className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                   value={input.industry ?? ''}
                   onChange={(event) =>
@@ -109,14 +110,15 @@ export function GuidedExplorer() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-slate-500 mt-2">
+                <p id="explorer-industry-desc" className="text-xs text-slate-500 mt-2">
                   {INDUSTRIES.find((industry) => industry.id === input.industry)?.description}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Role</label>
+                <label htmlFor="explorer-role" className="block text-sm font-medium mb-2">Role</label>
                 <select
+                  id="explorer-role"
                   className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                   value={input.role ?? ''}
                   onChange={(event) =>
@@ -133,8 +135,9 @@ export function GuidedExplorer() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Primary Pain Point</label>
+                <label htmlFor="explorer-painpoint" className="block text-sm font-medium mb-2">Primary Pain Point</label>
                 <select
+                  id="explorer-painpoint"
                   className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
                   value={input.painPoint ?? ''}
                   onChange={(event) =>
