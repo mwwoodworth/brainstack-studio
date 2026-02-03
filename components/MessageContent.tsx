@@ -147,14 +147,21 @@ function renderInline(text: string): React.ReactNode {
       continue;
     }
 
-    // Links
+    // Links - with URL validation to prevent javascript: protocol attacks
     const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
     if (linkMatch) {
-      parts.push(
-        <a key={key++} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">
-          {linkMatch[1]}
-        </a>
-      );
+      const url = linkMatch[2];
+      const isValidUrl = url.startsWith('/') || url.startsWith('#') || url.startsWith('https://') || url.startsWith('http://');
+      if (isValidUrl) {
+        parts.push(
+          <a key={key++} href={url} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">
+            {linkMatch[1]}
+          </a>
+        );
+      } else {
+        // Render as plain text if URL is suspicious (e.g., javascript:)
+        parts.push(<span key={key++}>{linkMatch[1]}</span>);
+      }
       remaining = remaining.slice(linkMatch[0].length);
       continue;
     }

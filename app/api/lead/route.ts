@@ -2,15 +2,69 @@ import { NextResponse } from 'next/server';
 
 const WEBHOOK_URL = process.env.BSS_LEAD_WEBHOOK_URL;
 
-const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
+// Input validation constants
+const MAX_FIELD_LENGTHS = {
+  name: 200,
+  email: 254,
+  company: 200,
+  industry: 100,
+  role: 100,
+  painPoint: 100,
+  budget: 50,
+  message: 5000,
+} as const;
+
+// RFC 5322 compliant email validation
+const isValidEmail = (value: string): boolean => {
+  if (!value || value.length > 254) return false;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  return emailRegex.test(value);
+};
+
+// Sanitize string input - remove potential XSS vectors
+const sanitizeString = (value: unknown): string => {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, 10000); // Hard cap at 10KB per field
+};
+
+// Validate field length
+const isValidLength = (value: string, maxLength: number): boolean => {
+  return value.length > 0 && value.length <= maxLength;
+};
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, email, company, industry, role, painPoint, budget, message } = body || {};
+    // Check content length to prevent DoS
+    const contentLength = request.headers.get('content-length');
+    if (contentLength && parseInt(contentLength, 10) > 100000) {
+      return NextResponse.json({ error: 'Request too large.' }, { status: 413 });
+    }
 
+    const body = await request.json();
+
+    // Sanitize all inputs
+    const name = sanitizeString(body?.name);
+    const email = sanitizeString(body?.email);
+    const company = sanitizeString(body?.company);
+    const industry = sanitizeString(body?.industry);
+    const role = sanitizeString(body?.role);
+    const painPoint = sanitizeString(body?.painPoint);
+    const budget = sanitizeString(body?.budget);
+    const message = sanitizeString(body?.message);
+
+    // Check required fields
     if (!name || !email || !company || !industry || !role || !painPoint || !message) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
+    }
+
+    // Validate field lengths
+    if (!isValidLength(name, MAX_FIELD_LENGTHS.name) ||
+        !isValidLength(company, MAX_FIELD_LENGTHS.company) ||
+        !isValidLength(industry, MAX_FIELD_LENGTHS.industry) ||
+        !isValidLength(role, MAX_FIELD_LENGTHS.role) ||
+        !isValidLength(painPoint, MAX_FIELD_LENGTHS.painPoint) ||
+        !isValidLength(message, MAX_FIELD_LENGTHS.message)) {
+      return NextResponse.json({ error: 'Field exceeds maximum length.' }, { status: 400 });
     }
 
     if (!isValidEmail(email)) {
