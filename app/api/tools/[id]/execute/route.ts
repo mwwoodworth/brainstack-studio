@@ -4,6 +4,16 @@ import { getToolById, executeTool } from '@/lib/tools/registry';
 import { trackEvent } from '@/lib/telemetry';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
+// Validate tool ID format (alphanumeric, hyphens, underscores, max 50 chars)
+function isValidToolId(id: string): boolean {
+  return /^[a-zA-Z0-9_-]{1,50}$/.test(id);
+}
+
+// Validate input value type
+function isValidInputType(value: unknown): value is string | number {
+  return typeof value === 'string' || typeof value === 'number';
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -20,6 +30,14 @@ export async function POST(
   }
 
   const { id } = await params;
+
+  // Validate ID format
+  if (!id || !isValidToolId(id)) {
+    return NextResponse.json(
+      { success: false, error: 'Invalid tool ID format' },
+      { status: 400 }
+    );
+  }
 
   // Verify tool exists
   const tool = getToolById(id);
@@ -38,11 +56,33 @@ export async function POST(
     );
   }
 
+  // Check content length to prevent DoS
+  const contentLength = request.headers.get('content-length');
+  if (contentLength && parseInt(contentLength, 10) > 100000) {
+    return NextResponse.json(
+      { success: false, error: 'Request too large' },
+      { status: 413 }
+    );
+  }
+
   // Parse request body
   let inputs: Record<string, string | number>;
   try {
     const body = await request.json();
-    inputs = body.inputs || {};
+    const rawInputs = body.inputs || {};
+
+    // Validate and sanitize input types
+    inputs = {};
+    for (const [key, value] of Object.entries(rawInputs)) {
+      if (value === null || value === undefined) continue;
+      if (!isValidInputType(value)) {
+        return NextResponse.json(
+          { success: false, error: `Invalid type for input "${key}". Expected string or number.` },
+          { status: 400 }
+        );
+      }
+      inputs[key] = value;
+    }
   } catch {
     return NextResponse.json(
       { success: false, error: 'Invalid JSON body' },
