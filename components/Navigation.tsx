@@ -10,11 +10,11 @@ import { cn } from '@/lib/utils';
 
 const NAV_LINKS = [
   { href: '/explorer', label: 'Explorer' },
+  { href: '/tools', label: 'Tools' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/technology', label: 'Platform' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/docs', label: 'Docs' },
-  { href: '/about', label: 'About' },
 ];
 
 export function Navigation() {

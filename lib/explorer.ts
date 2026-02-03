@@ -3,7 +3,14 @@ export type ExplorerIndustry =
   | 'construction'
   | 'saas'
   | 'finance'
-  | 'supply-chain';
+  | 'supply-chain'
+  | 'healthcare'
+  | 'manufacturing'
+  | 'retail'
+  | 'professional-services'
+  | 'non-profit'
+  | 'government'
+  | 'education';
 
 export type ExplorerRole =
   | 'owner'
@@ -53,6 +60,13 @@ export const INDUSTRIES: Array<{ id: ExplorerIndustry; label: string; descriptio
   { id: 'saas', label: 'SaaS Operations', description: 'Customer health, incidents, and retention risk.' },
   { id: 'finance', label: 'Finance / Forecasting', description: 'Cash flow, revenue risk, and compliance visibility.' },
   { id: 'supply-chain', label: 'Supply Chain / Logistics', description: 'Inventory accuracy and delivery predictability.' },
+  { id: 'healthcare', label: 'Healthcare', description: 'Patient flow, compliance, and scheduling optimization.' },
+  { id: 'manufacturing', label: 'Manufacturing', description: 'Quality control, inventory, and maintenance scheduling.' },
+  { id: 'retail', label: 'Retail', description: 'Inventory management, staffing, and customer experience.' },
+  { id: 'professional-services', label: 'Professional Services', description: 'Utilization tracking, project management, and billing.' },
+  { id: 'non-profit', label: 'Non-Profit', description: 'Donor management, program tracking, and impact reporting.' },
+  { id: 'government', label: 'Government', description: 'Compliance, resource allocation, and service delivery.' },
+  { id: 'education', label: 'Education', description: 'Student tracking, resource allocation, and enrollment.' },
 ];
 
 export const ROLES: Array<{ id: ExplorerRole; label: string }> = [
@@ -816,6 +830,864 @@ const INDUSTRY_MAP: Record<ExplorerIndustry, Record<ExplorerPainPoint, Mapping>>
         decisionLatency: 'Daily',
       },
       confidence: 0.82,
+    },
+  },
+  healthcare: {
+    money: {
+      identifiedPain: 'Revenue cycle delays and claim denials impacting cash flow.',
+      workflow: [
+        'Track claim submissions and denials',
+        'Flag revenue cycle bottlenecks',
+        'Prioritize high-value claim follow-ups',
+      ],
+      automationLogic: [
+        'If denial rate > 5% → alert billing team',
+        'Auto-prioritize claims by value and age',
+      ],
+      outputs: [
+        'Denial rate dashboard',
+        'Revenue cycle report',
+        'Follow-up priority queue',
+      ],
+      value: {
+        timeSaved: '8-12 hrs/week',
+        laborReduced: 'Automated claim triage',
+        errorsPrevented: '15-20% fewer write-offs',
+        decisionLatency: 'Daily → Real-time',
+      },
+      confidence: 0.81,
+    },
+    labor: {
+      identifiedPain: 'Staffing misalignment with patient volume.',
+      workflow: [
+        'Forecast patient volume by shift',
+        'Optimize staff scheduling',
+        'Track utilization metrics',
+      ],
+      automationLogic: [
+        'If patient load > capacity → alert scheduler',
+        'Auto-suggest shift adjustments',
+      ],
+      outputs: ['Staffing forecast', 'Utilization dashboard', 'Overtime alerts'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: '10-15% overtime reduction',
+        errorsPrevented: 'Fewer understaffed shifts',
+        decisionLatency: 'Weekly → Daily',
+      },
+      confidence: 0.78,
+    },
+    process: {
+      identifiedPain: 'Inconsistent patient intake and discharge processes.',
+      workflow: [
+        'Standardize intake checklists',
+        'Track discharge readiness',
+        'Automate handoff notifications',
+      ],
+      automationLogic: [
+        'If checklist incomplete → block discharge',
+        'Auto-notify care team on status changes',
+      ],
+      outputs: ['Intake completion rate', 'Discharge readiness score', 'Handoff log'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Fewer manual handoffs',
+        errorsPrevented: '25% fewer discharge delays',
+        decisionLatency: 'Same-day visibility',
+      },
+      confidence: 0.83,
+    },
+    compliance: {
+      identifiedPain: 'HIPAA compliance gaps and audit preparation burden.',
+      workflow: [
+        'Track access logs and compliance checkpoints',
+        'Auto-generate audit reports',
+        'Flag compliance exceptions',
+      ],
+      automationLogic: [
+        'If access anomaly detected → alert compliance',
+        'Auto-log all PHI access',
+      ],
+      outputs: ['Compliance dashboard', 'Audit-ready report', 'Exception alerts'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: '50% less audit prep',
+        errorsPrevented: 'Near-zero compliance gaps',
+        decisionLatency: 'Immediate alerts',
+      },
+      confidence: 0.85,
+    },
+    scale: {
+      identifiedPain: 'Scaling patient care without quality degradation.',
+      workflow: [
+        'Standardize care protocols',
+        'Monitor quality metrics',
+        'Surface capacity constraints',
+      ],
+      automationLogic: [
+        'If quality score drops → trigger review',
+        'Auto-route overflow to available providers',
+      ],
+      outputs: ['Quality scorecard', 'Capacity dashboard', 'Protocol compliance'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Automated quality tracking',
+        errorsPrevented: 'Consistent care delivery',
+        decisionLatency: 'Daily monitoring',
+      },
+      confidence: 0.76,
+    },
+    visibility: {
+      identifiedPain: 'Lack of real-time visibility into patient flow.',
+      workflow: [
+        'Aggregate patient status signals',
+        'Track bed availability',
+        'Generate operational briefs',
+      ],
+      automationLogic: [
+        'If wait time > threshold → alert staff',
+        'Auto-update availability board',
+      ],
+      outputs: ['Patient flow dashboard', 'Bed availability', 'Wait time alerts'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Reduced status calls',
+        errorsPrevented: 'Better flow management',
+        decisionLatency: 'Real-time updates',
+      },
+      confidence: 0.84,
+    },
+  },
+  manufacturing: {
+    money: {
+      identifiedPain: 'Production cost overruns and waste.',
+      workflow: [
+        'Track production costs vs targets',
+        'Monitor waste and scrap rates',
+        'Flag cost anomalies',
+      ],
+      automationLogic: [
+        'If waste > 3% → alert production manager',
+        'Auto-calculate cost impact',
+      ],
+      outputs: ['Cost variance report', 'Waste dashboard', 'Production efficiency'],
+      value: {
+        timeSaved: '5-8 hrs/week',
+        laborReduced: 'Automated cost tracking',
+        errorsPrevented: '10-15% waste reduction',
+        decisionLatency: 'Shift-level visibility',
+      },
+      confidence: 0.82,
+    },
+    labor: {
+      identifiedPain: 'Production line staffing gaps.',
+      workflow: [
+        'Forecast production demand',
+        'Optimize shift assignments',
+        'Track operator efficiency',
+      ],
+      automationLogic: [
+        'If line understaffed → alert supervisor',
+        'Auto-suggest cross-training needs',
+      ],
+      outputs: ['Shift schedule', 'Efficiency dashboard', 'Training needs'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Optimized staffing',
+        errorsPrevented: 'Fewer line stoppages',
+        decisionLatency: 'Daily planning',
+      },
+      confidence: 0.77,
+    },
+    process: {
+      identifiedPain: 'Quality control inconsistencies.',
+      workflow: [
+        'Standardize QC checkpoints',
+        'Track defect rates by line',
+        'Auto-escalate quality issues',
+      ],
+      automationLogic: [
+        'If defect rate > threshold → stop line alert',
+        'Auto-log all QC checks',
+      ],
+      outputs: ['QC dashboard', 'Defect trend report', 'Line performance'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: 'Automated QC logging',
+        errorsPrevented: '20-30% fewer defects',
+        decisionLatency: 'Real-time alerts',
+      },
+      confidence: 0.85,
+    },
+    compliance: {
+      identifiedPain: 'Regulatory compliance documentation gaps.',
+      workflow: [
+        'Track compliance requirements',
+        'Auto-generate compliance reports',
+        'Schedule audit preparation',
+      ],
+      automationLogic: [
+        'If documentation missing → block approval',
+        'Auto-log all compliance activities',
+      ],
+      outputs: ['Compliance status', 'Audit-ready packet', 'Certification tracking'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Less manual documentation',
+        errorsPrevented: 'Zero compliance gaps',
+        decisionLatency: 'Continuous monitoring',
+      },
+      confidence: 0.79,
+    },
+    scale: {
+      identifiedPain: 'Scaling production without quality loss.',
+      workflow: [
+        'Define scalable SOPs',
+        'Monitor throughput vs quality',
+        'Identify bottlenecks',
+      ],
+      automationLogic: [
+        'If throughput < target → surface bottleneck',
+        'Auto-balance line loads',
+      ],
+      outputs: ['Throughput dashboard', 'Bottleneck report', 'Capacity forecast'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: 'Optimized production',
+        errorsPrevented: 'Consistent quality at scale',
+        decisionLatency: 'Hourly monitoring',
+      },
+      confidence: 0.8,
+    },
+    visibility: {
+      identifiedPain: 'Lack of real-time production visibility.',
+      workflow: [
+        'Aggregate production signals',
+        'Track OEE metrics',
+        'Generate shift reports',
+      ],
+      automationLogic: [
+        'If OEE drops → alert production lead',
+        'Auto-surface root causes',
+      ],
+      outputs: ['Production dashboard', 'OEE scorecard', 'Shift summary'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Automated reporting',
+        errorsPrevented: 'Earlier issue detection',
+        decisionLatency: 'Real-time',
+      },
+      confidence: 0.84,
+    },
+  },
+  retail: {
+    money: {
+      identifiedPain: 'Margin erosion from markdowns and shrinkage.',
+      workflow: [
+        'Track margin by category',
+        'Monitor markdown effectiveness',
+        'Flag shrinkage anomalies',
+      ],
+      automationLogic: [
+        'If shrinkage > 2% → alert loss prevention',
+        'Auto-recommend markdown timing',
+      ],
+      outputs: ['Margin dashboard', 'Markdown analysis', 'Shrinkage alerts'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Automated analysis',
+        errorsPrevented: '5-10% margin improvement',
+        decisionLatency: 'Daily visibility',
+      },
+      confidence: 0.78,
+    },
+    labor: {
+      identifiedPain: 'Store staffing misaligned with traffic.',
+      workflow: [
+        'Forecast store traffic',
+        'Optimize staff schedules',
+        'Track labor efficiency',
+      ],
+      automationLogic: [
+        'If traffic > capacity → add staff alert',
+        'Auto-suggest schedule changes',
+      ],
+      outputs: ['Traffic forecast', 'Optimal schedule', 'Labor efficiency'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: '10-15% labor optimization',
+        errorsPrevented: 'Better customer service',
+        decisionLatency: 'Daily planning',
+      },
+      confidence: 0.81,
+    },
+    process: {
+      identifiedPain: 'Inconsistent store operations.',
+      workflow: [
+        'Standardize store procedures',
+        'Track compliance by location',
+        'Auto-assign tasks',
+      ],
+      automationLogic: [
+        'If compliance < 90% → alert district manager',
+        'Auto-generate task lists',
+      ],
+      outputs: ['Compliance scorecard', 'Task completion rate', 'Store comparison'],
+      value: {
+        timeSaved: '4-5 hrs/week',
+        laborReduced: 'Consistent operations',
+        errorsPrevented: 'Higher compliance',
+        decisionLatency: 'Same-day visibility',
+      },
+      confidence: 0.79,
+    },
+    compliance: {
+      identifiedPain: 'Health and safety compliance gaps.',
+      workflow: [
+        'Track safety checkpoints',
+        'Schedule inspections',
+        'Log compliance activities',
+      ],
+      automationLogic: [
+        'If inspection overdue → alert manager',
+        'Auto-log all safety checks',
+      ],
+      outputs: ['Safety dashboard', 'Inspection schedule', 'Compliance log'],
+      value: {
+        timeSaved: '2-3 hrs/week',
+        laborReduced: 'Automated tracking',
+        errorsPrevented: 'Zero compliance violations',
+        decisionLatency: 'Immediate alerts',
+      },
+      confidence: 0.76,
+    },
+    scale: {
+      identifiedPain: 'Scaling store count without losing consistency.',
+      workflow: [
+        'Define scalable playbooks',
+        'Track performance by store',
+        'Identify best practices',
+      ],
+      automationLogic: [
+        'If new store underperforms → trigger support',
+        'Auto-share best practices',
+      ],
+      outputs: ['Store performance', 'Playbook compliance', 'Best practice library'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Faster store ramp-up',
+        errorsPrevented: 'Consistent brand experience',
+        decisionLatency: 'Weekly review',
+      },
+      confidence: 0.75,
+    },
+    visibility: {
+      identifiedPain: 'Limited visibility into store performance.',
+      workflow: [
+        'Aggregate store metrics',
+        'Compare performance',
+        'Generate regional reports',
+      ],
+      automationLogic: [
+        'If store underperforms → flag for review',
+        'Auto-generate performance brief',
+      ],
+      outputs: ['Performance dashboard', 'Regional comparison', 'Trend analysis'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Automated reporting',
+        errorsPrevented: 'Earlier intervention',
+        decisionLatency: 'Daily updates',
+      },
+      confidence: 0.82,
+    },
+  },
+  'professional-services': {
+    money: {
+      identifiedPain: 'Revenue leakage from unbilled time.',
+      workflow: [
+        'Track time capture rates',
+        'Flag unbilled work',
+        'Monitor realization rates',
+      ],
+      automationLogic: [
+        'If utilization < 70% → alert manager',
+        'Auto-remind for time entry',
+      ],
+      outputs: ['Utilization report', 'Unbilled work queue', 'Realization dashboard'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: 'Better time capture',
+        errorsPrevented: '10-15% revenue recovery',
+        decisionLatency: 'Daily visibility',
+      },
+      confidence: 0.83,
+    },
+    labor: {
+      identifiedPain: 'Resource allocation inefficiencies.',
+      workflow: [
+        'Forecast resource demand',
+        'Match skills to projects',
+        'Track availability',
+      ],
+      automationLogic: [
+        'If resource conflict → alert resourcing',
+        'Auto-suggest alternatives',
+      ],
+      outputs: ['Resource forecast', 'Skill matching', 'Availability calendar'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: 'Optimal allocation',
+        errorsPrevented: 'Fewer conflicts',
+        decisionLatency: 'Weekly → Daily',
+      },
+      confidence: 0.79,
+    },
+    process: {
+      identifiedPain: 'Inconsistent project delivery.',
+      workflow: [
+        'Standardize project phases',
+        'Track milestone completion',
+        'Auto-escalate delays',
+      ],
+      automationLogic: [
+        'If milestone late → alert PM',
+        'Auto-update project status',
+      ],
+      outputs: ['Project dashboard', 'Milestone tracker', 'Risk report'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Automated tracking',
+        errorsPrevented: '20% fewer delays',
+        decisionLatency: 'Daily updates',
+      },
+      confidence: 0.81,
+    },
+    compliance: {
+      identifiedPain: 'Engagement letter and contract compliance gaps.',
+      workflow: [
+        'Track contract terms',
+        'Monitor scope boundaries',
+        'Flag compliance issues',
+      ],
+      automationLogic: [
+        'If scope exceeded → alert partner',
+        'Auto-log all scope changes',
+      ],
+      outputs: ['Contract tracker', 'Scope monitor', 'Compliance alerts'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Better scope control',
+        errorsPrevented: 'Reduced scope creep',
+        decisionLatency: 'Immediate alerts',
+      },
+      confidence: 0.77,
+    },
+    scale: {
+      identifiedPain: 'Scaling practice without losing quality.',
+      workflow: [
+        'Define delivery standards',
+        'Track quality metrics',
+        'Share best practices',
+      ],
+      automationLogic: [
+        'If quality drops → trigger review',
+        'Auto-assign mentorship',
+      ],
+      outputs: ['Quality scorecard', 'Practice metrics', 'Best practice library'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Consistent delivery',
+        errorsPrevented: 'Maintained quality',
+        decisionLatency: 'Weekly review',
+      },
+      confidence: 0.76,
+    },
+    visibility: {
+      identifiedPain: 'Limited visibility into project profitability.',
+      workflow: [
+        'Track project financials',
+        'Monitor profitability',
+        'Generate partner reports',
+      ],
+      automationLogic: [
+        'If margin < target → alert partner',
+        'Auto-calculate profitability',
+      ],
+      outputs: ['Profitability dashboard', 'Project financials', 'Partner brief'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Automated analysis',
+        errorsPrevented: 'Better profit management',
+        decisionLatency: 'Weekly → Daily',
+      },
+      confidence: 0.82,
+    },
+  },
+  'non-profit': {
+    money: {
+      identifiedPain: 'Donor revenue volatility and tracking gaps.',
+      workflow: [
+        'Track donation patterns',
+        'Forecast revenue',
+        'Flag at-risk donors',
+      ],
+      automationLogic: [
+        'If donation drops → trigger outreach',
+        'Auto-generate thank-you sequences',
+      ],
+      outputs: ['Donor dashboard', 'Revenue forecast', 'At-risk donor list'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Automated donor tracking',
+        errorsPrevented: 'Higher retention',
+        decisionLatency: 'Weekly → Daily',
+      },
+      confidence: 0.78,
+    },
+    labor: {
+      identifiedPain: 'Volunteer coordination challenges.',
+      workflow: [
+        'Track volunteer availability',
+        'Match skills to needs',
+        'Schedule assignments',
+      ],
+      automationLogic: [
+        'If shift unfilled → send alerts',
+        'Auto-confirm assignments',
+      ],
+      outputs: ['Volunteer calendar', 'Skill matching', 'Assignment tracker'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: 'Better coordination',
+        errorsPrevented: 'Fewer no-shows',
+        decisionLatency: 'Daily updates',
+      },
+      confidence: 0.76,
+    },
+    process: {
+      identifiedPain: 'Inconsistent program delivery.',
+      workflow: [
+        'Standardize program workflows',
+        'Track beneficiary outcomes',
+        'Report on impact',
+      ],
+      automationLogic: [
+        'If milestone missed → alert program lead',
+        'Auto-generate impact reports',
+      ],
+      outputs: ['Program dashboard', 'Outcome tracker', 'Impact report'],
+      value: {
+        timeSaved: '4-5 hrs/week',
+        laborReduced: 'Automated reporting',
+        errorsPrevented: 'Better outcomes',
+        decisionLatency: 'Monthly → Weekly',
+      },
+      confidence: 0.79,
+    },
+    compliance: {
+      identifiedPain: 'Grant compliance and reporting burden.',
+      workflow: [
+        'Track grant requirements',
+        'Monitor spending',
+        'Generate compliance reports',
+      ],
+      automationLogic: [
+        'If deadline approaching → alert staff',
+        'Auto-compile report data',
+      ],
+      outputs: ['Grant tracker', 'Spending dashboard', 'Compliance report'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: '50% less report prep',
+        errorsPrevented: 'On-time submissions',
+        decisionLatency: 'Continuous monitoring',
+      },
+      confidence: 0.82,
+    },
+    scale: {
+      identifiedPain: 'Scaling impact without proportional cost increase.',
+      workflow: [
+        'Define scalable programs',
+        'Track cost per outcome',
+        'Identify efficiency gains',
+      ],
+      automationLogic: [
+        'If cost per outcome increases → flag for review',
+        'Auto-suggest optimizations',
+      ],
+      outputs: ['Efficiency dashboard', 'Cost per outcome', 'Scale readiness'],
+      value: {
+        timeSaved: '3-5 hrs/week',
+        laborReduced: 'Better resource use',
+        errorsPrevented: 'Sustainable growth',
+        decisionLatency: 'Monthly review',
+      },
+      confidence: 0.74,
+    },
+    visibility: {
+      identifiedPain: 'Limited visibility into mission impact.',
+      workflow: [
+        'Aggregate impact metrics',
+        'Track against goals',
+        'Generate board reports',
+      ],
+      automationLogic: [
+        'If metric below target → alert leadership',
+        'Auto-generate dashboards',
+      ],
+      outputs: ['Impact dashboard', 'Goal progress', 'Board report'],
+      value: {
+        timeSaved: '3-4 hrs/week',
+        laborReduced: 'Automated reporting',
+        errorsPrevented: 'Better decision-making',
+        decisionLatency: 'Monthly → Weekly',
+      },
+      confidence: 0.8,
+    },
+  },
+  government: {
+    money: {
+      identifiedPain: 'Budget tracking and allocation inefficiencies.',
+      workflow: [
+        'Track budget utilization',
+        'Monitor spending patterns',
+        'Flag over/under-spend',
+      ],
+      automationLogic: [
+        'If variance > 10% → alert finance',
+        'Auto-generate budget reports',
+      ],
+      outputs: ['Budget dashboard', 'Variance report', 'Allocation tracker'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: 'Automated tracking',
+        errorsPrevented: 'Better budget control',
+        decisionLatency: 'Monthly → Weekly',
+      },
+      confidence: 0.79,
+    },
+    labor: {
+      identifiedPain: 'Workforce planning gaps.',
+      workflow: [
+        'Forecast service demand',
+        'Optimize staffing levels',
+        'Track productivity',
+      ],
+      automationLogic: [
+        'If backlog grows → recommend staffing',
+        'Auto-balance workloads',
+      ],
+      outputs: ['Staffing forecast', 'Productivity dashboard', 'Workload balance'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Better allocation',
+        errorsPrevented: 'Reduced backlogs',
+        decisionLatency: 'Weekly planning',
+      },
+      confidence: 0.75,
+    },
+    process: {
+      identifiedPain: 'Inconsistent service delivery processes.',
+      workflow: [
+        'Standardize service workflows',
+        'Track processing times',
+        'Auto-escalate delays',
+      ],
+      automationLogic: [
+        'If SLA at risk → alert supervisor',
+        'Auto-route to available staff',
+      ],
+      outputs: ['Process dashboard', 'SLA tracker', 'Escalation queue'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: 'Faster processing',
+        errorsPrevented: '25% fewer delays',
+        decisionLatency: 'Same-day visibility',
+      },
+      confidence: 0.81,
+    },
+    compliance: {
+      identifiedPain: 'Regulatory and audit compliance burden.',
+      workflow: [
+        'Track compliance requirements',
+        'Auto-generate audit evidence',
+        'Monitor policy adherence',
+      ],
+      automationLogic: [
+        'If compliance gap → alert compliance officer',
+        'Auto-log all activities',
+      ],
+      outputs: ['Compliance dashboard', 'Audit packet', 'Policy tracker'],
+      value: {
+        timeSaved: '8-10 hrs/week',
+        laborReduced: '60% less audit prep',
+        errorsPrevented: 'Zero compliance gaps',
+        decisionLatency: 'Continuous monitoring',
+      },
+      confidence: 0.84,
+    },
+    scale: {
+      identifiedPain: 'Scaling services to meet citizen demand.',
+      workflow: [
+        'Analyze demand patterns',
+        'Optimize service channels',
+        'Track citizen satisfaction',
+      ],
+      automationLogic: [
+        'If demand spikes → recommend capacity',
+        'Auto-route to digital channels',
+      ],
+      outputs: ['Demand forecast', 'Channel performance', 'Satisfaction score'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Channel optimization',
+        errorsPrevented: 'Better service delivery',
+        decisionLatency: 'Weekly review',
+      },
+      confidence: 0.77,
+    },
+    visibility: {
+      identifiedPain: 'Limited visibility into program performance.',
+      workflow: [
+        'Aggregate program metrics',
+        'Track KPIs',
+        'Generate leadership reports',
+      ],
+      automationLogic: [
+        'If KPI misses target → alert program lead',
+        'Auto-generate dashboards',
+      ],
+      outputs: ['Program dashboard', 'KPI scorecard', 'Leadership brief'],
+      value: {
+        timeSaved: '3-5 hrs/week',
+        laborReduced: 'Automated reporting',
+        errorsPrevented: 'Better oversight',
+        decisionLatency: 'Monthly → Weekly',
+      },
+      confidence: 0.82,
+    },
+  },
+  education: {
+    money: {
+      identifiedPain: 'Budget constraints and resource allocation.',
+      workflow: [
+        'Track budget by program',
+        'Monitor spending patterns',
+        'Optimize resource allocation',
+      ],
+      automationLogic: [
+        'If over-budget → alert administrator',
+        'Auto-recommend reallocations',
+      ],
+      outputs: ['Budget dashboard', 'Spending tracker', 'Allocation report'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Better budget control',
+        errorsPrevented: 'Optimal resource use',
+        decisionLatency: 'Monthly → Weekly',
+      },
+      confidence: 0.77,
+    },
+    labor: {
+      identifiedPain: 'Teacher and staff scheduling challenges.',
+      workflow: [
+        'Forecast staffing needs',
+        'Optimize schedules',
+        'Track substitute needs',
+      ],
+      automationLogic: [
+        'If coverage gap → alert HR',
+        'Auto-find substitutes',
+      ],
+      outputs: ['Schedule optimizer', 'Coverage tracker', 'Substitute queue'],
+      value: {
+        timeSaved: '5-7 hrs/week',
+        laborReduced: 'Better coverage',
+        errorsPrevented: 'Fewer gaps',
+        decisionLatency: 'Daily updates',
+      },
+      confidence: 0.78,
+    },
+    process: {
+      identifiedPain: 'Inconsistent administrative processes.',
+      workflow: [
+        'Standardize admin workflows',
+        'Track process completion',
+        'Auto-assign tasks',
+      ],
+      automationLogic: [
+        'If task overdue → escalate',
+        'Auto-route to appropriate staff',
+      ],
+      outputs: ['Process dashboard', 'Task tracker', 'Completion rate'],
+      value: {
+        timeSaved: '4-5 hrs/week',
+        laborReduced: 'Streamlined admin',
+        errorsPrevented: 'Fewer missed tasks',
+        decisionLatency: 'Same-day visibility',
+      },
+      confidence: 0.79,
+    },
+    compliance: {
+      identifiedPain: 'Accreditation and regulatory compliance.',
+      workflow: [
+        'Track compliance requirements',
+        'Monitor documentation',
+        'Prepare audit materials',
+      ],
+      automationLogic: [
+        'If documentation missing → alert compliance',
+        'Auto-compile audit packets',
+      ],
+      outputs: ['Compliance tracker', 'Documentation status', 'Audit packet'],
+      value: {
+        timeSaved: '6-8 hrs/week',
+        laborReduced: '50% less prep time',
+        errorsPrevented: 'Smooth accreditation',
+        decisionLatency: 'Continuous monitoring',
+      },
+      confidence: 0.81,
+    },
+    scale: {
+      identifiedPain: 'Scaling programs while maintaining quality.',
+      workflow: [
+        'Track enrollment trends',
+        'Forecast capacity needs',
+        'Monitor quality metrics',
+      ],
+      automationLogic: [
+        'If enrollment > capacity → alert admin',
+        'Auto-suggest expansions',
+      ],
+      outputs: ['Enrollment forecast', 'Capacity dashboard', 'Quality tracker'],
+      value: {
+        timeSaved: '3-5 hrs/week',
+        laborReduced: 'Better planning',
+        errorsPrevented: 'Quality maintained',
+        decisionLatency: 'Semester → Monthly',
+      },
+      confidence: 0.76,
+    },
+    visibility: {
+      identifiedPain: 'Limited visibility into student outcomes.',
+      workflow: [
+        'Track student progress',
+        'Monitor at-risk indicators',
+        'Generate outcome reports',
+      ],
+      automationLogic: [
+        'If at-risk detected → alert advisor',
+        'Auto-generate intervention list',
+      ],
+      outputs: ['Student dashboard', 'At-risk alerts', 'Outcome report'],
+      value: {
+        timeSaved: '4-6 hrs/week',
+        laborReduced: 'Proactive intervention',
+        errorsPrevented: 'Better outcomes',
+        decisionLatency: 'Weekly → Daily',
+      },
+      confidence: 0.83,
     },
   },
 };

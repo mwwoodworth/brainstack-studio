@@ -1,0 +1,667 @@
+// Tool Registry - Central registry of all available tools
+
+import { Tool, ToolRegistryEntry, ToolCategory } from './types';
+import { executeROICalculator } from './calculators/roi-calculator';
+import { executeCashFlowForecaster } from './calculators/cash-flow-forecaster';
+import { executePricingOptimizer } from './calculators/pricing-optimizer';
+import { executeWorkforcePlanner } from './calculators/workforce-planner';
+import { executeBreakEvenAnalyzer } from './calculators/break-even-analyzer';
+import { executeCustomerHealthScorer } from './calculators/customer-health-scorer';
+import { executeLeadQualityScorer } from './calculators/lead-quality-scorer';
+import { executeRiskAssessmentMatrix } from './calculators/risk-assessment-matrix';
+import { executeVendorScorecard } from './calculators/vendor-scorecard';
+import { executeProjectHealthCheck } from './calculators/project-health-check';
+import { executeSOPGenerator } from './calculators/sop-generator';
+import { executeEmailSequenceBuilder } from './calculators/email-sequence-builder';
+import { executeMeetingAgendaCreator } from './calculators/meeting-agenda-creator';
+import { executeJobDescriptionGenerator } from './calculators/job-description-generator';
+import { executeRFPResponseHelper } from './calculators/rfp-response-helper';
+
+// Tool Definitions
+export const TOOLS: Tool[] = [
+  // === CALCULATORS ===
+  {
+    id: 'roi-calculator',
+    slug: 'roi-calculator',
+    name: 'ROI Calculator',
+    shortDescription: 'Calculate return on investment with visual projections',
+    description: 'Determine the financial return of any investment or initiative. Input your costs and expected savings to see ROI percentage, payback period, and 3-year net present value with interactive projections.',
+    category: 'calculators',
+    industries: ['universal'],
+    painPoints: ['money'],
+    icon: 'TrendingUp',
+    color: 'cyan',
+    featured: true,
+    inputs: [
+      {
+        id: 'currentAnnualCost',
+        label: 'Current Annual Cost',
+        type: 'currency',
+        placeholder: '100000',
+        helpText: 'What you currently spend annually on this area',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'estimatedAnnualSavings',
+        label: 'Estimated Annual Savings',
+        type: 'currency',
+        placeholder: '40000',
+        helpText: 'Expected yearly savings after implementation',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'implementationCost',
+        label: 'Implementation Cost',
+        type: 'currency',
+        placeholder: '50000',
+        helpText: 'One-time cost to implement the solution',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'timeToImplement',
+        label: 'Time to Implement',
+        type: 'number',
+        placeholder: '3',
+        helpText: 'Months until full implementation',
+        required: true,
+        suffix: 'months',
+        min: 1,
+        max: 36,
+      },
+      {
+        id: 'discountRate',
+        label: 'Discount Rate',
+        type: 'percentage',
+        placeholder: '10',
+        helpText: 'Annual discount rate for NPV calculation',
+        defaultValue: 10,
+        suffix: '%',
+        min: 0,
+        max: 30,
+      },
+    ],
+  },
+  {
+    id: 'cash-flow-forecaster',
+    slug: 'cash-flow-forecaster',
+    name: 'Cash Flow Forecaster',
+    shortDescription: 'Project your 13-week cash runway with risk analysis',
+    description: 'Build a deterministic 13-week cash flow projection. Input your current position, receivables, and payables to see your runway, risk points, and recommended actions.',
+    category: 'calculators',
+    industries: ['universal', 'finance', 'saas'],
+    painPoints: ['money', 'visibility'],
+    icon: 'Wallet',
+    color: 'emerald',
+    featured: true,
+    inputs: [
+      {
+        id: 'currentCash',
+        label: 'Current Cash Balance',
+        type: 'currency',
+        placeholder: '250000',
+        helpText: 'Cash on hand today',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'weeklyRevenue',
+        label: 'Average Weekly Revenue',
+        type: 'currency',
+        placeholder: '50000',
+        helpText: 'Expected weekly incoming cash',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'weeklyExpenses',
+        label: 'Average Weekly Expenses',
+        type: 'currency',
+        placeholder: '45000',
+        helpText: 'Expected weekly outgoing cash',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'outstandingAR',
+        label: 'Outstanding Receivables',
+        type: 'currency',
+        placeholder: '120000',
+        helpText: 'Total accounts receivable',
+        prefix: '$',
+      },
+      {
+        id: 'outstandingAP',
+        label: 'Outstanding Payables',
+        type: 'currency',
+        placeholder: '80000',
+        helpText: 'Total accounts payable due within 13 weeks',
+        prefix: '$',
+      },
+      {
+        id: 'arCollectionRate',
+        label: 'AR Collection Rate',
+        type: 'percentage',
+        placeholder: '85',
+        helpText: 'Expected percentage of AR to be collected',
+        defaultValue: 85,
+        suffix: '%',
+      },
+    ],
+  },
+  {
+    id: 'pricing-optimizer',
+    slug: 'pricing-optimizer',
+    name: 'Pricing Optimizer',
+    shortDescription: 'Find optimal price points for maximum profit',
+    description: 'Determine the best pricing strategy for your product or service. Input your costs and market data to receive recommended price tiers with margin analysis and competitive positioning.',
+    category: 'calculators',
+    industries: ['universal', 'saas', 'retail'],
+    painPoints: ['money', 'scale'],
+    icon: 'DollarSign',
+    color: 'violet',
+    featured: true,
+    inputs: [
+      {
+        id: 'unitCost',
+        label: 'Cost per Unit/Customer',
+        type: 'currency',
+        placeholder: '25',
+        helpText: 'Your cost to deliver one unit or serve one customer',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'currentPrice',
+        label: 'Current Price',
+        type: 'currency',
+        placeholder: '99',
+        helpText: 'What you currently charge (if applicable)',
+        prefix: '$',
+      },
+      {
+        id: 'competitorLowPrice',
+        label: 'Competitor Low Price',
+        type: 'currency',
+        placeholder: '49',
+        helpText: 'Lowest competitor price in market',
+        prefix: '$',
+      },
+      {
+        id: 'competitorHighPrice',
+        label: 'Competitor High Price',
+        type: 'currency',
+        placeholder: '199',
+        helpText: 'Highest competitor price in market',
+        prefix: '$',
+      },
+      {
+        id: 'targetMargin',
+        label: 'Target Gross Margin',
+        type: 'percentage',
+        placeholder: '70',
+        helpText: 'Desired gross margin percentage',
+        defaultValue: 70,
+        suffix: '%',
+        min: 10,
+        max: 95,
+      },
+      {
+        id: 'monthlyVolume',
+        label: 'Expected Monthly Volume',
+        type: 'number',
+        placeholder: '100',
+        helpText: 'Expected units sold or customers per month',
+        required: true,
+      },
+    ],
+  },
+  {
+    id: 'workforce-planner',
+    slug: 'workforce-planner',
+    name: 'Workforce Planner',
+    shortDescription: 'Optimize team allocation and utilization',
+    description: 'Analyze your workforce capacity and utilization. Input your team size and workload to receive optimal allocation recommendations, identify capacity gaps, and improve efficiency.',
+    category: 'calculators',
+    industries: ['universal', 'operations', 'construction'],
+    painPoints: ['labor', 'process'],
+    icon: 'Users',
+    color: 'amber',
+    featured: true,
+    inputs: [
+      {
+        id: 'teamSize',
+        label: 'Team Size',
+        type: 'number',
+        placeholder: '10',
+        helpText: 'Number of team members',
+        required: true,
+        min: 1,
+        max: 1000,
+      },
+      {
+        id: 'hoursPerWeek',
+        label: 'Hours per Week per Person',
+        type: 'number',
+        placeholder: '40',
+        helpText: 'Standard working hours per week',
+        defaultValue: 40,
+        min: 1,
+        max: 80,
+      },
+      {
+        id: 'currentWorkload',
+        label: 'Current Workload (Hours/Week)',
+        type: 'number',
+        placeholder: '450',
+        helpText: 'Total hours of work needed per week',
+        required: true,
+      },
+      {
+        id: 'targetUtilization',
+        label: 'Target Utilization',
+        type: 'percentage',
+        placeholder: '80',
+        helpText: 'Desired utilization rate',
+        defaultValue: 80,
+        suffix: '%',
+        min: 50,
+        max: 100,
+      },
+      {
+        id: 'avgHourlyRate',
+        label: 'Average Hourly Cost',
+        type: 'currency',
+        placeholder: '75',
+        helpText: 'Fully-loaded cost per hour',
+        prefix: '$',
+      },
+      {
+        id: 'overtimeMultiplier',
+        label: 'Overtime Multiplier',
+        type: 'number',
+        placeholder: '1.5',
+        helpText: 'Overtime pay rate multiplier',
+        defaultValue: 1.5,
+        step: 0.1,
+        min: 1,
+        max: 3,
+      },
+    ],
+  },
+  {
+    id: 'break-even-analyzer',
+    slug: 'break-even-analyzer',
+    name: 'Break-Even Analyzer',
+    shortDescription: 'Find your break-even point with visual projections',
+    description: 'Calculate exactly when your revenue will cover your costs. Input fixed costs, variable costs, and pricing to see your break-even point in units and revenue, plus profit projections.',
+    category: 'calculators',
+    industries: ['universal', 'retail', 'manufacturing'],
+    painPoints: ['money', 'scale'],
+    icon: 'Target',
+    color: 'rose',
+    featured: true,
+    inputs: [
+      {
+        id: 'fixedCosts',
+        label: 'Monthly Fixed Costs',
+        type: 'currency',
+        placeholder: '50000',
+        helpText: 'Costs that don\'t change with volume (rent, salaries, etc.)',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'variableCostPerUnit',
+        label: 'Variable Cost per Unit',
+        type: 'currency',
+        placeholder: '15',
+        helpText: 'Cost to produce/deliver each unit',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'pricePerUnit',
+        label: 'Price per Unit',
+        type: 'currency',
+        placeholder: '49',
+        helpText: 'Selling price per unit',
+        required: true,
+        prefix: '$',
+      },
+      {
+        id: 'currentMonthlyUnits',
+        label: 'Current Monthly Units',
+        type: 'number',
+        placeholder: '1000',
+        helpText: 'How many units you currently sell per month',
+      },
+      {
+        id: 'growthRate',
+        label: 'Monthly Growth Rate',
+        type: 'percentage',
+        placeholder: '5',
+        helpText: 'Expected month-over-month growth',
+        defaultValue: 5,
+        suffix: '%',
+        min: -20,
+        max: 50,
+      },
+    ],
+  },
+
+  // === ANALYZERS ===
+  {
+    id: 'customer-health-scorer',
+    slug: 'customer-health-scorer',
+    name: 'Customer Health Scorer',
+    shortDescription: 'Predict churn risk and identify at-risk customers',
+    description: 'Analyze customer engagement metrics to calculate a health score and predict churn probability. Get actionable recommendations to improve retention.',
+    category: 'analyzers',
+    industries: ['saas', 'universal'],
+    painPoints: ['process', 'visibility'],
+    icon: 'HeartPulse',
+    color: 'rose',
+    featured: true,
+    inputs: [
+      { id: 'monthlyActiveUsers', label: 'Monthly Active Users (%)', type: 'percentage', placeholder: '75', helpText: 'Percentage of users active in the last 30 days', required: true, suffix: '%' },
+      { id: 'supportTickets', label: 'Support Tickets (Last 30 Days)', type: 'number', placeholder: '3', helpText: 'Number of support tickets opened', required: true },
+      { id: 'featureAdoption', label: 'Feature Adoption Score', type: 'number', placeholder: '7', helpText: 'How many core features they use (1-10)', min: 1, max: 10, required: true },
+      { id: 'daysToRenewal', label: 'Days to Renewal', type: 'number', placeholder: '60', helpText: 'Days until contract renewal' },
+      { id: 'npsScore', label: 'NPS Score', type: 'number', placeholder: '50', helpText: 'Net Promoter Score (-100 to 100)', min: -100, max: 100 },
+      { id: 'contractValue', label: 'Contract Value', type: 'currency', placeholder: '50000', helpText: 'Annual contract value', prefix: '$' },
+    ],
+  },
+  {
+    id: 'lead-quality-scorer',
+    slug: 'lead-quality-scorer',
+    name: 'Lead Quality Scorer',
+    shortDescription: 'Score and qualify sales leads instantly',
+    description: 'Evaluate lead quality based on BANT criteria, company fit, and engagement. Get a score, grade, and prioritized action recommendations.',
+    category: 'analyzers',
+    industries: ['universal', 'saas'],
+    painPoints: ['scale', 'process'],
+    icon: 'UserCheck',
+    color: 'cyan',
+    featured: true,
+    inputs: [
+      { id: 'companySize', label: 'Company Size', type: 'select', options: [{ value: 'startup', label: 'Startup (1-10)' }, { value: 'small', label: 'Small (11-50)' }, { value: 'medium', label: 'Medium (51-200)' }, { value: 'large', label: 'Large (201-1000)' }, { value: 'enterprise', label: 'Enterprise (1000+)' }], required: true },
+      { id: 'annualRevenue', label: 'Annual Revenue', type: 'currency', placeholder: '1000000', helpText: 'Estimated annual revenue', prefix: '$' },
+      { id: 'industryFit', label: 'Industry Fit Score', type: 'number', placeholder: '8', helpText: 'How well they match your ICP (1-10)', min: 1, max: 10, required: true },
+      { id: 'budgetConfirmed', label: 'Budget Confirmed', type: 'select', options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }], required: true },
+      { id: 'decisionMakerAccess', label: 'Decision Maker Access', type: 'select', options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }], required: true },
+      { id: 'timelineMonths', label: 'Purchase Timeline', type: 'number', placeholder: '3', helpText: 'Months until purchase decision', suffix: ' months' },
+      { id: 'engagementLevel', label: 'Engagement Level', type: 'number', placeholder: '7', helpText: 'Level of engagement with your content (1-10)', min: 1, max: 10 },
+      { id: 'competitorUsing', label: 'Current Solution', type: 'select', options: [{ value: 'none', label: 'No Current Solution' }, { value: 'competitor', label: 'Using Competitor' }, { value: 'unknown', label: 'Unknown' }] },
+    ],
+  },
+  {
+    id: 'risk-assessment-matrix',
+    slug: 'risk-assessment-matrix',
+    name: 'Risk Assessment Matrix',
+    shortDescription: 'Evaluate and prioritize business risks',
+    description: 'Build a risk matrix by entering up to 5 risks with likelihood and impact scores. Get prioritized risks, overall risk posture, and mitigation recommendations.',
+    category: 'analyzers',
+    industries: ['universal', 'finance', 'operations'],
+    painPoints: ['compliance', 'visibility'],
+    icon: 'AlertTriangle',
+    color: 'amber',
+    featured: false,
+    inputs: [
+      { id: 'risk1Name', label: 'Risk 1 Name', type: 'text', placeholder: 'Supply chain disruption', required: true },
+      { id: 'risk1Likelihood', label: 'Risk 1 Likelihood', type: 'number', placeholder: '3', helpText: '1 (Rare) to 5 (Almost Certain)', min: 1, max: 5, required: true },
+      { id: 'risk1Impact', label: 'Risk 1 Impact', type: 'number', placeholder: '4', helpText: '1 (Negligible) to 5 (Catastrophic)', min: 1, max: 5, required: true },
+      { id: 'risk2Name', label: 'Risk 2 Name', type: 'text', placeholder: 'Key person dependency' },
+      { id: 'risk2Likelihood', label: 'Risk 2 Likelihood', type: 'number', placeholder: '3', min: 1, max: 5 },
+      { id: 'risk2Impact', label: 'Risk 2 Impact', type: 'number', placeholder: '3', min: 1, max: 5 },
+      { id: 'risk3Name', label: 'Risk 3 Name', type: 'text', placeholder: 'Cyber security breach' },
+      { id: 'risk3Likelihood', label: 'Risk 3 Likelihood', type: 'number', placeholder: '2', min: 1, max: 5 },
+      { id: 'risk3Impact', label: 'Risk 3 Impact', type: 'number', placeholder: '5', min: 1, max: 5 },
+      { id: 'potentialExposure', label: 'Total Potential Exposure', type: 'currency', placeholder: '500000', helpText: 'Maximum financial impact across all risks', prefix: '$' },
+    ],
+  },
+  {
+    id: 'vendor-scorecard',
+    slug: 'vendor-scorecard',
+    name: 'Vendor Scorecard',
+    shortDescription: 'Evaluate and rank vendor performance',
+    description: 'Score vendors across quality, delivery, price, responsiveness, and compliance. Get a tier classification and recommendations for the relationship.',
+    category: 'analyzers',
+    industries: ['operations', 'supply-chain', 'universal'],
+    painPoints: ['process', 'compliance'],
+    icon: 'ClipboardCheck',
+    color: 'emerald',
+    featured: false,
+    inputs: [
+      { id: 'vendorName', label: 'Vendor Name', type: 'text', placeholder: 'Acme Supplies', required: true },
+      { id: 'qualityScore', label: 'Quality Score', type: 'number', placeholder: '8', helpText: 'Product/service quality (1-10)', min: 1, max: 10, required: true },
+      { id: 'deliveryOnTime', label: 'On-Time Delivery Rate', type: 'percentage', placeholder: '92', helpText: 'Percentage of orders delivered on time', suffix: '%', required: true },
+      { id: 'priceCompetitiveness', label: 'Price Competitiveness', type: 'number', placeholder: '7', helpText: 'Compared to market (1-10)', min: 1, max: 10 },
+      { id: 'responsiveness', label: 'Responsiveness', type: 'number', placeholder: '8', helpText: 'Speed of communication (1-10)', min: 1, max: 10 },
+      { id: 'complianceScore', label: 'Compliance Score', type: 'number', placeholder: '9', helpText: 'Regulatory/contract compliance (1-10)', min: 1, max: 10 },
+      { id: 'annualSpend', label: 'Annual Spend', type: 'currency', placeholder: '150000', helpText: 'Annual spend with this vendor', prefix: '$' },
+      { id: 'contractLength', label: 'Months Remaining', type: 'number', placeholder: '8', helpText: 'Months until contract expires', suffix: ' months' },
+      { id: 'issuesReported', label: 'Issues Reported', type: 'number', placeholder: '2', helpText: 'Number of issues in last 12 months' },
+    ],
+  },
+  {
+    id: 'project-health-check',
+    slug: 'project-health-check',
+    name: 'Project Health Check',
+    shortDescription: 'Assess project status and identify risks',
+    description: 'Evaluate project health across schedule, budget, issues, scope, and team dimensions. Get an overall health score and specific recommendations.',
+    category: 'analyzers',
+    industries: ['operations', 'construction', 'universal'],
+    painPoints: ['visibility', 'process'],
+    icon: 'Activity',
+    color: 'violet',
+    featured: false,
+    inputs: [
+      { id: 'projectName', label: 'Project Name', type: 'text', placeholder: 'Website Redesign', required: true },
+      { id: 'percentComplete', label: 'Percent Complete', type: 'percentage', placeholder: '45', helpText: 'Current completion percentage', suffix: '%', required: true },
+      { id: 'daysElapsed', label: 'Days Elapsed', type: 'number', placeholder: '30', helpText: 'Days since project started', required: true },
+      { id: 'totalDays', label: 'Total Duration (Days)', type: 'number', placeholder: '90', helpText: 'Planned project duration', required: true },
+      { id: 'budgetSpent', label: 'Budget Spent', type: 'currency', placeholder: '35000', helpText: 'Amount spent to date', prefix: '$', required: true },
+      { id: 'totalBudget', label: 'Total Budget', type: 'currency', placeholder: '100000', helpText: 'Total project budget', prefix: '$', required: true },
+      { id: 'openIssues', label: 'Open Issues', type: 'number', placeholder: '5', helpText: 'Number of unresolved issues' },
+      { id: 'criticalIssues', label: 'Critical Issues', type: 'number', placeholder: '1', helpText: 'Number of blocking/critical issues' },
+      { id: 'scopeChanges', label: 'Scope Changes', type: 'number', placeholder: '2', helpText: 'Number of scope change requests' },
+      { id: 'teamMorale', label: 'Team Morale', type: 'number', placeholder: '7', helpText: 'Team satisfaction (1-10)', min: 1, max: 10 },
+    ],
+  },
+
+  // === GENERATORS ===
+  {
+    id: 'sop-generator',
+    slug: 'sop-generator',
+    name: 'SOP Generator',
+    shortDescription: 'Create formatted Standard Operating Procedures',
+    description: 'Generate professional SOPs from your process steps. Input your workflow and get a structured document with checklist, training notes, and revision tracking.',
+    category: 'generators',
+    industries: ['universal', 'operations'],
+    painPoints: ['process', 'scale'],
+    icon: 'FileText',
+    color: 'violet',
+    featured: true,
+    inputs: [
+      { id: 'processName', label: 'Process Name', type: 'text', placeholder: 'Customer Onboarding', required: true },
+      { id: 'processPurpose', label: 'Process Purpose', type: 'textarea', placeholder: 'Describe the goal of this process...', helpText: 'Why does this process exist?' },
+      { id: 'owner', label: 'Process Owner', type: 'text', placeholder: 'John Smith', helpText: 'Who is responsible for this SOP?' },
+      { id: 'department', label: 'Department', type: 'text', placeholder: 'Operations', helpText: 'Which department owns this?' },
+      { id: 'frequency', label: 'Frequency', type: 'select', options: [{ value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'monthly', label: 'Monthly' }, { value: 'quarterly', label: 'Quarterly' }, { value: 'as-needed', label: 'As Needed' }, { value: 'one-time', label: 'One-Time' }] },
+      { id: 'step1', label: 'Step 1', type: 'text', placeholder: 'First step in the process...', required: true },
+      { id: 'step2', label: 'Step 2', type: 'text', placeholder: 'Second step...' },
+      { id: 'step3', label: 'Step 3', type: 'text', placeholder: 'Third step...' },
+      { id: 'step4', label: 'Step 4', type: 'text', placeholder: 'Fourth step...' },
+      { id: 'step5', label: 'Step 5', type: 'text', placeholder: 'Fifth step...' },
+    ],
+  },
+  {
+    id: 'email-sequence-builder',
+    slug: 'email-sequence-builder',
+    name: 'Email Sequence Builder',
+    shortDescription: 'Generate automated email campaign sequences',
+    description: 'Build effective email sequences for nurturing, onboarding, conversion, or reactivation. Get subject lines, timing, and key points for each email.',
+    category: 'generators',
+    industries: ['universal', 'saas', 'marketing'],
+    painPoints: ['scale', 'process'],
+    icon: 'Mail',
+    color: 'cyan',
+    featured: true,
+    inputs: [
+      { id: 'campaignGoal', label: 'Campaign Goal', type: 'select', options: [{ value: 'nurture', label: 'Lead Nurturing' }, { value: 'onboarding', label: 'User Onboarding' }, { value: 'conversion', label: 'Sales Conversion' }, { value: 'reactivation', label: 'Re-engagement' }], required: true },
+      { id: 'audienceType', label: 'Target Audience', type: 'select', options: [{ value: 'prospects', label: 'Prospects' }, { value: 'leads', label: 'Qualified Leads' }, { value: 'customers', label: 'Existing Customers' }, { value: 'churned', label: 'Churned Users' }], required: true },
+      { id: 'productService', label: 'Product/Service Name', type: 'text', placeholder: 'Your SaaS platform', helpText: 'What are you promoting?' },
+      { id: 'industryContext', label: 'Industry Context', type: 'text', placeholder: 'B2B Software', helpText: 'Your target industry' },
+      { id: 'sequenceLength', label: 'Number of Emails', type: 'number', placeholder: '5', helpText: '3-7 emails recommended', min: 3, max: 7 },
+      { id: 'tonality', label: 'Tone', type: 'select', options: [{ value: 'professional', label: 'Professional' }, { value: 'friendly', label: 'Friendly & Casual' }, { value: 'urgent', label: 'Urgent/Action-Oriented' }, { value: 'educational', label: 'Educational' }] },
+      { id: 'callToAction', label: 'Primary CTA', type: 'text', placeholder: 'Schedule a demo', helpText: 'What action should recipients take?' },
+    ],
+  },
+  {
+    id: 'meeting-agenda-creator',
+    slug: 'meeting-agenda-creator',
+    name: 'Meeting Agenda Creator',
+    shortDescription: 'Generate structured meeting agendas',
+    description: 'Create professional meeting agendas with time allocation, topic owners, and pre-meeting prep. Perfect for standups, planning sessions, reviews, and more.',
+    category: 'generators',
+    industries: ['universal'],
+    painPoints: ['process', 'visibility'],
+    icon: 'Calendar',
+    color: 'emerald',
+    featured: false,
+    inputs: [
+      { id: 'meetingTitle', label: 'Meeting Title', type: 'text', placeholder: 'Weekly Team Sync', required: true },
+      { id: 'meetingType', label: 'Meeting Type', type: 'select', options: [{ value: 'general', label: 'General Meeting' }, { value: 'standup', label: 'Daily Standup' }, { value: 'brainstorm', label: 'Brainstorming Session' }, { value: 'review', label: 'Review/Retrospective' }, { value: 'planning', label: 'Planning Session' }, { value: 'one-on-one', label: '1:1 Meeting' }, { value: 'kickoff', label: 'Project Kickoff' }], required: true },
+      { id: 'duration', label: 'Duration (minutes)', type: 'number', placeholder: '60', helpText: 'Total meeting length', required: true, min: 15, max: 180 },
+      { id: 'attendeeCount', label: 'Number of Attendees', type: 'number', placeholder: '5', min: 2, max: 50 },
+      { id: 'meetingDate', label: 'Meeting Date', type: 'text', placeholder: 'Monday, Feb 10' },
+      { id: 'organizer', label: 'Organizer', type: 'text', placeholder: 'Your name' },
+      { id: 'topic1', label: 'Topic 1', type: 'text', placeholder: 'Project status update', required: true },
+      { id: 'topic1Minutes', label: 'Topic 1 Minutes', type: 'number', placeholder: '15', min: 2, max: 60 },
+      { id: 'topic2', label: 'Topic 2', type: 'text', placeholder: 'Blockers discussion' },
+      { id: 'topic2Minutes', label: 'Topic 2 Minutes', type: 'number', placeholder: '10', min: 2, max: 60 },
+      { id: 'topic3', label: 'Topic 3', type: 'text', placeholder: 'Next steps' },
+      { id: 'topic3Minutes', label: 'Topic 3 Minutes', type: 'number', placeholder: '10', min: 2, max: 60 },
+    ],
+  },
+  {
+    id: 'job-description-generator',
+    slug: 'job-description-generator',
+    name: 'Job Description Generator',
+    shortDescription: 'Create polished job descriptions',
+    description: 'Generate professional job descriptions with responsibilities, requirements, and company culture sections. Optimized for attracting qualified candidates.',
+    category: 'generators',
+    industries: ['universal', 'hr'],
+    painPoints: ['labor', 'process'],
+    icon: 'Briefcase',
+    color: 'amber',
+    featured: false,
+    inputs: [
+      { id: 'jobTitle', label: 'Job Title', type: 'text', placeholder: 'Senior Software Engineer', required: true },
+      { id: 'department', label: 'Department', type: 'text', placeholder: 'Engineering', required: true },
+      { id: 'employmentType', label: 'Employment Type', type: 'select', options: [{ value: 'full-time', label: 'Full-Time' }, { value: 'part-time', label: 'Part-Time' }, { value: 'contract', label: 'Contract' }, { value: 'freelance', label: 'Freelance' }, { value: 'internship', label: 'Internship' }], required: true },
+      { id: 'experienceLevel', label: 'Experience Level', type: 'select', options: [{ value: 'entry', label: 'Entry Level' }, { value: 'junior', label: 'Junior' }, { value: 'mid', label: 'Mid-Level' }, { value: 'senior', label: 'Senior' }, { value: 'lead', label: 'Lead/Principal' }, { value: 'director', label: 'Director' }, { value: 'executive', label: 'Executive' }], required: true },
+      { id: 'location', label: 'Location', type: 'text', placeholder: 'Remote / New York, NY' },
+      { id: 'salaryMin', label: 'Salary Min', type: 'currency', placeholder: '80000', prefix: '$' },
+      { id: 'salaryMax', label: 'Salary Max', type: 'currency', placeholder: '120000', prefix: '$' },
+      { id: 'responsibility1', label: 'Responsibility 1', type: 'text', placeholder: 'Lead feature development...', required: true },
+      { id: 'responsibility2', label: 'Responsibility 2', type: 'text', placeholder: 'Mentor junior engineers...' },
+      { id: 'responsibility3', label: 'Responsibility 3', type: 'text', placeholder: 'Collaborate with product...' },
+      { id: 'requirement1', label: 'Requirement 1', type: 'text', placeholder: '5+ years of experience...', required: true },
+      { id: 'requirement2', label: 'Requirement 2', type: 'text', placeholder: 'Proficiency in React...' },
+      { id: 'requirement3', label: 'Requirement 3', type: 'text', placeholder: 'Strong communication...' },
+      { id: 'niceToHave1', label: 'Nice to Have', type: 'text', placeholder: 'Experience with AWS...' },
+    ],
+  },
+  {
+    id: 'rfp-response-helper',
+    slug: 'rfp-response-helper',
+    name: 'RFP Response Helper',
+    shortDescription: 'Structure responses to RFP questions',
+    description: 'Get structured frameworks for answering RFP questions. Paste your questions and receive response outlines, key points to cover, and pitfalls to avoid.',
+    category: 'generators',
+    industries: ['universal', 'sales'],
+    painPoints: ['scale', 'process'],
+    icon: 'FileQuestion',
+    color: 'rose',
+    featured: false,
+    inputs: [
+      { id: 'rfpTitle', label: 'RFP Title', type: 'text', placeholder: 'Enterprise Software Implementation', required: true },
+      { id: 'clientName', label: 'Client Name', type: 'text', placeholder: 'Acme Corporation', helpText: 'Who issued the RFP?' },
+      { id: 'projectType', label: 'Project Type', type: 'select', options: [{ value: 'general', label: 'General' }, { value: 'software', label: 'Software/IT' }, { value: 'consulting', label: 'Consulting' }, { value: 'construction', label: 'Construction' }, { value: 'marketing', label: 'Marketing' }, { value: 'staffing', label: 'Staffing' }] },
+      { id: 'proposedValue', label: 'Proposed Value', type: 'currency', placeholder: '250000', helpText: 'Your proposed contract value', prefix: '$' },
+      { id: 'deadline', label: 'Submission Deadline', type: 'text', placeholder: 'Feb 28, 2026' },
+      { id: 'companyStrengths', label: 'Your Key Strengths', type: 'textarea', placeholder: 'List 2-3 differentiators...' },
+      { id: 'question1', label: 'RFP Question 1', type: 'textarea', placeholder: 'Paste the first RFP question...', required: true },
+      { id: 'question2', label: 'RFP Question 2', type: 'textarea', placeholder: 'Paste the second question...' },
+      { id: 'question3', label: 'RFP Question 3', type: 'textarea', placeholder: 'Paste the third question...' },
+      { id: 'question4', label: 'RFP Question 4', type: 'textarea', placeholder: 'Paste additional questions...' },
+      { id: 'question5', label: 'RFP Question 5', type: 'textarea', placeholder: 'More questions...' },
+    ],
+  },
+];
+
+// Tool executors map
+const TOOL_EXECUTORS: Record<string, ToolRegistryEntry['execute']> = {
+  'roi-calculator': executeROICalculator,
+  'cash-flow-forecaster': executeCashFlowForecaster,
+  'pricing-optimizer': executePricingOptimizer,
+  'workforce-planner': executeWorkforcePlanner,
+  'break-even-analyzer': executeBreakEvenAnalyzer,
+  'customer-health-scorer': executeCustomerHealthScorer,
+  'lead-quality-scorer': executeLeadQualityScorer,
+  'risk-assessment-matrix': executeRiskAssessmentMatrix,
+  'vendor-scorecard': executeVendorScorecard,
+  'project-health-check': executeProjectHealthCheck,
+  'sop-generator': executeSOPGenerator,
+  'email-sequence-builder': executeEmailSequenceBuilder,
+  'meeting-agenda-creator': executeMeetingAgendaCreator,
+  'job-description-generator': executeJobDescriptionGenerator,
+  'rfp-response-helper': executeRFPResponseHelper,
+};
+
+// Registry functions
+export function getToolById(id: string): Tool | undefined {
+  return TOOLS.find(tool => tool.id === id);
+}
+
+export function getToolBySlug(slug: string): Tool | undefined {
+  return TOOLS.find(tool => tool.slug === slug);
+}
+
+export function getToolsByCategory(category: ToolCategory): Tool[] {
+  return TOOLS.filter(tool => tool.category === category);
+}
+
+export function getAllTools(): Tool[] {
+  return TOOLS;
+}
+
+export function getFeaturedTools(): Tool[] {
+  return TOOLS.filter(tool => tool.featured);
+}
+
+export function getToolExecutor(toolId: string): ToolRegistryEntry['execute'] | undefined {
+  return TOOL_EXECUTORS[toolId];
+}
+
+export function executeTool(toolId: string, inputs: Record<string, string | number>) {
+  const executor = getToolExecutor(toolId);
+  if (!executor) {
+    throw new Error(`No executor found for tool: ${toolId}`);
+  }
+  return executor(inputs);
+}
+
+export function searchTools(query: string): Tool[] {
+  const lowerQuery = query.toLowerCase();
+  return TOOLS.filter(tool =>
+    tool.name.toLowerCase().includes(lowerQuery) ||
+    tool.shortDescription.toLowerCase().includes(lowerQuery) ||
+    tool.industries.some(i => i.includes(lowerQuery)) ||
+    tool.painPoints.some(p => p.includes(lowerQuery))
+  );
+}

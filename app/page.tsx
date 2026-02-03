@@ -9,6 +9,8 @@ import {
   Shield,
   Target,
   Zap,
+  Calculator,
+  Sparkles,
 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -16,6 +18,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { SOLUTIONS } from '@/lib/solutions';
+import { ToolCard } from '@/components/tools';
+import { getFeaturedTools } from '@/lib/tools';
 
 const STATS = [
   { value: '5', label: 'Industries Supported' },
@@ -153,8 +157,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Solutions Preview */}
+      {/* Free Tools Showcase */}
       <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <Badge variant="primary" className="mb-4">
+              <Sparkles className="w-3 h-3 mr-1" />
+              Free Tools
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Try Before You Buy</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              Interactive calculators and analyzers you can use right now. No signup required.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {getFeaturedTools().map((tool, idx) => (
+              <motion.div
+                key={tool.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <ToolCard tool={tool} />
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/tools">
+              <Button size="lg" variant="secondary">
+                <Calculator className="w-5 h-5" />
+                Browse All Tools
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Preview */}
+      <section className="py-20 px-6 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
