@@ -109,12 +109,17 @@ export function getConfidenceColor(level: ConfidenceLevel): string {
 }
 
 /**
- * Generate a unique session ID
+ * Generate a unique session ID using cryptographically secure randomness
  */
 export function generateSessionId(): string {
   const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 8);
-  return `tool_${timestamp}_${random}`;
+  // Use crypto for secure random generation
+  const randomBytes = typeof crypto !== 'undefined' && crypto.getRandomValues
+    ? Array.from(crypto.getRandomValues(new Uint8Array(4)))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+    : Math.random().toString(36).substring(2, 10); // Fallback only for SSR
+  return `tool_${timestamp}_${randomBytes}`;
 }
 
 /**

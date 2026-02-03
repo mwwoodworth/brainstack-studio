@@ -103,8 +103,11 @@ export default function SolutionDetailPage({ params }: Props) {
                 {solution.preview.map((step, index) => (
                   <button
                     key={step.title}
+                    type="button"
                     onClick={() => setActiveStep(index)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border transition ${
+                    aria-pressed={activeStep === index}
+                    aria-label={`Preview step ${index + 1}: ${step.title}`}
+                    className={`w-full text-left px-4 py-3 rounded-lg border transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
                       activeStep === index
                         ? 'border-cyan-500 bg-cyan-500/10 text-cyan-200'
                         : 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5'

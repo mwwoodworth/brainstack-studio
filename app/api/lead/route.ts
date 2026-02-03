@@ -104,7 +104,8 @@ export async function POST(request: Request) {
       });
 
       if (!response.ok) {
-        return NextResponse.json({ error: 'Lead webhook failed.' }, { status: 502 });
+        console.error('[BSS Lead] Webhook failed with status:', response.status);
+        return NextResponse.json({ error: 'Failed to submit lead. Please try again.' }, { status: 500 });
       }
     } else {
       console.log('[BSS Lead]', payload);

@@ -6,7 +6,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+  // Use cryptographically secure random ID generation
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for environments without crypto.randomUUID
+  return `${Date.now()}-${Array.from(crypto.getRandomValues(new Uint8Array(8)))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')}`;
 }
 
 export function formatDate(timestamp: number): string {

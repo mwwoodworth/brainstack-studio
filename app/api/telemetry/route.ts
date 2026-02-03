@@ -21,11 +21,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing or invalid event name.' }, { status: 400 });
     }
 
+    // Log only non-PII metadata - never log payload contents
     console.log('[BSS Telemetry]', {
       name,
-      ts,
-      path,
-      payload,
+      ts: ts || Date.now(),
+      path: path || 'unknown',
     });
 
     return NextResponse.json({ status: 'ok' });

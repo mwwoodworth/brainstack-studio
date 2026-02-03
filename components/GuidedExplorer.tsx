@@ -52,7 +52,7 @@ export function GuidedExplorer() {
     if (!result || !canRun) return;
     if (!preferences.saveSessions) return;
     const session = {
-      id: `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      id: `sess_${Date.now().toString(36)}_${Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(16).padStart(2, '0')).join('')}`,
       createdAt: new Date().toISOString(),
       input,
       result,
