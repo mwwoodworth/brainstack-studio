@@ -20,6 +20,23 @@ export const metadata: Metadata = {
     description:
       'Deterministic operational AI workflows with clear boundaries and confidence scoring.',
     type: 'website',
+    url: 'https://brainstackstudio.com',
+    siteName: 'BrainStack Studio',
+    images: [
+      {
+        url: 'https://brainstackstudio.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'BrainStack Studio - Operational AI, Built for Trust',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BrainStack Studio - Operational AI, Built for Trust',
+    description:
+      'Deterministic operational AI workflows with clear boundaries and confidence scoring.',
+    images: ['https://brainstackstudio.com/og-image.png'],
   },
 };
 
