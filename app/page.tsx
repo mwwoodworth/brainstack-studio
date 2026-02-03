@@ -72,7 +72,7 @@ const HOW_IT_WORKS = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       {/* Hero */}
@@ -146,7 +146,7 @@ export default function Home() {
               >
                 <Card className="h-full">
                   <CardContent>
-                    <item.icon className="w-8 h-8 text-cyan-400 mb-4" />
+                    <item.icon className="w-8 h-8 text-cyan-400 mb-4" aria-hidden="true" />
                     <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
                     <p className="text-sm text-slate-400">{item.description}</p>
                   </CardContent>
@@ -166,7 +166,7 @@ export default function Home() {
             className="text-center mb-12"
           >
             <Badge variant="primary" className="mb-4">
-              <Sparkles className="w-3 h-3 mr-1" />
+              <Sparkles className="w-3 h-3 mr-1" aria-hidden="true" />
               Free Tools
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Try Before You Buy</h2>
@@ -265,7 +265,7 @@ export default function Home() {
             {TRUST_MECHANISMS.map((item) => (
               <Card key={item.title}>
                 <CardContent className="flex gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-400 mt-1" />
+                  <CheckCircle2 className="w-6 h-6 text-emerald-400 mt-1" aria-hidden="true" />
                   <div>
                     <h3 className="font-semibold">{item.title}</h3>
                     <p className="text-sm text-slate-400">{item.description}</p>

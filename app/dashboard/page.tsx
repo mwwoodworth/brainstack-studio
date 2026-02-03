@@ -65,14 +65,14 @@ export default function DashboardPage() {
       <main className="min-h-screen">
         <Navigation />
         <div className="pt-32 pb-20 px-6 flex items-center justify-center">
-          <div className="animate-pulse text-slate-400">Loading dashboard...</div>
+          <div className="animate-pulse text-slate-400" role="status" aria-live="polite">Loading dashboard...</div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <div className="pt-24 pb-20 px-6">
@@ -84,7 +84,7 @@ export default function DashboardPage() {
           >
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <LayoutDashboard className="w-10 h-10 text-cyan-400" />
+                <LayoutDashboard className="w-10 h-10 text-cyan-400" aria-hidden="true" />
                 <h1 className="text-4xl font-bold">Explorer Dashboard</h1>
               </div>
               <p className="text-slate-400">
@@ -116,7 +116,7 @@ export default function DashboardPage() {
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-cyan-500/10 rounded-lg">
-                    <ClipboardList className="w-5 h-5 text-cyan-400" />
+                    <ClipboardList className="w-5 h-5 text-cyan-400" aria-hidden="true" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{totalSessions}</div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-emerald-500/10 rounded-lg">
-                    <Target className="w-5 h-5 text-emerald-400" />
+                    <Target className="w-5 h-5 text-emerald-400" aria-hidden="true" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold truncate">{topIndustry}</div>
@@ -142,7 +142,7 @@ export default function DashboardPage() {
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-amber-500/10 rounded-lg">
-                    <Clock className="w-5 h-5 text-amber-400" />
+                    <Clock className="w-5 h-5 text-amber-400" aria-hidden="true" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold">{lastRun}</div>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
             className="mb-6"
           >
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden="true" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -178,7 +178,7 @@ export default function DashboardPage() {
             {filteredSessions.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
-                  <ClipboardList className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                  <ClipboardList className="w-12 h-12 text-slate-600 mx-auto mb-4" aria-hidden="true" />
                   <h3 className="text-lg font-semibold mb-2">
                     {sessions.length === 0 ? 'No sessions saved yet' : 'No matching sessions'}
                   </h3>
@@ -257,8 +257,9 @@ export default function DashboardPage() {
                                   deleteSession(session.id);
                                 }}
                                 className="text-slate-400 hover:text-red-400"
+                                aria-label="Delete session"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4" aria-hidden="true" />
                               </Button>
                             </div>
                           </CardContent>
