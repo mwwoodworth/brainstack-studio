@@ -104,10 +104,11 @@ export function executeProjectHealthCheck(
 
   // Calculate projected completion
   // Handle edge case: if no progress yet, use linear projection based on time elapsed
+  // Floor velocity at 0.01 to prevent extreme projections (max 100x overrun)
   const velocityRatio = percentComplete > 0 && expectedProgress > 0
-    ? percentComplete / expectedProgress
+    ? Math.max(0.01, percentComplete / expectedProgress)
     : 1; // Default to 1:1 velocity when no data
-  const projectedDays = velocityRatio > 0 ? totalDays / velocityRatio : totalDays;
+  const projectedDays = totalDays / velocityRatio;
   const daysRemaining = totalDays - daysElapsed;
   const projectedOverrun = projectedDays - totalDays;
 

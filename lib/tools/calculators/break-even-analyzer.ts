@@ -45,13 +45,18 @@ export function executeBreakEvenAnalyzer(inputs: Record<string, string | number>
   // Months to break-even if not there yet
   let monthsToBreakEven = 0;
   if (currentMonthlyUnits < breakEvenUnits && growthRate > 0) {
-    let units = currentMonthlyUnits;
-    let months = 0;
-    while (units < breakEvenUnits && months < 36) {
-      units = units * (1 + growthRate);
-      months++;
+    // Handle edge case: if starting at 0 units, can't grow multiplicatively
+    if (currentMonthlyUnits <= 0) {
+      monthsToBreakEven = 36; // Max months - can't reach break-even from 0 with multiplicative growth
+    } else {
+      let units = currentMonthlyUnits;
+      let months = 0;
+      while (units < breakEvenUnits && months < 36) {
+        units = units * (1 + growthRate);
+        months++;
+      }
+      monthsToBreakEven = months;
     }
-    monthsToBreakEven = months;
   }
 
   // Generate 12-month projection

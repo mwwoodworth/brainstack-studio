@@ -127,9 +127,11 @@ export function executeCustomerHealthScorer(
 
   // Generate trend data for chart (simulated 6-month trend)
   const months = ['6mo ago', '5mo ago', '4mo ago', '3mo ago', '2mo ago', '1mo ago', 'Now'];
-  const trendVariance = healthScore > 70 ? 5 : healthScore > 50 ? 10 : 15;
+  // Ensure healthScore is valid (protect against NaN propagation)
+  const safeHealthScore = Number.isFinite(healthScore) ? healthScore : 50;
+  const trendVariance = safeHealthScore > 70 ? 5 : safeHealthScore > 50 ? 10 : 15;
   const healthTrend = months.map((_, i) => {
-    const baseScore = healthScore - (6 - i) * 2;
+    const baseScore = safeHealthScore - (6 - i) * 2;
     return Math.max(0, Math.min(100, baseScore + (Math.random() - 0.5) * trendVariance));
   });
 

@@ -71,14 +71,17 @@ export function useConversations() {
       const newConversations = [...prev];
       newConversations[index] = updated;
 
-      // Also update current if it's the same
-      if (currentConversation?.id === id) {
-        setCurrentConversation(updated);
-      }
-
       return newConversations;
     });
-  }, [currentConversation]);
+
+    // Update current conversation separately using functional update to avoid stale closure
+    setCurrentConversation((prev) => {
+      if (prev?.id === id) {
+        return { ...prev, ...updates, updatedAt: Date.now() };
+      }
+      return prev;
+    });
+  }, []);
 
   const addMessage = useCallback((conversationId: string, message: Omit<Message, 'id' | 'timestamp'>): Message => {
     const newMessage: Message = {
