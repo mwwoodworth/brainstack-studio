@@ -61,7 +61,7 @@ export default function ToolsPage() {
   }, [selectedCategory, searchQuery, allTools]);
 
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navigation />
 
       {/* Hero Section */}
@@ -129,9 +129,10 @@ export default function ToolsPage() {
             <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0" role="group" aria-label="Filter tools by category">
               <Filter className="w-5 h-5 text-slate-500 flex-shrink-0" aria-hidden="true" />
               <button
+                type="button"
                 onClick={() => setSelectedCategory('all')}
                 aria-pressed={selectedCategory === 'all'}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black ${
                   selectedCategory === 'all'
                     ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                     : 'bg-slate-800/50 text-slate-400 border border-slate-700 hover:border-slate-600'
@@ -141,10 +142,11 @@ export default function ToolsPage() {
               </button>
               {CATEGORIES.map((cat) => (
                 <button
+                  type="button"
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   aria-pressed={selectedCategory === cat}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black ${
                     selectedCategory === cat
                       ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700 hover:border-slate-600'

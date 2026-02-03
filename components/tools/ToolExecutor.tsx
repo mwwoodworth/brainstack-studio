@@ -119,7 +119,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
           </div>
 
           {errors._general && (
-            <p className="mt-4 text-sm text-red-400">{errors._general}</p>
+            <p className="mt-4 text-sm text-red-400" role="alert" aria-live="polite">{errors._general}</p>
           )}
 
           <div className="flex gap-3 mt-6">
@@ -145,7 +145,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
                 </>
               )}
             </Button>
-            <Button variant="secondary" onClick={handleReset} aria-label="Reset to default values">
+            <Button type="button" variant="secondary" onClick={handleReset} aria-label="Reset to default values">
               <RotateCcw className="w-4 h-4" aria-hidden="true" />
             </Button>
           </div>
@@ -191,7 +191,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
               </div>
 
               {/* Summary */}
-              <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+              <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700" role="status" aria-live="polite">
                 <p className="text-slate-300">{result.summary}</p>
               </div>
 

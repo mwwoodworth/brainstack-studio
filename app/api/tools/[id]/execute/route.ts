@@ -89,11 +89,12 @@ export async function POST(
     });
   } catch (error) {
     console.error(`Tool execution error [${id}]:`, error);
+    // Don't expose internal error details in production
     return NextResponse.json(
       {
         success: false,
         error: 'Tool execution failed',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An error occurred while processing your request. Please check your inputs and try again.',
       },
       { status: 500 }
     );

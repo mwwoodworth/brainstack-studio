@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
 import { cn, copyToClipboard } from '@/lib/utils';
 
@@ -63,7 +63,7 @@ export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true
   const [isClient, setIsClient] = useState(false);
 
   // Prevent hydration mismatch by only highlighting on client
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
@@ -75,7 +75,7 @@ export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true
   };
 
   // Clean up the copied state after timeout
-  React.useEffect(() => {
+  useEffect(() => {
     if (!copied) return;
     const timer = setTimeout(() => setCopied(false), 2000);
     return () => clearTimeout(timer);
