@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
 import { cn, copyToClipboard } from '@/lib/utils';
 
@@ -47,6 +47,12 @@ function highlightCode(code: string, language: string): string {
 
 export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true, className }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Prevent hydration mismatch by only highlighting on client
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleCopy = async () => {
     const success = await copyToClipboard(code);
@@ -57,7 +63,8 @@ export function CodeBlock({ code, language = 'plaintext', showLineNumbers = true
   };
 
   const lines = code.split('\n');
-  const highlightedCode = highlightCode(code, language);
+  // Only apply highlighting after hydration to prevent mismatch
+  const highlightedCode = isClient ? highlightCode(code, language) : code;
 
   return (
     <div className={cn('group relative rounded-xl overflow-hidden bg-slate-900/80 border border-white/10', className)}>

@@ -7,6 +7,14 @@ export const metadata: Metadata = {
     'BrainStack Studio is the public interface for BrainOps, showcasing deterministic operational AI workflows without exposing proprietary systems.',
   keywords: ['Operational AI', 'Deterministic', 'AI Studio', 'Workflow Automation', 'BrainOps'],
   authors: [{ name: 'BrainOps' }],
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: 'BrainStack Studio - Operational AI, Built for Trust',
     description:
