@@ -67,9 +67,9 @@ export default function AboutPage() {
             </h1>
 
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-              BrainStack Studio is the public face of BrainOps — a calm, credible showcase of
-              operational AI capabilities without exposing proprietary systems. We focus on
-              specific problems, measurable value, and deterministic outcomes.
+              BrainStack Studio showcases BrainOps through deterministic workflow previews and
+              bounded solution demos. We focus on specific problems, measurable value, and
+              clear boundaries—without exposing proprietary infrastructure.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -115,20 +115,20 @@ export default function AboutPage() {
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">100%</div>
-                  <div className="text-slate-400">Deterministic Mode</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Deterministic</div>
+                  <div className="text-slate-400">Workflow Previews</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">0</div>
-                  <div className="text-slate-400">IP Leakage</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">IP-Safe</div>
+                  <div className="text-slate-400">Public Demos</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">1</div>
-                  <div className="text-slate-400">Unified Studio</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Unified</div>
+                  <div className="text-slate-400">Studio Experience</div>
                 </CardContent>
               </Card>
             </motion.div>

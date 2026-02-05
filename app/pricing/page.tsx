@@ -154,9 +154,10 @@ export default function PricingPage() {
 
       <section className="pb-20 px-6">
         <div className="max-w-5xl mx-auto text-center space-y-4">
-          <h2 className="text-3xl font-bold">Lead → Implementation Pipeline</h2>
+          <h2 className="text-3xl font-bold">From Exploration to Implementation</h2>
           <p className="text-slate-400">
-            High-intent users enter through Guided Explorer or Solutions, then move to scoped implementation.
+            Start with the Guided Explorer or a solution preview. When there&apos;s a clear fit, we scope a production
+            implementation with requirements, integration plan, acceptance criteria, and deployment support.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">

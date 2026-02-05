@@ -23,9 +23,9 @@ import { getFeaturedTools } from '@/lib/tools';
 
 const STATS = [
   { value: '5', label: 'Industries Supported' },
-  { value: 'Deterministic', label: 'Response Mode' },
+  { value: 'Deterministic', label: 'Workflow Previews' },
   { value: 'Confidence', label: 'Scored Outputs' },
-  { value: 'Zero IP Leak', label: 'Safe by Design' },
+  { value: 'IP-Safe', label: 'Public Demos' },
 ];
 
 const TRUST_MECHANISMS = [
@@ -92,9 +92,10 @@ export default function Home() {
               built for trust.
             </h1>
             <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-10">
-              BrainStack Studio is the public interface for BrainOps — a calm, credible showcase of
-              operational AI capabilities without exposing proprietary systems. We solve specific
-              industry problems, not “everything”.
+              BrainStack Studio is where teams explore operational AI workflows built on BrainOps.
+              Get deterministic previews, confidence-scored outputs, and decision trails—without
+              exposing proprietary infrastructure. Start with the Guided Explorer or browse
+              solutions, then move to a scoped implementation when there&apos;s a clear fit.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link href="/explorer">

@@ -39,8 +39,8 @@ export function Footer() {
               <span className="text-xl font-bold">BrainStack Studio</span>
             </Link>
             <p className="text-slate-400 text-sm mb-4 max-w-xs">
-              BrainStack Studio is the public interface for BrainOps — a calm, trustworthy showcase of operational AI
-              capabilities without exposing proprietary infrastructure.
+              BrainStack Studio showcases BrainOps through deterministic workflow demos and solution previews—focused
+              on security, clear boundaries, and measurable outcomes.
             </p>
             <div className="flex items-center gap-4">
               <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Visit our GitHub page">

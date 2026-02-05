@@ -3,10 +3,19 @@ import './globals.css';
 import { ClientProviders } from '@/components/ClientProviders';
 
 export const metadata: Metadata = {
-  title: 'BrainStack Studio - Operational AI, Built for Trust',
+  title: 'BrainStack Studio | Operational AI Workflows & Automation',
   description:
-    'BrainStack Studio is the public interface for BrainOps, showcasing deterministic operational AI workflows without exposing proprietary systems.',
-  keywords: ['Operational AI', 'Deterministic', 'AI Studio', 'Workflow Automation', 'BrainOps'],
+    'Explore deterministic operational AI workflows and automation tools built for reliability, auditability, and clear boundaries. Guided Explorer, solution previews, and scoped implementations.',
+  keywords: [
+    'Operational AI',
+    'Workflow Automation',
+    'Business Process Automation',
+    'Deterministic AI',
+    'Decision Trails',
+    'Audit Trails',
+    'BrainStack Studio',
+    'BrainOps',
+  ],
   authors: [{ name: 'BrainOps' }],
   icons: {
     icon: [
@@ -17,9 +26,9 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'BrainStack Studio - Operational AI, Built for Trust',
+    title: 'BrainStack Studio | Operational AI Workflows & Automation',
     description:
-      'Deterministic operational AI workflows with clear boundaries and confidence scoring.',
+      'Deterministic operational AI workflows with clear boundaries, confidence scoring, and audit-ready decision trails.',
     type: 'website',
     url: 'https://brainstackstudio.com',
     siteName: 'BrainStack Studio',
@@ -34,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BrainStack Studio - Operational AI, Built for Trust',
+    title: 'BrainStack Studio | Operational AI Workflows & Automation',
     description:
-      'Deterministic operational AI workflows with clear boundaries and confidence scoring.',
+      'Deterministic operational AI workflows with clear boundaries, confidence scoring, and audit-ready decision trails.',
     images: ['https://brainstackstudio.com/og-image.png'],
   },
 };
