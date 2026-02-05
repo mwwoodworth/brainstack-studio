@@ -18,28 +18,28 @@ import {
 
 const PRINCIPLES = [
   {
-    title: 'Deterministic Outputs',
-    description: 'Every response is bounded and generated from a controlled scaffold. No surprises.',
+    title: 'Controlled Automation',
+    description: 'Workflows run within explicit constraints, with clear inputs and outputs.',
   },
   {
-    title: 'Confidence & Uncertainty',
-    description: 'We score confidence and explicitly flag when more detail is required.',
+    title: 'Governance & Observability',
+    description: 'Runs are traceable and measurable, so teams can monitor performance and risk.',
   },
   {
-    title: 'Clear Boundaries',
-    description: 'BSS exposes capability facades, not proprietary infrastructure.',
+    title: 'Secure Integration',
+    description: 'Connect to real systems with least-privilege access and scoped integrations.',
   },
   {
-    title: 'Operational Safety',
-    description: 'Decision trails and audit-friendly summaries are always visible.',
+    title: 'Human-in-the-Loop',
+    description: 'People stay in control for exceptions and high-impact actions.',
   },
 ];
 
 const SAFETY_RAILS = [
-  'No internal agent names, orchestration logic, or system topology exposed.',
-  'No database schemas, internal tables, or infrastructure diagrams.',
-  'All outputs are example-grade and bounded to provided context.',
-  'Enterprise deployments require explicit scope and approval.',
+  'Public demos use safe examples and sanitized data.',
+  'Production deployments run behind authentication and role-based access.',
+  'Data access is scoped to explicit integrations and permissions.',
+  'High-impact actions can require approvals and audit trails.',
 ];
 
 export default function TechnologyPage() {
@@ -51,10 +51,10 @@ export default function TechnologyPage() {
         <div className="max-w-5xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Badge variant="primary" className="mb-4">Platform Trust</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Operational AI, without the engine room.</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Secure operational AI, built to ship.</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              BrainStack Studio is intentionally restrained. We show what is safe to show, and we keep
-              proprietary systems hidden. Trust is a design constraint, not an afterthought.
+              BrainOps is engineered for operational use: controlled automation, secure integration, and clear governance.
+              We prioritize safety, observability, and auditability so AI can be trusted in production.
             </p>
           </motion.div>
         </div>
@@ -105,15 +105,15 @@ export default function TechnologyPage() {
             <CardContent className="space-y-3 text-sm text-slate-300">
               <div className="flex gap-2">
                 <Eye className="w-4 h-4 text-cyan-400 mt-0.5" />
-                Deterministic workflow summaries and bounded outputs
+                Workflow summaries and realistic example outputs
               </div>
               <div className="flex gap-2">
                 <Eye className="w-4 h-4 text-cyan-400 mt-0.5" />
-                Confidence scores, uncertainty notes, and decision trails
+                Audit trails and run traces (inputs, decisions, results)
               </div>
               <div className="flex gap-2">
                 <Eye className="w-4 h-4 text-cyan-400 mt-0.5" />
-                Industry-specific capability previews (sandboxed)
+                Industry-specific previews and free operational tools
               </div>
               <div className="flex gap-2">
                 <Lock className="w-4 h-4 text-amber-300 mt-0.5" />
@@ -128,8 +128,7 @@ export default function TechnologyPage() {
         <div className="max-w-4xl mx-auto text-center space-y-4">
           <h2 className="text-3xl font-bold">Ready for deployment?</h2>
           <p className="text-slate-400">
-            We scope and deploy operational AI with clear guardrails, audited workflows, and
-            deterministic outputs.
+            We scope and deploy operational AI with clear guardrails, auditable workflows, and measurable outcomes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">

@@ -19,7 +19,7 @@ const VALUES = [
   {
     icon: Shield,
     title: 'Trust by Design',
-    description: 'We default to safety, boundaries, and explicit uncertainty.',
+    description: 'We default to safety, governance, and clear limits.',
   },
   {
     icon: Target,
@@ -28,8 +28,8 @@ const VALUES = [
   },
   {
     icon: ClipboardCheck,
-    title: 'Deterministic First',
-    description: 'Outputs are bounded, repeatable, and audit-friendly.',
+    title: 'Audit-Ready',
+    description: 'Outputs are traceable, reviewable, and designed for operators.',
   },
   {
     icon: Users,
@@ -40,7 +40,7 @@ const VALUES = [
 
 const MILESTONES = [
   { year: '2024', event: 'BrainOps operational AI framework initiated' },
-  { year: '2025', event: 'Industry pilots validated deterministic workflows' },
+  { year: '2025', event: 'Industry pilots validated production-ready operational workflows' },
   { year: '2026', event: 'BrainStack Studio launched as the public interface' },
 ];
 
@@ -67,9 +67,8 @@ export default function AboutPage() {
             </h1>
 
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
-              BrainStack Studio showcases BrainOps through deterministic workflow previews and
-              bounded solution demos. We focus on specific problems, measurable value, and
-              clear boundaries—without exposing proprietary infrastructure.
+              BrainStack Studio is a practical window into BrainOps—operational AI workflows, tools, and solution patterns.
+              We focus on specific problems, measurable value, and responsible deployment.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -94,11 +93,10 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-slate-400 mb-6">
                 We believe operational AI should be dependable, explainable, and safe to deploy.
-                BrainStack Studio shows what is possible without revealing internal infrastructure.
+                We build systems that integrate with real operations and stay governable over time.
               </p>
               <p className="text-lg text-slate-400">
-                Every workflow preview is deterministic, bounded, and built to reflect real
-                operational constraints.
+                Every preview is designed to be concrete and actionable—so teams can decide what to pilot and what to ship.
               </p>
             </motion.div>
 
@@ -109,26 +107,26 @@ export default function AboutPage() {
             >
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">5</div>
-                  <div className="text-slate-400">Industries Live</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Free</div>
+                  <div className="text-slate-400">Tools & Explorer</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">Deterministic</div>
-                  <div className="text-slate-400">Workflow Previews</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Scoped</div>
+                  <div className="text-slate-400">Pilot to Production</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">IP-Safe</div>
-                  <div className="text-slate-400">Public Demos</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Secure</div>
+                  <div className="text-slate-400">By Design</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
-                  <div className="text-4xl font-bold text-cyan-400 mb-2">Unified</div>
-                  <div className="text-slate-400">Studio Experience</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2">Audit</div>
+                  <div className="text-slate-400">Ready Outputs</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -211,22 +209,22 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold mb-6">The BrainOps Relationship</h2>
             <p className="text-lg text-slate-400 mb-8">
-              BrainStack Studio is the interface to BrainOps capabilities. We expose safe, bounded
-              facades while keeping internal orchestration private.
+              BrainStack Studio is how teams evaluate BrainOps. Explore workflows and tools publicly,
+              then engage for pilots and production deployments tailored to your environment.
             </p>
             <div className="grid md:grid-cols-2 gap-6 mb-10">
               <Card>
                 <CardContent className="text-center">
                   <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-                  <h3 className="font-semibold">Public Facade</h3>
-                  <p className="text-sm text-slate-400">Deterministic workflows and safe previews.</p>
+                  <h3 className="font-semibold">Public Studio</h3>
+                  <p className="text-sm text-slate-400">Workflows, tools, and solution patterns you can evaluate today.</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="text-center">
                   <HeartHandshake className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-                  <h3 className="font-semibold">Private Engine</h3>
-                  <p className="text-sm text-slate-400">Proprietary systems stay protected.</p>
+                  <h3 className="font-semibold">Production Delivery</h3>
+                  <p className="text-sm text-slate-400">Integrations, governance, and operational hardening delivered with your team.</p>
                 </CardContent>
               </Card>
             </div>

@@ -79,7 +79,7 @@ export default function SolutionDetailPage({ params }: Props) {
 
             <Card>
               <CardHeader>
-                <CardTitle>Outputs (Bounded)</CardTitle>
+                <CardTitle>Outputs</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 {solution.outputs.map((output) => (
@@ -93,9 +93,9 @@ export default function SolutionDetailPage({ params }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Sandbox Preview</CardTitle>
+              <CardTitle>Example Preview</CardTitle>
               <p className="text-sm text-slate-400">
-                Semi-live preview using deterministic scaffolds. No proprietary logic exposed.
+                Safe example preview using sanitized inputs and outputs. Production implementations are scoped to your requirements.
               </p>
             </CardHeader>
             <CardContent className="grid lg:grid-cols-3 gap-6">
@@ -126,7 +126,7 @@ export default function SolutionDetailPage({ params }: Props) {
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <div className="text-xs text-slate-400 mb-2">Deterministic Output</div>
+                  <div className="text-xs text-slate-400 mb-2">Example Output</div>
                   <ul className="space-y-2 text-sm text-slate-200">
                     {preview.output.map((line) => (
                       <li key={line} className="flex gap-2">
@@ -156,7 +156,7 @@ export default function SolutionDetailPage({ params }: Props) {
 
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link href="/pricing">Subscribe</Link>
+              <Link href="/pricing">View Pricing</Link>
             </Button>
             <Button asChild variant="secondary" size="lg">
               <Link href="/contact">Request Implementation</Link>

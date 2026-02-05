@@ -25,8 +25,8 @@ export default function SolutionsPage() {
             <Badge variant="primary" className="mb-4">Solution Gallery</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Operational AI, by industry.</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Each solution is a bounded, deterministic preview. We show what is safe to show, and we
-              keep proprietary systems abstracted.
+              Explore operational AI workflows tailored to real industries. Each solution shows what it does,
+              what it needs, and how a production implementation comes together.
             </p>
           </motion.div>
 

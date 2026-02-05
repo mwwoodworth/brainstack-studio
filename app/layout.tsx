@@ -2,21 +2,32 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ClientProviders } from '@/components/ClientProviders';
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
+
 export const metadata: Metadata = {
-  title: 'BrainStack Studio | Operational AI Workflows & Automation',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'BrainStack Studio | Operational AI & Enterprise Automation',
+    template: '%s | BrainStack Studio',
+  },
   description:
-    'Explore deterministic operational AI workflows and automation tools built for reliability, auditability, and clear boundaries. Guided Explorer, solution previews, and scoped implementations.',
+    'Move beyond chatbots. BrainStack Studio designs operational AI workflows and automation that integrate with how your business runs—secure, governed, and built for measurable results.',
   keywords: [
+    'Operational AI Platform',
     'Operational AI',
+    'Enterprise Automation',
     'Workflow Automation',
     'Business Process Automation',
-    'Deterministic AI',
-    'Decision Trails',
+    'AI Governance',
+    'AI Agents',
     'Audit Trails',
     'BrainStack Studio',
     'BrainOps',
   ],
   authors: [{ name: 'BrainOps' }],
+  alternates: {
+    canonical: siteUrl,
+  },
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
@@ -26,27 +37,27 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'BrainStack Studio | Operational AI Workflows & Automation',
+    title: 'BrainStack Studio | Operational AI & Enterprise Automation',
     description:
-      'Deterministic operational AI workflows with clear boundaries, confidence scoring, and audit-ready decision trails.',
+      'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
     type: 'website',
-    url: 'https://brainstackstudio.com',
+    url: siteUrl,
     siteName: 'BrainStack Studio',
     images: [
       {
-        url: 'https://brainstackstudio.com/og-image.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'BrainStack Studio - Operational AI, Built for Trust',
+        alt: 'BrainStack Studio - Operational AI for the Real World',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BrainStack Studio | Operational AI Workflows & Automation',
+    title: 'BrainStack Studio | Operational AI & Enterprise Automation',
     description:
-      'Deterministic operational AI workflows with clear boundaries, confidence scoring, and audit-ready decision trails.',
-    images: ['https://brainstackstudio.com/og-image.png'],
+      'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
+    images: ['/og-image.png'],
   },
 };
 

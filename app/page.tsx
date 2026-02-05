@@ -22,50 +22,50 @@ import { ToolCard } from '@/components/tools';
 import { getFeaturedTools } from '@/lib/tools';
 
 const STATS = [
-  { value: '5', label: 'Industries Supported' },
-  { value: 'Deterministic', label: 'Workflow Previews' },
-  { value: 'Confidence', label: 'Scored Outputs' },
-  { value: 'IP-Safe', label: 'Public Demos' },
+  { value: 'Free', label: 'Tools & Explorer' },
+  { value: 'Scoped', label: 'Pilot to Production' },
+  { value: 'Audit-Ready', label: 'Decision Traces' },
+  { value: 'Secure', label: 'By Design' },
 ];
 
 const TRUST_MECHANISMS = [
   {
-    title: 'Confidence Scoring',
-    description: 'Every output includes a confidence score with explicit uncertainty signaling.',
+    title: 'Guardrails & Approvals',
+    description: 'Automation runs within explicit rules and can require human approval for high-impact actions.',
   },
   {
-    title: 'Deterministic Outputs',
-    description: 'Bounded results that do not hallucinate or over-promise.',
+    title: 'Audit-Ready Traces',
+    description: 'Every run captures inputs, outputs, and key decisions so teams can review and improve.',
   },
   {
-    title: 'Decision Trails',
-    description: 'User-visible summaries that show how conclusions are formed.',
+    title: 'Secure by Default',
+    description: "Your data stays isolated. We follow least-privilege access and don’t use your proprietary data to train public models.",
   },
   {
-    title: 'Clear Boundaries',
-    description: 'We show what is safe to show and keep proprietary infrastructure hidden.',
+    title: 'Measurable Outcomes',
+    description: 'We focus on cycle time, error reduction, and revenue impact—so value is visible.',
   },
 ];
 
 const HOW_IT_WORKS = [
   {
-    title: 'Context Intake',
-    description: 'Industry, role, and pain-point selection.',
+    title: 'Discover',
+    description: 'Define the workflow, inputs, outputs, and constraints.',
     icon: Target,
   },
   {
-    title: 'Solution Mapping',
-    description: 'Deterministic workflow and automation preview.',
+    title: 'Preview',
+    description: 'See a realistic walkthrough of what the system would do.',
     icon: ClipboardList,
   },
   {
-    title: 'Value Demonstration',
-    description: 'Time saved, errors prevented, decision latency reduced.',
+    title: 'Pilot',
+    description: 'Run a scoped pilot with guardrails and measurable results.',
     icon: Zap,
   },
   {
-    title: 'Deployment Paths',
-    description: 'Subscribe, request implementation, or unlock advanced tools.',
+    title: 'Deploy',
+    description: 'Integrate, monitor, and harden for production operations.',
     icon: Shield,
   },
 ];
@@ -84,29 +84,28 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <Badge variant="primary" className="mb-6">
-              BrainStack Studio
+              Operational Intelligence
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              Operational AI solutions,
+              Operational AI
               <br />
-              built for trust.
+              for the real world.
             </h1>
             <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-10">
-              BrainStack Studio is where teams explore operational AI workflows built on BrainOps.
-              Get deterministic previews, confidence-scored outputs, and decision trails—without
-              exposing proprietary infrastructure. Start with the Guided Explorer or browse
-              solutions, then move to a scoped implementation when there&apos;s a clear fit.
+              BrainStack Studio helps teams turn real workflows into reliable AI automation and decision support.
+              Start with the Guided Explorer and free tools, then move to a scoped pilot and production deployment
+              when there&apos;s a clear fit.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link href="/explorer">
+              <Link href="/contact">
                 <Button size="xl">
-                  Run Guided Explorer
+                  Request Implementation
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>
               <Link href="/solutions">
                 <Button variant="secondary" size="xl">
-                  View Solutions
+                  Explore Solutions
                 </Button>
               </Link>
             </div>
@@ -131,9 +130,9 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Guided AI Explorer</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">From Problem to Production</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              A deterministic flow that maps your operational pain to an actionable AI workflow.
+              A guided path that turns operational complexity into an implementation-ready workflow.
             </p>
           </motion.div>
 
@@ -210,7 +209,7 @@ export default function Home() {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Solution Gallery</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Specific, believable, and safe to share. Each solution is a bounded preview.
+              Practical workflows built for real teams. See what it does, what it needs, and how it ships.
             </p>
           </motion.div>
 
@@ -258,7 +257,7 @@ export default function Home() {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Trust & Reliability</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              BrainStack Studio is designed to show what AI can do without hiding its limits.
+              Operational AI needs controls, not vibes. We build for governance, safety, and repeatability.
             </p>
           </motion.div>
 
@@ -281,18 +280,18 @@ export default function Home() {
       {/* Teaser */}
       <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto text-center space-y-4">
-          <Badge variant="warning">Coming Soon</Badge>
-          <h2 className="text-3xl md:text-4xl font-bold">Prompt-to-Operational System</h2>
+          <Badge variant="warning">Pilot Program</Badge>
+          <h2 className="text-3xl md:text-4xl font-bold">Operational Automation, End to End</h2>
           <p className="text-slate-400 max-w-3xl mx-auto">
-            We are building AI that can assemble operational SaaS systems from intent — safely,
-            deterministically, and responsibly. This capability is not yet public.
+            We&apos;re expanding BrainOps into deeper build-and-run capabilities for high-impact operations.
+            If you&apos;re exploring enterprise-scale automation, join the pilot and help shape what ships next.
           </p>
           <div className="flex justify-center gap-4 mt-6">
             <Link href="/contact">
-              <Button size="lg">Join the Pilot List</Button>
+              <Button size="lg">Join the Pilot</Button>
             </Link>
             <Link href="/pricing">
-              <Button variant="secondary" size="lg">View Plans</Button>
+              <Button variant="secondary" size="lg">View Pricing</Button>
             </Link>
           </div>
         </div>

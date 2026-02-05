@@ -15,8 +15,8 @@ export default function TermsPage() {
           <div>
             <h1 className="text-4xl font-bold mb-4">Terms of Use</h1>
             <p className="text-slate-400">
-              BrainStack Studio provides deterministic previews of operational AI capabilities. By
-              using this site, you agree to these basic terms.
+              BrainStack Studio provides example previews of operational AI capabilities. By using this site, you agree
+              to these basic terms.
             </p>
           </div>
 
@@ -41,8 +41,8 @@ export default function TermsPage() {
                 <h2 className="text-lg font-semibold">Disclaimers</h2>
               </div>
               <p className="text-sm text-slate-300">
-                Outputs are deterministic previews and are not legal, financial, or operational
-                advice. Production deployments require a scoped agreement with BrainOps.
+                Outputs are example previews and are not legal, financial, or operational advice. Production deployments
+                require a scoped agreement with BrainOps.
               </p>
             </CardContent>
           </Card>

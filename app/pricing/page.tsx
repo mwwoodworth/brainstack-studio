@@ -12,27 +12,27 @@ import { Check, Lock, ArrowRight } from 'lucide-react';
 const PLANS = [
   {
     name: 'Free',
-    description: 'Guided Explorer with deterministic outputs',
+    description: 'Guided Explorer + free operational tools',
     price: '$0',
     period: ' / forever',
     features: [
-      'Guided AI Explorer (bounded)',
+      'Guided Explorer',
       'Solution previews',
-      'Confidence scoring + decision trail',
-      'Local-only saved sessions',
+      'Audit-ready run summaries',
+      'Local saved sessions',
     ],
     cta: 'Start Free',
     href: '/explorer',
   },
   {
     name: 'Pro',
-    description: 'Advanced workflows + saved sessions',
+    description: 'Advanced workflows + collaboration',
     price: '$99',
     period: ' / month',
     features: [
       'Advanced workflow templates',
       'Team-shared saved sessions',
-      'Exportable decision trails',
+      'Exportable run summaries',
       'Priority support',
     ],
     cta: 'Subscribe to Pro',
@@ -41,13 +41,13 @@ const PLANS = [
   },
   {
     name: 'Enterprise',
-    description: 'Custom ops solutions + deployment',
+    description: 'Custom implementation + deployment',
     price: 'Custom',
     period: '',
     features: [
       'Dedicated implementation team',
       'System integration & onboarding',
-      'Compliance-ready audit trails',
+      'Governance and audit trails',
       'SLA-backed reliability',
     ],
     cta: 'Request Implementation',
@@ -63,7 +63,7 @@ const CAPABILITIES = [
   },
   {
     name: 'Process Automation Builder',
-    description: 'Deterministic workflow builders with guardrails.',
+    description: 'Workflow builders with guardrails.',
     price: '$2,000 / module',
   },
   {
@@ -89,8 +89,8 @@ export default function PricingPage() {
             <Badge variant="primary" className="mb-4">Pricing</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Revenue paths without pressure.</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Start free. Upgrade when the workflows prove value. Enterprise deployments are scoped
-              with clear boundaries and deterministic outcomes.
+              Start with free tools and exploration. When you&apos;re ready to ship, choose a scoped pilot or an
+              implementation engagement built around outcomes and production requirements.
             </p>
           </motion.div>
         </div>

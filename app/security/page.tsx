@@ -16,8 +16,8 @@ export default function SecurityPage() {
             <h1 className="text-4xl font-bold mb-4">Security</h1>
             <p className="text-slate-400">
               BrainStack Studio is designed to demonstrate capability without exposing proprietary
-              infrastructure. Security is enforced through strict boundaries and deterministic
-              scaffolding.
+              infrastructure. Security is enforced through strict boundaries, scoped access, and
+              auditable operations.
             </p>
           </div>
 
@@ -30,7 +30,7 @@ export default function SecurityPage() {
               <ul className="text-sm text-slate-300 space-y-2">
                 <li>No internal agent names or orchestration logic exposed.</li>
                 <li>No database schemas, infrastructure maps, or service topology shown.</li>
-                <li>Deterministic outputs prevent data leakage from hidden sources.</li>
+                <li>Guardrails and scoped data access help prevent data leakage.</li>
               </ul>
             </CardContent>
           </Card>

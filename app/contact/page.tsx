@@ -69,8 +69,7 @@ export default function ContactPage() {
               Request an implementation.
             </h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Give us your context. We will respond with a scoped, deterministic plan and the safest
-              path to deployment.
+              Share your context. We&apos;ll respond with a scoped implementation plan and the safest path to deployment.
             </p>
           </motion.div>
 
