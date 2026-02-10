@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
 const WEBHOOK_URL = process.env.BSS_LEAD_WEBHOOK_URL;
+const WEBHOOK_API_KEY = process.env.BSS_LEAD_API_KEY;
 
 // Input validation constants
 const MAX_FIELD_LENGTHS = {
@@ -83,23 +84,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
     }
 
+    // Build payload matching BrainOps Agents /revenue/leads/capture schema
+    // Required: email, name, industry, source
+    // Optional: company, phone, custom_fields
     const payload = {
       name,
       email,
-      company,
       industry,
-      role,
-      painPoint,
-      budget,
-      message,
-      submittedAt: new Date().toISOString(),
       source: 'bss-enterprise-intake',
+      company,
+      custom_fields: {
+        role,
+        painPoint,
+        budget,
+        message,
+        submittedAt: new Date().toISOString(),
+      },
     };
 
     if (WEBHOOK_URL) {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (WEBHOOK_API_KEY) {
+        headers['X-API-Key'] = WEBHOOK_API_KEY;
+      }
+
       const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(payload),
       });
 
