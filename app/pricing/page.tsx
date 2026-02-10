@@ -1,171 +1,278 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Check, Lock, ArrowRight } from 'lucide-react';
+import {
+  Check,
+  ArrowRight,
+  Zap,
+  Shield,
+  Users,
+  BarChart3,
+  Loader2,
+  Star,
+  Building2,
+  Rocket,
+} from 'lucide-react';
 
 const PLANS = [
   {
     name: 'Free',
-    description: 'Guided Explorer + free operational tools',
+    description: 'Explore operational AI at your own pace',
     price: '$0',
-    period: ' / forever',
+    period: 'forever',
+    icon: Rocket,
     features: [
-      'Guided Explorer',
-      'Solution previews',
+      'Guided Explorer with 12 industries',
+      '15 interactive business tools',
+      'Solution gallery with previews',
       'Audit-ready run summaries',
       'Local saved sessions',
     ],
     cta: 'Start Free',
     href: '/explorer',
+    stripeplan: null,
   },
   {
     name: 'Pro',
-    description: 'Advanced workflows + collaboration',
+    description: 'For teams ready to operationalize AI',
     price: '$99',
-    period: ' / month',
+    period: '/month',
+    icon: Star,
     features: [
+      'Everything in Free, plus:',
       'Advanced workflow templates',
       'Team-shared saved sessions',
-      'Exportable run summaries',
-      'Priority support',
+      'Exportable run summaries (PDF/CSV)',
+      'Priority support (24hr SLA)',
+      'API access for integrations',
+      'Custom industry configurations',
     ],
     cta: 'Subscribe to Pro',
-    href: '/contact',
+    href: null,
+    stripeplan: 'pro',
     popular: true,
   },
   {
     name: 'Enterprise',
-    description: 'Custom implementation + deployment',
+    description: 'Custom implementation and deployment',
     price: 'Custom',
-    period: '',
+    period: 'per engagement',
+    icon: Building2,
     features: [
+      'Everything in Pro, plus:',
       'Dedicated implementation team',
-      'System integration & onboarding',
-      'Governance and audit trails',
-      'SLA-backed reliability',
+      'System integration and onboarding',
+      'Custom governance and audit trails',
+      'SLA-backed reliability guarantees',
+      'White-label deployment option',
+      'On-premise / VPC available',
     ],
     cta: 'Request Implementation',
     href: '/contact',
+    stripeplan: null,
   },
 ];
 
-const CAPABILITIES = [
+const VALUE_PROPS = [
   {
-    name: 'Advanced Forecasting',
-    description: '13-week cash flow, demand forecasting, and scenario sensitivity.',
-    price: '$1,500 / module',
+    icon: BarChart3,
+    title: 'Measurable ROI',
+    description: 'Every workflow shows projected time saved, error reduction, and revenue impact before you commit.',
   },
   {
-    name: 'Process Automation Builder',
-    description: 'Workflow builders with guardrails.',
-    price: '$2,000 / module',
+    icon: Shield,
+    title: 'Audit-Ready',
+    description: 'Full decision trails and run summaries that satisfy compliance and governance requirements.',
   },
   {
-    name: 'Compliance Logic Pack',
-    description: 'Audit-ready controls and exception handling.',
-    price: '$1,200 / module',
+    icon: Users,
+    title: 'Team Collaboration',
+    description: 'Share sessions, templates, and insights across your organization with role-based access.',
   },
   {
-    name: 'Scenario Modeling',
-    description: 'Operational what-if modeling with safe constraints.',
-    price: '$1,800 / module',
+    icon: Zap,
+    title: 'No Lock-In',
+    description: 'Cancel anytime. Export your data. We earn your business every month through results, not contracts.',
   },
 ];
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState<string | null>(null);
+
+  async function handleCheckout(plan: string) {
+    setLoading(plan);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error('Checkout error:', data.error);
+        setLoading(null);
+      }
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      setLoading(null);
+    }
+  }
+
   return (
     <main id="main-content" className="min-h-screen">
       <Navigation />
 
-      <section className="pt-28 pb-16 px-6">
+      {/* Hero */}
+      <section className="pt-28 pb-12 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Badge variant="primary" className="mb-4">Pricing</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Revenue paths without pressure.</h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              Start with free tools and exploration. When you&apos;re ready to ship, choose a scoped pilot or an
-              implementation engagement built around outcomes and production requirements.
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Start free. Scale when ready.
+            </h1>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              No credit card for free tier. No lock-in contracts.
+              Upgrade to Pro when you need advanced workflows, team collaboration, and priority support.
             </p>
           </motion.div>
         </div>
       </section>
 
+      {/* Plans */}
       <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
-          {PLANS.map((plan) => (
-            <Card key={plan.name} className={plan.popular ? 'border-cyan-500 ring-1 ring-cyan-500' : ''}>
-              <CardHeader>
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+          {PLANS.map((plan, idx) => (
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+            >
+              <Card className={`h-full flex flex-col ${plan.popular
+                ? 'border-cyan-500 ring-2 ring-cyan-500/30 relative'
+                : ''
+              }`}>
                 {plan.popular && (
-                  <Badge variant="primary" className="w-fit">Most Chosen</Badge>
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge variant="primary" className="shadow-lg shadow-cyan-500/20">
+                      Most Popular
+                    </Badge>
+                  </div>
                 )}
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                <p className="text-sm text-slate-400">{plan.description}</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-3xl font-bold">
-                  {plan.price}
-                  <span className="text-sm text-slate-400">{plan.period}</span>
-                </div>
-                <ul className="space-y-2 text-sm text-slate-300">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-2">
-                      <Check className="w-4 h-4 text-emerald-400 mt-0.5" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button asChild size="lg" className="w-full">
-                  <Link href={plan.href}>
-                    {plan.cta}
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'
+                    }`}>
+                      <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-400'}`} />
+                    </div>
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                  </div>
+                  <p className="text-sm text-slate-400">{plan.description}</p>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="text-sm text-slate-400 ml-1">{plan.period}</span>
+                  </div>
+
+                  <ul className="space-y-3 text-sm flex-1">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex gap-2.5">
+                        <Check className={`w-4 h-4 mt-0.5 shrink-0 ${
+                          feature.startsWith('Everything') ? 'text-cyan-400' : 'text-emerald-400'
+                        }`} />
+                        <span className={feature.startsWith('Everything') ? 'text-cyan-300 font-medium' : 'text-slate-300'}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-6">
+                    {plan.stripeplan ? (
+                      <Button
+                        size="lg"
+                        className="w-full"
+                        onClick={() => handleCheckout(plan.stripeplan!)}
+                        disabled={loading !== null}
+                      >
+                        {loading === plan.stripeplan ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            {plan.cta}
+                            <ArrowRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button asChild size="lg" className="w-full" variant={plan.popular ? 'primary' : 'secondary'}>
+                        <Link href={plan.href!}>
+                          {plan.cta}
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </section>
 
-      <section className="pb-20 px-6 bg-white/[0.02]">
+      {/* Value Props */}
+      <section className="pb-20 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <Lock className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-2xl font-bold">Pay-per-capability</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {CAPABILITIES.map((capability) => (
-              <Card key={capability.name}>
-                <CardContent>
-                  <h3 className="font-semibold text-lg">{capability.name}</h3>
-                  <p className="text-sm text-slate-400 mt-2">{capability.description}</p>
-                  <div className="mt-4 text-sm font-semibold text-cyan-300">{capability.price}</div>
-                </CardContent>
-              </Card>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {VALUE_PROPS.map((prop, idx) => (
+              <motion.div
+                key={prop.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="h-full">
+                  <CardContent>
+                    <prop.icon className="w-8 h-8 text-cyan-400 mb-3" />
+                    <h3 className="font-semibold mb-1">{prop.title}</h3>
+                    <p className="text-sm text-slate-400">{prop.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* FAQ / CTA */}
       <section className="pb-20 px-6">
-        <div className="max-w-5xl mx-auto text-center space-y-4">
-          <h2 className="text-3xl font-bold">From Exploration to Implementation</h2>
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <h2 className="text-3xl font-bold">Ready to operationalize AI?</h2>
           <p className="text-slate-400">
-            Start with the Guided Explorer or a solution preview. When there&apos;s a clear fit, we scope a production
-            implementation with requirements, integration plan, acceptance criteria, and deployment support.
+            Start with the free Explorer and tools. When you see the value, Pro gives you the power
+            to scale workflows across your entire team.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
-              <Link href="/contact">Request Implementation</Link>
-            </Button>
-            <Button asChild variant="secondary" size="lg">
-              <Link href="/solutions">Explore Solutions</Link>
-            </Button>
+            <Link href="/explorer">
+              <Button size="lg">Try Free Explorer</Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="secondary" size="lg">Talk to Sales</Button>
+            </Link>
           </div>
         </div>
       </section>

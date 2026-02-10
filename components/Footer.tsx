@@ -1,18 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { Brain, Github, Twitter, Linkedin } from 'lucide-react';
+import { Brain, Github, Linkedin } from 'lucide-react';
 
 const FOOTER_LINKS = {
   Product: [
     { label: 'Guided Explorer', href: '/explorer' },
+    { label: 'Tools', href: '/tools' },
     { label: 'Solutions', href: '/solutions' },
     { label: 'Pricing', href: '/pricing' },
-    { label: 'Enterprise Intake', href: '/contact' },
   ],
   Resources: [
     { label: 'Documentation', href: '/docs' },
-    { label: 'API Facades', href: '/api-docs' },
+    { label: 'API Reference', href: '/api-docs' },
     { label: 'Platform Trust', href: '/technology' },
     { label: 'Implementation Guide', href: '/docs#implementation' },
   ],
@@ -39,17 +39,14 @@ export function Footer() {
               <span className="text-xl font-bold">BrainStack Studio</span>
             </Link>
             <p className="text-slate-400 text-sm mb-4 max-w-xs">
-              BrainStack Studio is where teams evaluate BrainOps: operational AI workflows, tools, and implementation
-              patterns—built for security, governance, and measurable outcomes.
+              Operational AI that automates real workflows with governance, audit trails,
+              and measurable outcomes. Part of the BrainOps AI Operating System.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Visit our GitHub page">
+              <a href="https://github.com/mwwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="BrainOps on GitHub">
                 <Github className="w-5 h-5" aria-hidden="true" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Visit our Twitter page">
-                <Twitter className="w-5 h-5" aria-hidden="true" />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Visit our LinkedIn page">
+              <a href="https://linkedin.com/in/mattwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Matt Woodworth on LinkedIn">
                 <Linkedin className="w-5 h-5" aria-hidden="true" />
               </a>
             </div>
@@ -78,7 +75,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-400">
-            © {new Date().getFullYear()} BrainStack Studio. Part of the BrainOps AI Operating System.
+            &copy; {new Date().getFullYear()} BrainOps. All rights reserved.
           </p>
           <p className="text-sm text-slate-500">
             Operational AI, built for trust.
