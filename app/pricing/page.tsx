@@ -117,6 +117,8 @@ export default function PricingPage() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.authRedirect) {
+        window.location.href = data.authRedirect;
       } else {
         console.error('Checkout error:', data.error);
         setLoading(null);

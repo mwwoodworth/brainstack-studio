@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-01-28.clover',
@@ -23,10 +24,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
 
+    // Get authenticated user
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
     const origin = request.headers.get('origin') || 'https://brainstack-studio.vercel.app';
+
+    // If not logged in, return auth redirect
+    if (!user) {
+      return NextResponse.json({
+        error: 'Authentication required',
+        authRedirect: `/auth?redirect=/pricing&plan=${plan}`,
+      }, { status: 401 });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
+      customer_email: user.email,
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout/cancel`,
@@ -35,6 +49,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         source: 'brainstack-studio',
         plan,
+        user_id: user.id,
       },
     });
 

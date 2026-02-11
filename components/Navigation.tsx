@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Brain, Menu, X } from 'lucide-react';
+import { Brain, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/Button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const NAV_LINKS = [
   { href: '/explorer', label: 'Explorer' },
@@ -20,6 +21,7 @@ const NAV_LINKS = [
 export function Navigation() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, loading, signOut } = useAuth();
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/10">
@@ -49,14 +51,33 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons — Auth-aware */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/pricing">
-              <Button variant="ghost" size="sm">Subscribe</Button>
-            </Link>
-            <Link href="/contact">
-              <Button size="sm">Request Implementation</Button>
-            </Link>
+            {loading ? (
+              <div className="w-20 h-8" />
+            ) : user ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth">
+                  <Button variant="ghost" size="sm">Sign In</Button>
+                </Link>
+                <Link href="/pricing">
+                  <Button size="sm">Get Pro</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -99,12 +120,25 @@ export function Navigation() {
               </Link>
             ))}
             <div className="pt-2 border-t border-white/10 flex gap-2">
-              <Link href="/pricing" className="flex-1">
-                <Button variant="secondary" className="w-full" size="sm">Subscribe</Button>
-              </Link>
-              <Link href="/contact" className="flex-1">
-                <Button className="w-full" size="sm">Request Implementation</Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="secondary" className="w-full" size="sm">Dashboard</Button>
+                  </Link>
+                  <Button className="flex-1" size="sm" onClick={() => { signOut(); setIsMenuOpen(false); }}>
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="secondary" className="w-full" size="sm">Sign In</Button>
+                  </Link>
+                  <Link href="/pricing" className="flex-1" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full" size="sm">Get Pro</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
