@@ -54,18 +54,24 @@ export async function POST(request: NextRequest) {
 
   const supabase = createServiceRoleClient();
 
-  // Idempotency check
-  const { data: existing } = await supabase
+  // Atomic dedup: upsert with ignoreDuplicates so only the first writer claims the event
+  const { data: claimed } = await supabase
     .from("bss_webhook_events")
-    .select("id, status")
-    .eq("id", event.id)
+    .upsert(
+      {
+        id: event.id,
+        payload: event.data.object as object,
+        status: "PROCESSING",
+      },
+      { onConflict: "id", ignoreDuplicates: true }
+    )
+    .select("id")
     .single();
 
-  if (existing?.status === "PROCESSED") {
+  if (!claimed) {
+    // Another process already claimed this event — skip
     return NextResponse.json({ received: true, deduplicated: true });
   }
-
-  await logWebhookEvent(supabase, event.id, event.data.object as object, "PROCESSING");
 
   try {
     switch (event.type) {
