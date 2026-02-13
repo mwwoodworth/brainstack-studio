@@ -2,9 +2,11 @@ import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-01-28.clover',
-});
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2026-01-28.clover',
+  });
+}
 
 const PRICE_MAP: Record<string, string | undefined> = {
   pro: process.env.STRIPE_PRICE_PRO,
@@ -38,6 +40,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer_email: user.email,
