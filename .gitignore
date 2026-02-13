@@ -12,3 +12,7 @@ tsconfig.tsbuildinfo
 discovery_script_v2.py
 *.pyc
 __pycache__/
+
+# Playwright test artifacts
+test-results/
+playwright-report/
