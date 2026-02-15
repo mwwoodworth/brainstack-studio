@@ -126,7 +126,7 @@ export default function Home() {
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               AI that runs your
               <br />
-              <span className="text-gradient">operations</span>, not your mouth.
+              <span className="text-gradient">operations</span>, end-to-end.
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-10">
               BrainStack Studio turns real workflows into reliable AI automation.
