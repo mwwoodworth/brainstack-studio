@@ -57,7 +57,7 @@ export default function SolutionDetailPage({ params }: Props) {
             className="space-y-4"
           >
             <h1 className="text-4xl md:text-5xl font-bold">{solution.name}</h1>
-            <p className="text-lg text-slate-400 max-w-3xl">{solution.problem}</p>
+            <p className="text-lg text-slate-300 max-w-3xl">{solution.problem}</p>
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -94,7 +94,7 @@ export default function SolutionDetailPage({ params }: Props) {
           <Card>
             <CardHeader>
               <CardTitle>Example Preview</CardTitle>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-300">
                 Safe example preview using sanitized inputs and outputs. Production implementations are scoped to your requirements.
               </p>
             </CardHeader>
@@ -110,7 +110,7 @@ export default function SolutionDetailPage({ params }: Props) {
                     className={`w-full text-left px-4 py-3 rounded-lg border transition focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-900 ${
                       activeStep === index
                         ? 'border-cyan-500 bg-cyan-500/10 text-cyan-200'
-                        : 'border-white/10 text-slate-400 hover:text-white hover:bg-white/5'
+                        : 'border-white/10 text-slate-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <div className="text-sm font-semibold">{step.title}</div>
@@ -121,12 +121,12 @@ export default function SolutionDetailPage({ params }: Props) {
 
               <div className="lg:col-span-2 space-y-4">
                 <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <div className="text-xs text-slate-400 mb-2">Input</div>
+                  <div className="text-xs text-slate-300 mb-2">Input</div>
                   <p className="text-sm text-slate-200">{preview.input}</p>
                 </div>
 
                 <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                  <div className="text-xs text-slate-400 mb-2">Example Output</div>
+                  <div className="text-xs text-slate-300 mb-2">Example Output</div>
                   <ul className="space-y-2 text-sm text-slate-200">
                     {preview.output.map((line) => (
                       <li key={line} className="flex gap-2">

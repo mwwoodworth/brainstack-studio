@@ -52,7 +52,7 @@ export default function TechnologyPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Badge variant="primary" className="mb-4">Platform Trust</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Secure operational AI, built to ship.</h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               BrainOps is engineered for operational use: controlled automation, secure integration, and clear governance.
               We prioritize safety, observability, and auditability so AI can be trusted in production.
             </p>
@@ -68,7 +68,7 @@ export default function TechnologyPage() {
                 <Target className="w-6 h-6 text-cyan-400 mt-1" />
                 <div>
                   <h3 className="font-semibold">{principle.title}</h3>
-                  <p className="text-sm text-slate-400">{principle.description}</p>
+                  <p className="text-sm text-slate-300">{principle.description}</p>
                 </div>
               </CardContent>
             </Card>
@@ -127,7 +127,7 @@ export default function TechnologyPage() {
       <section className="pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-4">
           <h2 className="text-3xl font-bold">Ready for deployment?</h2>
-          <p className="text-slate-400">
+          <p className="text-slate-300">
             We scope and deploy operational AI with clear guardrails, auditable workflows, and measurable outcomes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

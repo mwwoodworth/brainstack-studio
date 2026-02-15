@@ -14,7 +14,7 @@ export default function SecurityPage() {
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
             <h1 className="text-4xl font-bold mb-4">Security</h1>
-            <p className="text-slate-400">
+            <p className="text-slate-300">
               BrainStack Studio is designed to demonstrate capability without exposing proprietary
               infrastructure. Security is enforced through strict boundaries, scoped access, and
               auditable operations.

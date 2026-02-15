@@ -24,7 +24,7 @@ export default function SolutionsPage() {
           >
             <Badge variant="primary" className="mb-4">Solution Gallery</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Operational AI, by industry.</h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               Explore operational AI workflows tailored to real industries. Each solution shows what it does,
               what it needs, and how a production implementation comes together.
             </p>
@@ -41,7 +41,7 @@ export default function SolutionsPage() {
                 <Card className="h-full">
                   <CardHeader>
                     <CardTitle className="text-2xl">{solution.name}</CardTitle>
-                    <p className="text-sm text-slate-400">{solution.industry}</p>
+                    <p className="text-sm text-slate-300">{solution.industry}</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-sm text-slate-300">{solution.problem}</p>

@@ -128,7 +128,7 @@ export default function Home() {
               <br />
               <span className="text-gradient">operations</span>, not your mouth.
             </h1>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-10">
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-10">
               BrainStack Studio turns real workflows into reliable AI automation.
               Deterministic. Auditable. Measurable. Start free with 15 business tools and
               a guided explorer across 12 industries.
@@ -161,7 +161,7 @@ export default function Home() {
                     <stat.icon className="w-5 h-5 text-cyan-400" />
                     <span className="text-3xl font-bold text-white">{stat.value}</span>
                   </div>
-                  <div className="text-sm text-slate-400">{stat.label}</div>
+                  <div className="text-sm text-slate-300">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -194,7 +194,7 @@ export default function Home() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <p className="text-slate-400">
+            <p className="text-slate-300">
               BrainStack Studio was built to solve exactly these problems. <span className="text-cyan-400">Here&apos;s how.</span>
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function Home() {
           >
             <Badge variant="default" className="mb-4">How It Works</Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">From Problem to Production</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               A guided path that turns operational complexity into measurable automation.
             </p>
           </motion.div>
@@ -231,7 +231,7 @@ export default function Home() {
                     </div>
                     <div className="text-xs font-mono text-slate-500 mb-2">STEP {item.step}</div>
                     <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                    <p className="text-sm text-slate-400">{item.description}</p>
+                    <p className="text-sm text-slate-300">{item.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -253,7 +253,7 @@ export default function Home() {
               Free Tools
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Try Before You Buy</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               Interactive calculators and analyzers you can use right now. No signup. No credit card.
             </p>
           </motion.div>
@@ -291,7 +291,7 @@ export default function Home() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Solution Gallery</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               Practical workflows built for real teams. See what it does, what it needs, and how it ships.
             </p>
           </motion.div>
@@ -307,7 +307,7 @@ export default function Home() {
                 <Card className="h-full hover:border-white/20 transition-colors">
                   <CardHeader>
                     <CardTitle>{solution.name}</CardTitle>
-                    <p className="text-sm text-slate-400">{solution.industry}</p>
+                    <p className="text-sm text-slate-300">{solution.industry}</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <p className="text-sm text-slate-300">{solution.problem}</p>
@@ -350,7 +350,7 @@ export default function Home() {
               Trust & Governance
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Built for Real Operations</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               Operational AI needs controls, not vibes. We build for governance, safety, and repeatability.
             </p>
           </motion.div>
@@ -370,7 +370,7 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">{item.title}</h3>
-                      <p className="text-sm text-slate-400">{item.description}</p>
+                      <p className="text-sm text-slate-300">{item.description}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -395,7 +395,7 @@ export default function Home() {
             <br />
             <span className="text-gradient">real operations?</span>
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
             Start free with the Explorer and 15 business tools. No signup required.
             Upgrade to Pro at $99/mo when you need team collaboration and advanced workflows.
           </p>

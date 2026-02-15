@@ -141,7 +141,7 @@ export default function PricingPage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Start free. Scale when ready.
             </h1>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
               No credit card for free tier. No lock-in contracts.
               Upgrade to Pro when you need advanced workflows, team collaboration, and priority support.
             </p>
@@ -175,16 +175,16 @@ export default function PricingPage() {
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'
                     }`}>
-                      <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-400'}`} />
+                      <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-300'}`} />
                     </div>
                     <CardTitle className="text-xl">{plan.name}</CardTitle>
                   </div>
-                  <p className="text-sm text-slate-400">{plan.description}</p>
+                  <p className="text-sm text-slate-300">{plan.description}</p>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
                   <div className="mb-6">
                     <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-sm text-slate-400 ml-1">{plan.period}</span>
+                    <span className="text-sm text-slate-300 ml-1">{plan.period}</span>
                   </div>
 
                   <ul className="space-y-3 text-sm flex-1">
@@ -251,7 +251,7 @@ export default function PricingPage() {
                   <CardContent>
                     <prop.icon className="w-8 h-8 text-cyan-400 mb-3" />
                     <h3 className="font-semibold mb-1">{prop.title}</h3>
-                    <p className="text-sm text-slate-400">{prop.description}</p>
+                    <p className="text-sm text-slate-300">{prop.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -264,7 +264,7 @@ export default function PricingPage() {
       <section className="pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h2 className="text-3xl font-bold">Ready to operationalize AI?</h2>
-          <p className="text-slate-400">
+          <p className="text-slate-300">
             Start with the free Explorer and tools. When you see the value, Pro gives you the power
             to scale workflows across your entire team.
           </p>

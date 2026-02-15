@@ -38,15 +38,15 @@ export function Footer() {
               <Brain className="w-8 h-8 text-cyan-400" />
               <span className="text-xl font-bold">BrainStack Studio</span>
             </Link>
-            <p className="text-slate-400 text-sm mb-4 max-w-xs">
+            <p className="text-slate-300 text-sm mb-4 max-w-xs">
               Operational AI that automates real workflows with governance, audit trails,
               and measurable outcomes. Part of the BrainOps AI Operating System.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://github.com/mwwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="BrainOps on GitHub">
+              <a href="https://github.com/mwwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="BrainOps on GitHub">
                 <Github className="w-5 h-5" aria-hidden="true" />
               </a>
-              <a href="https://linkedin.com/in/mattwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Matt Woodworth on LinkedIn">
+              <a href="https://linkedin.com/in/mattwoodworth" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black rounded" aria-label="Matt Woodworth on LinkedIn">
                 <Linkedin className="w-5 h-5" aria-hidden="true" />
               </a>
             </div>
@@ -61,7 +61,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-400 hover:text-white transition-colors"
+                      className="text-sm text-slate-300 hover:text-white transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -74,10 +74,10 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-300">
             &copy; {new Date().getFullYear()} BrainOps. All rights reserved.
           </p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             Operational AI, built for trust.
           </p>
         </div>

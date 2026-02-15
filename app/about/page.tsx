@@ -66,7 +66,7 @@ export default function AboutPage() {
               built for trust.
             </h1>
 
-            <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
               BrainStack Studio is a practical window into BrainOps—operational AI workflows, tools, and solution patterns.
               We focus on specific problems, measurable value, and responsible deployment.
             </p>
@@ -91,11 +91,11 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
             >
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-              <p className="text-lg text-slate-400 mb-6">
+              <p className="text-lg text-slate-300 mb-6">
                 We believe operational AI should be dependable, explainable, and safe to deploy.
                 We build systems that integrate with real operations and stay governable over time.
               </p>
-              <p className="text-lg text-slate-400">
+              <p className="text-lg text-slate-300">
                 Every preview is designed to be concrete and actionable—so teams can decide what to pilot and what to ship.
               </p>
             </motion.div>
@@ -108,25 +108,25 @@ export default function AboutPage() {
               <Card className="text-center">
                 <CardContent className="pt-6">
                   <div className="text-4xl font-bold text-cyan-400 mb-2">Free</div>
-                  <div className="text-slate-400">Tools & Explorer</div>
+                  <div className="text-slate-300">Tools & Explorer</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
                   <div className="text-4xl font-bold text-cyan-400 mb-2">Scoped</div>
-                  <div className="text-slate-400">Pilot to Production</div>
+                  <div className="text-slate-300">Pilot to Production</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
                   <div className="text-4xl font-bold text-cyan-400 mb-2">Secure</div>
-                  <div className="text-slate-400">By Design</div>
+                  <div className="text-slate-300">By Design</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="pt-6">
                   <div className="text-4xl font-bold text-cyan-400 mb-2">Audit</div>
-                  <div className="text-slate-400">Ready Outputs</div>
+                  <div className="text-slate-300">Ready Outputs</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -142,7 +142,7 @@ export default function AboutPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold mb-4">Our Values</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <p className="text-slate-300 max-w-2xl mx-auto">
               The principles that guide every decision we make.
             </p>
           </motion.div>
@@ -159,7 +159,7 @@ export default function AboutPage() {
                   <CardContent>
                     <value.icon className="w-10 h-10 text-cyan-400 mb-4" />
                     <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                    <p className="text-slate-400 text-sm">{value.description}</p>
+                    <p className="text-slate-300 text-sm">{value.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -176,7 +176,7 @@ export default function AboutPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold mb-4">Our Journey</h2>
-            <p className="text-slate-400">Key milestones that shaped BrainStack Studio.</p>
+            <p className="text-slate-300">Key milestones that shaped BrainStack Studio.</p>
           </motion.div>
 
           <div className="relative">
@@ -208,7 +208,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
           >
             <h2 className="text-3xl font-bold mb-6">The BrainOps Relationship</h2>
-            <p className="text-lg text-slate-400 mb-8">
+            <p className="text-lg text-slate-300 mb-8">
               BrainStack Studio is how teams evaluate BrainOps. Explore workflows and tools publicly,
               then engage for pilots and production deployments tailored to your environment.
             </p>
@@ -217,14 +217,14 @@ export default function AboutPage() {
                 <CardContent className="text-center">
                   <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
                   <h3 className="font-semibold">Public Studio</h3>
-                  <p className="text-sm text-slate-400">Workflows, tools, and solution patterns you can evaluate today.</p>
+                  <p className="text-sm text-slate-300">Workflows, tools, and solution patterns you can evaluate today.</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="text-center">
                   <HeartHandshake className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
                   <h3 className="font-semibold">Production Delivery</h3>
-                  <p className="text-sm text-slate-400">Integrations, governance, and operational hardening delivered with your team.</p>
+                  <p className="text-sm text-slate-300">Integrations, governance, and operational hardening delivered with your team.</p>
                 </CardContent>
               </Card>
             </div>
