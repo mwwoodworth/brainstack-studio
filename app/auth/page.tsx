@@ -160,6 +160,7 @@ function AuthPageInner() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
                   required
+                  autoComplete="email"
                   className="pl-10"
                 />
               </div>
@@ -180,6 +181,7 @@ function AuthPageInner() {
                     placeholder="Your password"
                     required
                     minLength={6}
+                    autoComplete="current-password"
                     className="pl-10"
                   />
                 </div>

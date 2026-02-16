@@ -187,15 +187,20 @@ export default function ContactPage() {
 
                 <div className="md:col-span-2 flex items-center gap-4">
                   <Button type="submit" size="lg" disabled={status === 'loading' || !isFeatureEnabled('leadCapture')}>
-                    {status === 'loading' ? 'Submitting…' : 'Request Implementation'}
+                    {status === 'loading' ? 'Sending...' : 'Request Implementation'}
                   </Button>
-                  {status === 'success' && (
-                    <span className="text-sm text-emerald-400">Request received. We will follow up shortly.</span>
-                  )}
-                  {status === 'error' && (
-                    <span className="text-sm text-amber-300">{error}</span>
-                  )}
                 </div>
+                {status === 'success' && (
+                  <div className="md:col-span-2 p-4 rounded-lg bg-emerald-500/15 border border-emerald-500/30">
+                    <p className="text-base font-semibold text-emerald-400">Request received successfully.</p>
+                    <p className="text-sm text-emerald-300/80 mt-1">We will follow up with a scoped implementation plan shortly.</p>
+                  </div>
+                )}
+                {status === 'error' && (
+                  <div className="md:col-span-2 p-4 rounded-lg bg-amber-500/15 border border-amber-500/30">
+                    <p className="text-sm font-medium text-amber-300">{error}</p>
+                  </div>
+                )}
               </form>
             </CardContent>
           </Card>
