@@ -37,7 +37,7 @@ export function useSubscription(): SubscriptionState {
         .in('status', ['active', 'trialing'])
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
         setState({ isPro: false, status: null, tier: null, loading: false });
