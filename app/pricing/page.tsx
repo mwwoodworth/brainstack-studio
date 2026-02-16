@@ -260,7 +260,52 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ / CTA */}
+      {/* FAQ */}
+      <section className="pb-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: 'What does "deterministic" mean for AI workflows?',
+                a: 'Every workflow runs with explicit inputs, bounded logic, and traceable outputs. There are no black-box decisions — you can audit exactly why a result was produced, what data was used, and what confidence level was assigned.',
+              },
+              {
+                q: 'Can I use the free tools without signing up?',
+                a: 'Yes. All 15 interactive tools and the Guided Explorer work immediately with no account required. Sign up when you want to save sessions or access Pro features.',
+              },
+              {
+                q: 'How is this different from ChatGPT or other AI chatbots?',
+                a: 'BrainStack Studio runs structured operational workflows, not open-ended conversations. Outputs are governed by explicit rules, confidence thresholds, and approval gates — designed for production use, not improvisation.',
+              },
+              {
+                q: 'What happens to my data?',
+                a: 'Free-tier tool calculations run entirely in your browser. No data is sent to any server. Pro features store encrypted session data with role-based access. See our Privacy page for details.',
+              },
+              {
+                q: 'Can I cancel Pro anytime?',
+                a: 'Yes. No contracts, no lock-in. Cancel from your dashboard and your subscription ends at the current billing period. You can export all your data before canceling.',
+              },
+              {
+                q: 'What does Enterprise implementation include?',
+                a: 'A dedicated team scopes your workflows, integrates with your existing systems, configures governance rules, and deploys with SLA-backed reliability. Every engagement is custom-quoted based on complexity.',
+              },
+            ].map((faq) => (
+              <details key={faq.q} className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 rounded-lg bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
+                  <span className="text-sm font-medium text-white pr-4">{faq.q}</span>
+                  <ArrowRight className="w-4 h-4 text-slate-500 shrink-0 transition-transform group-open:rotate-90" />
+                </summary>
+                <div className="px-4 pb-4 pt-2">
+                  <p className="text-sm text-slate-400">{faq.a}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
       <section className="pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h2 className="text-3xl font-bold">Ready to operationalize AI?</h2>
