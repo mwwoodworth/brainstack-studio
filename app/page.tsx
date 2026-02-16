@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import {
   ArrowRight,
   CheckCircle2,
@@ -18,6 +19,9 @@ import {
   Clock,
   AlertTriangle,
   Users,
+  FileText,
+  Activity,
+  ShieldCheck,
 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -31,7 +35,7 @@ import { getFeaturedTools } from '@/lib/tools';
 const METRICS = [
   { value: '15+', label: 'Free Tools', icon: Calculator },
   { value: '12', label: 'Industries', icon: Target },
-  { value: '72', label: 'Workflow Maps', icon: ClipboardList },
+  { value: '5+', label: 'Solution Patterns', icon: ClipboardList },
   { value: '100%', label: 'Audit-Ready', icon: Shield },
 ];
 
@@ -100,6 +104,144 @@ const PAIN_POINTS = [
   { icon: Users, text: 'Scaling operations without proportional headcount' },
 ];
 
+const PROOF_TABS = [
+  {
+    id: 'trace',
+    label: 'Run Trace',
+    icon: Activity,
+    title: 'Sample Run Trace',
+    description: 'Every workflow execution captures a full decision trail.',
+    content: [
+      { label: 'Trigger', value: 'Weekly churn risk scan', type: 'input' },
+      { label: 'Data Sources', value: '3 connected (CRM, billing, support)', type: 'input' },
+      { label: 'Accounts Scanned', value: '847', type: 'metric' },
+      { label: 'High-Risk Flagged', value: '23 accounts (2.7%)', type: 'metric' },
+      { label: 'Confidence', value: '94.2%', type: 'success' },
+      { label: 'Decision', value: 'Auto-escalated 8 accounts to CS team; 15 queued for review', type: 'output' },
+      { label: 'Approval Gate', value: 'Manager approval required for accounts > $50K ARR', type: 'guard' },
+      { label: 'Duration', value: '12.4s', type: 'metric' },
+    ],
+  },
+  {
+    id: 'audit',
+    label: 'Audit Trail',
+    icon: FileText,
+    title: 'Sample Audit Trail',
+    description: 'Immutable log of every input, decision, and output.',
+    content: [
+      { label: '09:00:01', value: 'Workflow initiated by scheduled trigger', type: 'input' },
+      { label: '09:00:02', value: 'Data fetched from 3 integrations (CRM, Stripe, Zendesk)', type: 'input' },
+      { label: '09:00:03', value: 'Churn model applied: logistic regression + rule engine', type: 'metric' },
+      { label: '09:00:08', value: 'Risk scores computed for 847 accounts', type: 'metric' },
+      { label: '09:00:09', value: 'Threshold filter: 23 accounts above 0.75 risk score', type: 'output' },
+      { label: '09:00:10', value: 'Approval gate triggered for 3 enterprise accounts', type: 'guard' },
+      { label: '09:00:12', value: 'Notifications dispatched: Slack + email to CS leads', type: 'output' },
+      { label: '09:00:12', value: 'Run complete. Trace ID: run_2026_02_16_0900_churn_scan', type: 'success' },
+    ],
+  },
+  {
+    id: 'governance',
+    label: 'Governance Rules',
+    icon: ShieldCheck,
+    title: 'Sample Governance Model',
+    description: 'Explicit rules that bound every automated decision.',
+    content: [
+      { label: 'Scope', value: 'Churn prevention workflow — SaaS accounts only', type: 'input' },
+      { label: 'Data Access', value: 'Read-only: CRM contacts, billing status, ticket history', type: 'guard' },
+      { label: 'Confidence Floor', value: 'Suppress actions below 85% confidence', type: 'guard' },
+      { label: 'Approval Required', value: 'Accounts with ARR > $50K require human approval', type: 'guard' },
+      { label: 'Rate Limit', value: 'Max 50 auto-escalations per run', type: 'guard' },
+      { label: 'Fallback', value: 'Queue for manual review if model uncertainty > 20%', type: 'output' },
+      { label: 'Retention', value: 'All traces retained 90 days; exportable as CSV/JSON', type: 'metric' },
+      { label: 'Owner', value: 'CS Operations Lead (role-based, revocable)', type: 'input' },
+    ],
+  },
+];
+
+function ProofArtifactStrip() {
+  const [activeTab, setActiveTab] = useState('trace');
+  const activeProof = PROOF_TABS.find((t) => t.id === activeTab)!;
+
+  const typeStyles: Record<string, string> = {
+    input: 'text-slate-400',
+    metric: 'text-cyan-400',
+    output: 'text-emerald-400',
+    success: 'text-emerald-300 font-medium',
+    guard: 'text-amber-400',
+  };
+
+  return (
+    <section className="py-16 px-6 bg-white/[0.02]">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
+          <Badge variant="default" className="mb-4">
+            <Shield className="w-3 h-3 mr-1" />
+            Proof, Not Promises
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">See What the Output Looks Like</h2>
+          <p className="text-slate-300 max-w-2xl mx-auto">
+            Every workflow produces traceable, auditable artifacts. Here are real examples.
+          </p>
+        </motion.div>
+
+        {/* Tabs */}
+        <div className="flex justify-center gap-2 mb-8">
+          {PROOF_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
+                activeTab === tab.id
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                  : 'bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-1">
+                <activeProof.icon className="w-5 h-5 text-cyan-400" />
+                <CardTitle className="text-lg">{activeProof.title}</CardTitle>
+              </div>
+              <p className="text-sm text-slate-400">{activeProof.description}</p>
+            </CardHeader>
+            <CardContent>
+              <div className="font-mono text-sm space-y-1 bg-black/30 rounded-lg p-4 border border-white/5">
+                {activeProof.content.map((line, i) => (
+                  <div key={i} className="flex gap-3">
+                    <span className="text-slate-500 w-32 shrink-0 text-right">{line.label}</span>
+                    <span className="text-slate-600">|</span>
+                    <span className={typeStyles[line.type] || 'text-slate-300'}>{line.value}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 mt-3 text-center">
+                Sample data. Real deployments connect to your systems with full governance controls.
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <main id="main-content" className="min-h-screen">
@@ -128,10 +270,13 @@ export default function Home() {
               <br />
               <span className="text-gradient">operations</span>, end-to-end.
             </h1>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-10">
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-4">
               BrainStack Studio turns real workflows into reliable AI automation.
-              Deterministic. Auditable. Measurable. Start free with 15 business tools and
-              a guided explorer across 12 industries.
+              Deterministic. Auditable. Measurable.
+            </p>
+            <p className="text-sm text-slate-400 max-w-2xl mx-auto mb-10">
+              Deterministic = bounded outputs + explicit rules + approval gates + full traceability.
+              No hallucinations. No black boxes. Start free with 15 tools and a guided explorer across 12 industries.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/explorer">
@@ -168,6 +313,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Proof Artifact Strip */}
+      <ProofArtifactStrip />
 
       {/* Pain Points */}
       <section className="py-16 px-6 border-y border-white/5">
