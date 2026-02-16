@@ -22,9 +22,8 @@ export const metadata: Metadata = {
     'AI Agents',
     'Audit Trails',
     'BrainStack Studio',
-    'BrainOps',
   ],
-  authors: [{ name: 'BrainOps' }],
+  authors: [{ name: 'BrainStack Studio' }],
   alternates: {
     canonical: siteUrl,
   },

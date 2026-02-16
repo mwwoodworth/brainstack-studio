@@ -41,7 +41,7 @@ export default function PrivacyPage() {
               </div>
               <ul className="text-sm text-slate-300 space-y-2">
                 <li>No hidden background recordings or undisclosed tracking.</li>
-                <li>No internal system data or customer data from BrainOps.</li>
+                <li>No internal system data or customer data from BrainStack Studio deployments.</li>
               </ul>
             </CardContent>
           </Card>

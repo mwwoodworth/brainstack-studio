@@ -53,7 +53,7 @@ export default function TechnologyPage() {
             <Badge variant="primary" className="mb-4">Platform Trust</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Secure operational AI, built to ship.</h1>
             <p className="text-slate-300 max-w-2xl mx-auto">
-              BrainOps is engineered for operational use: controlled automation, secure integration, and clear governance.
+              BrainStack Studio is engineered for operational use: controlled automation, secure integration, and clear governance.
               We prioritize safety, observability, and auditability so AI can be trusted in production.
             </p>
           </motion.div>

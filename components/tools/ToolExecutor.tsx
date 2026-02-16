@@ -155,7 +155,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
         <div className="p-6 rounded-xl bg-gradient-to-br from-cyan-500/10 to-violet-500/10 border border-cyan-500/20">
           <h4 className="font-semibold text-white mb-2">Want this automated?</h4>
           <p className="text-sm text-slate-400 mb-4">
-            BrainOps can run this analysis continuously on your real data, with alerts and integrations.
+            BrainStack Studio Pro can run this analysis continuously on your real data, with alerts and integrations.
           </p>
           <Button variant="primary" size="sm" className="w-full">
             Talk to Our Team

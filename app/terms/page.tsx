@@ -42,7 +42,7 @@ export default function TermsPage() {
               </div>
               <p className="text-sm text-slate-300">
                 Outputs are example previews and are not legal, financial, or operational advice. Production deployments
-                require a scoped agreement with BrainOps.
+                require a scoped agreement with BrainStack Studio.
               </p>
             </CardContent>
           </Card>

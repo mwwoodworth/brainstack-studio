@@ -39,7 +39,7 @@ const VALUES = [
 ];
 
 const MILESTONES = [
-  { year: '2024', event: 'BrainOps operational AI framework initiated' },
+  { year: '2024', event: 'Operational AI framework initiated' },
   { year: '2025', event: 'Industry pilots validated production-ready operational workflows' },
   { year: '2026', event: 'BrainStack Studio launched as the public interface' },
 ];
@@ -67,7 +67,7 @@ export default function AboutPage() {
             </h1>
 
             <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
-              BrainStack Studio is a practical window into BrainOps—operational AI workflows, tools, and solution patterns.
+              BrainStack Studio is a practical window into operational AI workflows, tools, and solution patterns.
               We focus on specific problems, measurable value, and responsible deployment.
             </p>
 
@@ -207,9 +207,9 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-3xl font-bold mb-6">The BrainOps Relationship</h2>
+            <h2 className="text-3xl font-bold mb-6">From Evaluation to Production</h2>
             <p className="text-lg text-slate-300 mb-8">
-              BrainStack Studio is how teams evaluate BrainOps. Explore workflows and tools publicly,
+              BrainStack Studio is how teams evaluate operational AI. Explore workflows and tools publicly,
               then engage for pilots and production deployments tailored to your environment.
             </p>
             <div className="grid md:grid-cols-2 gap-6 mb-10">
