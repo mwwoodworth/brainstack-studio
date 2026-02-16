@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -8,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/Button';
 import { useExplorerPreferences } from '@/hooks/useExplorerPreferences';
 import { useExplorerSessions } from '@/hooks/useExplorerSessions';
+import { useSubscription } from '@/hooks/useSubscription';
 import {
   Settings,
   Shield,
@@ -17,13 +19,19 @@ import {
   Trash2,
   Check,
   AlertTriangle,
+  CreditCard,
+  Crown,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { preferences, isLoaded, updatePreferences, resetToDefaults } = useExplorerPreferences();
   const { sessions, clearSessions } = useExplorerSessions();
+  const { isPro, status: subStatus, tier, loading: subLoading } = useSubscription();
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   const handleExport = () => {
     const payload = JSON.stringify(
@@ -42,6 +50,21 @@ export default function SettingsPage() {
     a.download = `bss-explorer-export-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      // silent fail — user can try again
+    } finally {
+      setPortalLoading(false);
+    }
   };
 
   const handleReset = () => {
@@ -146,6 +169,82 @@ export default function SettingsPage() {
                       />
                     </button>
                   </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-cyan-400" />
+                    Subscription
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your BrainStack Studio plan and billing.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {subLoading ? (
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Loading subscription...
+                    </div>
+                  ) : isPro ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl">
+                        <Crown className="w-5 h-5 text-cyan-400" />
+                        <div>
+                          <p className="font-medium text-cyan-300">
+                            Pro Plan
+                            {subStatus === 'trialing' && (
+                              <span className="ml-2 text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">
+                                Trial
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {subStatus === 'active' ? 'Active subscription' : subStatus === 'trialing' ? 'Trial period' : `Status: ${subStatus}`}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="secondary"
+                        onClick={handleManageSubscription}
+                        disabled={portalLoading}
+                        className="w-full"
+                      >
+                        {portalLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <ExternalLink className="w-4 h-4" />
+                        )}
+                        Manage Subscription
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl">
+                        <Shield className="w-5 h-5 text-slate-400" />
+                        <div>
+                          <p className="font-medium text-slate-300">Free Plan</p>
+                          <p className="text-xs text-slate-400">
+                            Upgrade to Pro for advanced workflows, team sessions, and PDF exports.
+                          </p>
+                        </div>
+                      </div>
+                      <Link href="/pricing">
+                        <Button className="w-full">
+                          <Crown className="w-4 h-4" />
+                          Upgrade to Pro
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

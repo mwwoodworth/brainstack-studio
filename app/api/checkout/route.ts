@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    const origin = request.headers.get('origin') || 'https://brainstack-studio.vercel.app';
+    const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://brainstackstudio.com';
 
     // If not logged in, return auth redirect
     if (!user) {
@@ -41,9 +41,24 @@ export async function POST(request: NextRequest) {
     }
 
     const stripe = getStripe();
+
+    // Prevent duplicate Stripe customers — look up existing customer first
+    let customerId: string | undefined;
+    if (user.email) {
+      const existing = await stripe.customers.list({
+        email: user.email,
+        limit: 1,
+      });
+      if (existing.data.length > 0) {
+        customerId = existing.data[0].id;
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      customer_email: user.email,
+      ...(customerId
+        ? { customer: customerId }
+        : { customer_email: user.email }),
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout/cancel`,

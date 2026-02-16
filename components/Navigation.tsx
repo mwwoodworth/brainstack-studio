@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Brain, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
+import { Brain, Menu, X, LogOut, LayoutDashboard, Crown } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/Button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const NAV_LINKS = [
   { href: '/explorer', label: 'Explorer' },
@@ -22,6 +23,7 @@ export function Navigation() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const { isPro } = useSubscription();
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/10">
@@ -57,6 +59,12 @@ export function Navigation() {
               <div className="w-20 h-8" />
             ) : user ? (
               <>
+                {isPro && (
+                  <span className="inline-flex items-center gap-1 text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-1 rounded-full">
+                    <Crown className="w-3 h-3" />
+                    Pro
+                  </span>
+                )}
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm">
                     <LayoutDashboard className="w-4 h-4" />
