@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { Play, RotateCcw, Share2, Download, Lightbulb, ListChecks, GitBranch } from 'lucide-react';
 import { Tool, ToolResult, executeTool, validateInputs } from '@/lib/tools';
 import { ToolInput } from './ToolInput';
@@ -157,8 +158,8 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
           <p className="text-sm text-slate-400 mb-4">
             BrainStack Studio Pro can run this analysis continuously on your real data, with alerts and integrations.
           </p>
-          <Button variant="primary" size="sm" className="w-full">
-            Talk to Our Team
+          <Button asChild variant="primary" size="sm" className="w-full">
+            <Link href="/contact">Talk to Our Team</Link>
           </Button>
         </div>
       </div>

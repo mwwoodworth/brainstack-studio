@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/Button';
 import { ToolCard } from '@/components/tools';
 import { getAllTools, getToolsByCategory, getFeaturedTools, ToolCategory } from '@/lib/tools';
 import { useState, useMemo } from 'react';
-import { Sparkles, Calculator, BarChart3, Wand2, Eye, Search, Filter } from 'lucide-react';
+import { Sparkles, Calculator, BarChart3, Wand2, Search, Filter } from 'lucide-react';
 
-const CATEGORY_INFO: Record<ToolCategory, { label: string; icon: React.ReactNode; description: string }> = {
+const CATEGORY_INFO: Partial<Record<ToolCategory, { label: string; icon: React.ReactNode; description: string }>> = {
   calculators: {
     label: 'Calculators',
     icon: <Calculator className="w-5 h-5" />,
@@ -27,14 +27,9 @@ const CATEGORY_INFO: Record<ToolCategory, { label: string; icon: React.ReactNode
     icon: <Wand2 className="w-5 h-5" />,
     description: 'Content and strategy generators',
   },
-  visualizers: {
-    label: 'Visualizers',
-    icon: <Eye className="w-5 h-5" />,
-    description: 'Data visualization tools',
-  },
 };
 
-const CATEGORIES: ToolCategory[] = ['calculators', 'analyzers', 'generators', 'visualizers'];
+const CATEGORIES: ToolCategory[] = ['calculators', 'analyzers', 'generators'];
 
 export default function ToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
@@ -152,8 +147,8 @@ export default function ToolsPage() {
                       : 'bg-slate-800/50 text-slate-400 border border-slate-700 hover:border-slate-600'
                   }`}
                 >
-                  <span aria-hidden="true">{CATEGORY_INFO[cat].icon}</span>
-                  {CATEGORY_INFO[cat].label}
+                  <span aria-hidden="true">{CATEGORY_INFO[cat]?.icon}</span>
+                  {CATEGORY_INFO[cat]?.label}
                 </button>
               ))}
             </div>
@@ -163,7 +158,7 @@ export default function ToolsPage() {
           <div className="text-sm text-slate-500 mb-6">
             {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''} found
             {searchQuery && ` for "${searchQuery}"`}
-            {selectedCategory !== 'all' && ` in ${CATEGORY_INFO[selectedCategory].label}`}
+            {selectedCategory !== 'all' && ` in ${CATEGORY_INFO[selectedCategory]?.label}`}
           </div>
 
           {/* Tools Grid */}
@@ -213,7 +208,7 @@ export default function ToolsPage() {
           >
             <h3 className="text-2xl font-bold mb-4">Want These Tools Automated?</h3>
             <p className="text-slate-400 mb-6 max-w-xl mx-auto">
-              BrainStack can run these analyses continuously on your real data, with alerts,
+              BrainStack Studio Pro can run these analyses continuously on your real data, with alerts,
               integrations, and AI-powered recommendations.
             </p>
             <div className="flex justify-center gap-4">

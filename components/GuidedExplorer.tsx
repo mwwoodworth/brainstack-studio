@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Clock,
   Lock,
+  Mail,
   Save,
   Shield,
   Target,
@@ -33,6 +34,9 @@ const DEFAULT_INPUT: ExplorerInput = {};
 export function GuidedExplorer() {
   const [input, setInput] = useState<ExplorerInput>(DEFAULT_INPUT);
   const [hasRun, setHasRun] = useState(false);
+  const [captureEmail, setCaptureEmail] = useState('');
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
   const { saveSession } = useExplorerSessions();
   const { preferences } = useExplorerPreferences();
 
@@ -71,6 +75,32 @@ export function GuidedExplorer() {
     } catch (error) {
       // Save/telemetry failure should not break UI functionality
       console.error('Failed to save explorer session:', error);
+    }
+  };
+
+  const handleEmailCapture = async () => {
+    if (!captureEmail.trim() || emailSubmitting) return;
+    setEmailSubmitting(true);
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: '',
+          email: captureEmail.trim(),
+          company: '',
+          industry: input.industry ?? '',
+          role: input.role ?? '',
+          painPoint: input.painPoint ?? '',
+          message: `Explorer result request — confidence: ${result ? Math.round(result.confidence * 100) : 'N/A'}%`,
+        }),
+      });
+      setEmailSubmitted(true);
+      await trackEvent({ name: 'explorer_email_capture', payload: { industry: input.industry } });
+    } catch {
+      // Silently fail — don't block UX
+    } finally {
+      setEmailSubmitting(false);
     }
   };
 
@@ -251,6 +281,43 @@ export function GuidedExplorer() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Email Capture — visible after explorer run */}
+        {hasRun && result && !emailSubmitted && (
+          <div className="mt-8 p-6 rounded-xl bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-cyan-500/20">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex items-center gap-3 flex-1">
+                <Mail className="w-5 h-5 text-cyan-400 shrink-0" />
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Get this analysis as a summary</h3>
+                  <p className="text-xs text-slate-400">We will send a formatted recap to your inbox. No spam.</p>
+                </div>
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <label htmlFor="explorer-email" className="sr-only">Work email</label>
+                <input
+                  id="explorer-email"
+                  type="email"
+                  placeholder="you@company.com"
+                  value={captureEmail}
+                  onChange={(e) => setCaptureEmail(e.target.value)}
+                  className="flex-1 sm:w-56 rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                />
+                <Button size="sm" onClick={handleEmailCapture} disabled={emailSubmitting || !captureEmail.trim()}>
+                  {emailSubmitting ? 'Sending...' : 'Send'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        {hasRun && emailSubmitted && (
+          <div className="mt-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+            <p className="text-sm text-emerald-300 flex items-center justify-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              Summary sent. Check your inbox.
+            </p>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 mt-8">
           <Card className="h-full">
