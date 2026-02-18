@@ -27,10 +27,10 @@ export type FeatureComparisonRow = {
 
 export const DEFAULT_PRO_FEATURES = [
   'Advanced workflow templates',
-  'Team-shared sessions',
-  'Exportable run summaries',
+  'Cloud-synced explorer sessions',
+  'API key access for integrations',
   'Priority support',
-  'API access for integrations',
+  'Billing portal and subscription controls',
 ];
 
 export const FEATURE_COMPARISON_ROWS: FeatureComparisonRow[] = [
@@ -38,8 +38,8 @@ export const FEATURE_COMPARISON_ROWS: FeatureComparisonRow[] = [
     id: 'explorer',
     label: 'Explorer sessions',
     values: {
-      free: 'Local sessions',
-      pro: 'Shared team sessions',
+      free: 'Local browser sessions',
+      pro: 'Cloud-synced sessions',
       enterprise: 'Shared + governed',
     },
   },

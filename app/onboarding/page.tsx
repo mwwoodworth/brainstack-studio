@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { sanitizeRedirectPath } from '@/lib/authRedirect';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -54,7 +55,10 @@ export default function OnboardingPage() {
 function OnboardingPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = useMemo(() => searchParams.get('redirect') || '/dashboard', [searchParams]);
+  const redirect = useMemo(
+    () => sanitizeRedirectPath(searchParams.get('redirect'), '/dashboard'),
+    [searchParams]
+  );
 
   const [form, setForm] = useState<OnboardingForm>(DEFAULT_FORM);
   const [loading, setLoading] = useState(true);

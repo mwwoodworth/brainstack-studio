@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { useExplorerSessions } from '@/hooks/useExplorerSessions';
+import { useSubscription } from '@/hooks/useSubscription';
 import { INDUSTRIES, PAIN_POINTS, ROLES } from '@/lib/explorer';
 import { copyToClipboard, formatDate, truncateText } from '@/lib/utils';
 import {
@@ -28,6 +29,7 @@ import {
   RefreshCw,
   Loader2,
   ShieldCheck,
+  Crown,
 } from 'lucide-react';
 
 type UsageTotals = {
@@ -73,6 +75,7 @@ const EMPTY_USAGE: UsageTotals = {
 
 export default function DashboardPage() {
   const { sessions, isLoaded, deleteSession, clearSessions } = useExplorerSessions();
+  const { isPro, loading: subLoading } = useSubscription();
   const [searchQuery, setSearchQuery] = useState('');
 
   const [usageTotals, setUsageTotals] = useState<UsageTotals>(EMPTY_USAGE);
@@ -87,6 +90,7 @@ export default function DashboardPage() {
   const [apiKeyBusy, setApiKeyBusy] = useState(false);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [apiKeysError, setApiKeysError] = useState<string | null>(null);
+  const [apiKeysLocked, setApiKeysLocked] = useState(false);
 
   const filteredSessions = useMemo(() => {
     if (!searchQuery) return sessions;
@@ -152,13 +156,21 @@ export default function DashboardPage() {
       const response = await fetch('/api/dashboard/api-keys', { cache: 'no-store' });
       const data = await response.json();
 
+      if (response.status === 403 && data.code === 'PRO_REQUIRED') {
+        setApiKeys([]);
+        setApiKeysLocked(true);
+        return;
+      }
+
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Failed to load API keys');
       }
 
+      setApiKeysLocked(false);
       setApiKeys((data.keys as ApiKeyRecord[]) ?? []);
     } catch (error) {
       setApiKeys([]);
+      setApiKeysLocked(false);
       setApiKeysError(error instanceof Error ? error.message : 'Failed to load API keys');
     } finally {
       setApiKeysLoading(false);
@@ -166,6 +178,7 @@ export default function DashboardPage() {
   }
 
   async function handleCreateApiKey() {
+    if (apiKeysLocked) return;
     setApiKeyBusy(true);
     setApiKeysError(null);
     setCreatedKey(null);
@@ -193,6 +206,7 @@ export default function DashboardPage() {
   }
 
   async function handleRevokeApiKey(id: string) {
+    if (apiKeysLocked) return;
     setApiKeyBusy(true);
     setApiKeysError(null);
     try {
@@ -213,8 +227,20 @@ export default function DashboardPage() {
 
   useEffect(() => {
     void loadUsage();
-    void loadApiKeys();
   }, []);
+
+  useEffect(() => {
+    if (subLoading) return;
+
+    if (!isPro) {
+      setApiKeys([]);
+      setApiKeysLocked(true);
+      setApiKeysLoading(false);
+      return;
+    }
+
+    void loadApiKeys();
+  }, [isPro, subLoading]);
 
   if (!isLoaded) {
     return (
@@ -447,74 +473,95 @@ export default function DashboardPage() {
                 <CardDescription>Create and revoke keys for external integrations.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-3">
-                  <Input
-                    value={apiKeyName}
-                    onChange={(event) => setApiKeyName(event.target.value)}
-                    placeholder="Optional key name (e.g. Production MCP)"
-                  />
-                  <Button onClick={handleCreateApiKey} disabled={apiKeyBusy}>
-                    {apiKeyBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                    Create key
-                  </Button>
-                </div>
-
-                {createdKey && (
-                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 space-y-2">
-                    <p className="text-xs text-emerald-200">
-                      Copy this key now. It will not be shown again.
-                    </p>
-                    <div className="flex flex-col md:flex-row gap-2 md:items-center">
-                      <code className="flex-1 text-xs bg-black/40 rounded px-2 py-2 break-all">{createdKey}</code>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={async () => {
-                          await copyToClipboard(createdKey);
-                        }}
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {apiKeysError && (
-                  <div className="text-sm text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
-                    {apiKeysError}
-                  </div>
-                )}
-
-                {apiKeysLoading ? (
+                {subLoading ? (
                   <div className="text-sm text-slate-500 flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Loading API keys...
+                    Loading subscription...
                   </div>
-                ) : apiKeys.length === 0 ? (
-                  <p className="text-sm text-slate-500">No active API keys.</p>
+                ) : apiKeysLocked ? (
+                  <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/10 p-4 space-y-3">
+                    <p className="text-sm text-cyan-200">
+                      API key management is available on the Pro plan.
+                    </p>
+                    <Link href="/pricing">
+                      <Button>
+                        <Crown className="w-4 h-4" />
+                        Upgrade to Pro
+                      </Button>
+                    </Link>
+                  </div>
                 ) : (
-                  <div className="space-y-2">
-                    {apiKeys.map((key) => (
-                      <div key={key.id} className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                        <div>
-                          <p className="font-medium">{key.name}</p>
-                          <p className="text-xs text-slate-500">
-                            Prefix {key.key_prefix}... • Created {formatDate(Date.parse(key.created_at))}
-                            {key.last_used_at ? ` • Last used ${formatDate(Date.parse(key.last_used_at))}` : ''}
-                          </p>
+                  <>
+                    <div className="flex flex-col md:flex-row gap-3">
+                      <Input
+                        value={apiKeyName}
+                        onChange={(event) => setApiKeyName(event.target.value)}
+                        placeholder="Optional key name (e.g. Production MCP)"
+                      />
+                      <Button onClick={handleCreateApiKey} disabled={apiKeyBusy}>
+                        {apiKeyBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                        Create key
+                      </Button>
+                    </div>
+
+                    {createdKey && (
+                      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 space-y-2">
+                        <p className="text-xs text-emerald-200">
+                          Copy this key now. It will not be shown again.
+                        </p>
+                        <div className="flex flex-col md:flex-row gap-2 md:items-center">
+                          <code className="flex-1 text-xs bg-black/40 rounded px-2 py-2 break-all">{createdKey}</code>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={async () => {
+                              await copyToClipboard(createdKey);
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                            Copy
+                          </Button>
                         </div>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleRevokeApiKey(key.id)}
-                          disabled={apiKeyBusy}
-                        >
-                          Revoke
-                        </Button>
                       </div>
-                    ))}
-                  </div>
+                    )}
+
+                    {apiKeysError && (
+                      <div className="text-sm text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+                        {apiKeysError}
+                      </div>
+                    )}
+
+                    {apiKeysLoading ? (
+                      <div className="text-sm text-slate-500 flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Loading API keys...
+                      </div>
+                    ) : apiKeys.length === 0 ? (
+                      <p className="text-sm text-slate-500">No active API keys.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {apiKeys.map((key) => (
+                          <div key={key.id} className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <div>
+                              <p className="font-medium">{key.name}</p>
+                              <p className="text-xs text-slate-500">
+                                Prefix {key.key_prefix}... • Created {formatDate(Date.parse(key.created_at))}
+                                {key.last_used_at ? ` • Last used ${formatDate(Date.parse(key.last_used_at))}` : ''}
+                              </p>
+                            </div>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleRevokeApiKey(key.id)}
+                              disabled={apiKeyBusy}
+                            >
+                              Revoke
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>

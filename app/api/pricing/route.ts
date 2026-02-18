@@ -1,7 +1,7 @@
-import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { getAllTools } from '@/lib/tools/registry';
 import { INDUSTRIES } from '@/lib/explorer';
+import { getOptionalEnv } from '@/lib/env';
 import {
   DEFAULT_PRO_FEATURES,
   FEATURE_COMPARISON_ROWS,
@@ -9,14 +9,14 @@ import {
   parseProductFeatures,
   type PricingPlan,
 } from '@/lib/pricing';
+import { getStripeProPlanConfig, getStripeServerClient } from '@/lib/stripe/config';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-  return new Stripe(key, { apiVersion: '2026-01-28.clover' });
+  if (!getOptionalEnv('STRIPE_SECRET_KEY')) return null;
+  return getStripeServerClient();
 }
 
 function basePlans(toolCount: number, industryCount: number): PricingPlan[] {
@@ -85,10 +85,9 @@ export async function GET() {
   const industryCount = INDUSTRIES.length;
   const plans = basePlans(toolCount, industryCount);
   const stripe = getStripe();
-  const priceId = process.env.STRIPE_PRICE_PRO;
-  const productId = process.env.STRIPE_PRODUCT_PRO || 'prod_TxJIELH1qRihyq';
+  const { priceId, productId } = getStripeProPlanConfig();
 
-  if (stripe && priceId) {
+  if (stripe) {
     try {
       const price = await stripe.prices.retrieve(priceId, { expand: ['product'] });
       const product =

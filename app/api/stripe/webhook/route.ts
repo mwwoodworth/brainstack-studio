@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { getOptionalEnv } from "@/lib/env";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { getStripeServerClient } from "@/lib/stripe/config";
 
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-01-28.clover",
-  });
-}
-
-// In Stripe API 2026-01-28.clover, current_period_end moved to subscription items
 function getSubscriptionPeriodEnd(sub: Stripe.Subscription): string | null {
   const item = sub.items?.data?.[0];
   if (item?.current_period_end) {
@@ -17,11 +12,18 @@ function getSubscriptionPeriodEnd(sub: Stripe.Subscription): string | null {
   return null;
 }
 
+function getSubscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {
+  const nested = invoice.parent?.subscription_details?.subscription;
+  if (typeof nested === "string") return nested;
+  if (nested?.id) return nested.id;
+  return null;
+}
+
 async function logWebhookEvent(
   supabase: ReturnType<typeof createServiceRoleClient>,
   eventId: string,
   payload: object,
-  status: string,
+  status: "PROCESSING" | "PROCESSED" | "FAILED",
   error?: string
 ) {
   await supabase.from("bss_webhook_events").upsert(
@@ -31,8 +33,61 @@ async function logWebhookEvent(
       status,
       error: error || null,
       processed_at: status === "PROCESSED" ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString(),
     },
     { onConflict: "id" }
+  );
+}
+
+async function upsertSubscriptionState(
+  supabase: ReturnType<typeof createServiceRoleClient>,
+  sub: Stripe.Subscription,
+  options?: {
+    userId?: string;
+    tier?: string;
+    customerId?: string;
+    forcedStatus?: string;
+  }
+) {
+  const customerId =
+    options?.customerId ||
+    (typeof sub.customer === "string" ? sub.customer : sub.customer?.id) ||
+    null;
+  const metadataUserId =
+    typeof sub.metadata?.user_id === "string" ? sub.metadata.user_id : undefined;
+  const metadataTier =
+    typeof sub.metadata?.plan === "string" ? sub.metadata.plan : undefined;
+
+  const { data: existing } = await supabase
+    .from("bss_subscriptions")
+    .select("user_id,tier")
+    .eq("stripe_subscription_id", sub.id)
+    .maybeSingle();
+
+  const userId = options?.userId || metadataUserId || existing?.user_id || null;
+  const tier = options?.tier || metadataTier || existing?.tier || "pro";
+
+  if (!userId || !customerId) {
+    console.error("[stripe/webhook] Missing subscription identity fields", {
+      subscriptionId: sub.id,
+      userId,
+      customerId,
+    });
+    return;
+  }
+
+  await supabase.from("bss_subscriptions").upsert(
+    {
+      user_id: userId,
+      stripe_customer_id: customerId,
+      stripe_subscription_id: sub.id,
+      status: options?.forcedStatus || sub.status,
+      tier,
+      current_period_end: getSubscriptionPeriodEnd(sub),
+      cancel_at_period_end: sub.cancel_at_period_end,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "stripe_subscription_id" }
   );
 }
 
@@ -44,8 +99,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing signature" }, { status: 400 });
   }
 
-  const stripe = getStripe();
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const secretKey = getOptionalEnv("STRIPE_SECRET_KEY");
+  const webhookSecret = getOptionalEnv("STRIPE_WEBHOOK_SECRET");
+  if (!secretKey || !webhookSecret) {
+    return NextResponse.json(
+      { error: "Stripe webhook is not configured on this deployment." },
+      { status: 500 }
+    );
+  }
+
+  const stripe = getStripeServerClient();
 
   let event: Stripe.Event;
   try {
@@ -57,24 +120,23 @@ export async function POST(request: NextRequest) {
 
   const supabase = createServiceRoleClient();
 
-  // Atomic dedup: upsert with ignoreDuplicates so only the first writer claims the event
-  const { data: claimed } = await supabase
+  // Retry-safe dedupe: allow retries for FAILED/PROCESSING, skip only PROCESSED.
+  const { data: existingEvent } = await supabase
     .from("bss_webhook_events")
-    .upsert(
-      {
-        id: event.id,
-        payload: event.data.object as object,
-        status: "PROCESSING",
-      },
-      { onConflict: "id", ignoreDuplicates: true }
-    )
-    .select("id")
-    .single();
+    .select("status")
+    .eq("id", event.id)
+    .maybeSingle();
 
-  if (!claimed) {
-    // Another process already claimed this event — skip
+  if (existingEvent?.status === "PROCESSED") {
     return NextResponse.json({ received: true, deduplicated: true });
   }
+
+  await logWebhookEvent(
+    supabase,
+    event.id,
+    event.data.object as object,
+    "PROCESSING"
+  );
 
   try {
     switch (event.type) {
@@ -101,59 +163,47 @@ export async function POST(request: NextRequest) {
           break;
         }
 
-        // Fetch subscription details for period end
         const sub = await stripe.subscriptions.retrieve(subscriptionId, {
           expand: ["items"],
         });
 
-        await supabase.from("bss_subscriptions").upsert(
-          {
-            user_id: userId,
-            stripe_customer_id: customerId,
-            stripe_subscription_id: subscriptionId,
-            status: sub.status,
-            tier: session.metadata?.plan || "pro",
-            current_period_end: getSubscriptionPeriodEnd(sub),
-            cancel_at_period_end: sub.cancel_at_period_end,
-          },
-          { onConflict: "stripe_subscription_id" }
-        );
+        await upsertSubscriptionState(supabase, sub, {
+          userId,
+          tier: session.metadata?.plan || "pro",
+          customerId,
+        });
         break;
       }
 
-      case "customer.subscription.updated": {
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.paused":
+      case "customer.subscription.resumed": {
         const sub = event.data.object as Stripe.Subscription;
-        const subId = sub.id;
-
-        await supabase
-          .from("bss_subscriptions")
-          .update({
-            status: sub.status,
-            current_period_end: getSubscriptionPeriodEnd(sub),
-            cancel_at_period_end: sub.cancel_at_period_end,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("stripe_subscription_id", subId);
+        await upsertSubscriptionState(supabase, sub);
         break;
       }
 
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
-        await supabase
-          .from("bss_subscriptions")
-          .update({
-            status: "canceled",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("stripe_subscription_id", sub.id);
+        await upsertSubscriptionState(supabase, sub, {
+          forcedStatus: "canceled",
+        });
         break;
       }
 
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subRef = invoice.parent?.subscription_details?.subscription;
-        const subId = typeof subRef === "string" ? subRef : subRef?.id;
-        if (subId) {
+        const subId = getSubscriptionIdFromInvoice(invoice);
+        if (!subId) break;
+
+        const { data: existing } = await supabase
+          .from("bss_subscriptions")
+          .select("stripe_subscription_id")
+          .eq("stripe_subscription_id", subId)
+          .maybeSingle();
+
+        if (existing?.stripe_subscription_id) {
           await supabase
             .from("bss_subscriptions")
             .update({
@@ -161,29 +211,33 @@ export async function POST(request: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq("stripe_subscription_id", subId);
+          break;
         }
+
+        const sub = await stripe.subscriptions.retrieve(subId, {
+          expand: ["items"],
+        });
+        await upsertSubscriptionState(supabase, sub, {
+          forcedStatus: "past_due",
+        });
         break;
       }
 
+      case "invoice.paid":
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        const subRef = invoice.parent?.subscription_details?.subscription;
-        const subId = typeof subRef === "string" ? subRef : subRef?.id;
-        if (subId) {
-          const sub = await stripe.subscriptions.retrieve(subId, {
-            expand: ["items"],
-          });
-          await supabase
-            .from("bss_subscriptions")
-            .update({
-              status: sub.status,
-              current_period_end: getSubscriptionPeriodEnd(sub),
-              updated_at: new Date().toISOString(),
-            })
-            .eq("stripe_subscription_id", subId);
-        }
+        const subId = getSubscriptionIdFromInvoice(invoice);
+        if (!subId) break;
+
+        const sub = await stripe.subscriptions.retrieve(subId, {
+          expand: ["items"],
+        });
+        await upsertSubscriptionState(supabase, sub);
         break;
       }
+
+      default:
+        break;
     }
 
     await logWebhookEvent(

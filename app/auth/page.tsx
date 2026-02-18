@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Brain, Mail, Lock, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
+import { sanitizeRedirectPath } from '@/lib/authRedirect';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -26,7 +27,7 @@ export default function AuthPage() {
 function AuthPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  const redirect = sanitizeRedirectPath(searchParams.get('redirect'), '/dashboard');
 
   const [mode, setMode] = useState<AuthMode>('signin');
   const [email, setEmail] = useState('');

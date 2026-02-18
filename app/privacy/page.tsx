@@ -2,8 +2,69 @@
 
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { Card, CardContent } from '@/components/ui/Card';
-import { Shield, EyeOff, Database } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+
+const EFFECTIVE_DATE = 'February 18, 2026';
+
+const SECTIONS = [
+  {
+    title: '1. Information We Collect',
+    body: [
+      'Account information: email address, authentication identifiers, and account metadata required to provide access.',
+      'Billing information: subscription and payment status data received from Stripe. Full card details are handled by Stripe and are not stored by BrainStack Studio.',
+      'Usage and product data: session records, API key metadata, and feature usage events needed to operate dashboard analytics and service reliability.',
+      'Support and contact submissions: information you provide when requesting support or implementation services.',
+    ],
+  },
+  {
+    title: '2. How We Use Information',
+    body: [
+      'We use data to provide the service, manage subscriptions, secure accounts, improve product quality, and respond to support requests.',
+      'We also process limited telemetry to measure feature adoption and platform performance when telemetry is enabled.',
+    ],
+  },
+  {
+    title: '3. Data Sharing',
+    body: [
+      'We do not sell personal data.',
+      'We share data only with service providers needed to run BrainStack Studio, including hosting, authentication, and payment processors (such as Supabase, Vercel, and Stripe).',
+      'We may disclose information when required by law or to protect platform security and legal rights.',
+    ],
+  },
+  {
+    title: '4. Data Retention',
+    body: [
+      'We retain account and subscription records for as long as your account is active and for a reasonable period afterward to meet legal, security, and accounting obligations.',
+      'You can clear stored explorer sessions from Settings. Additional deletion requests can be sent to us using the contact listed below.',
+    ],
+  },
+  {
+    title: '5. Security',
+    body: [
+      'We use access controls, encrypted transport (HTTPS), and least-privilege practices to protect data.',
+      'No system is perfectly secure, but we continuously improve controls to reduce risk.',
+    ],
+  },
+  {
+    title: '6. Your Choices',
+    body: [
+      'You can manage telemetry preferences and session retention settings from the Settings page.',
+      'You may request account deletion or data access by contacting us at privacy@brainstackstudio.com.',
+    ],
+  },
+  {
+    title: '7. Changes to This Policy',
+    body: [
+      'We may update this Privacy Policy from time to time. Material changes will be reflected by updating the effective date on this page.',
+    ],
+  },
+  {
+    title: '8. Contact',
+    body: [
+      'Questions or requests about privacy can be sent to privacy@brainstackstudio.com.',
+    ],
+  },
+];
 
 export default function PrivacyPage() {
   return (
@@ -13,51 +74,27 @@ export default function PrivacyPage() {
       <section className="pt-28 pb-20 px-6">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="text-4xl font-bold mb-4">Privacy</h1>
+            <h1 className="text-4xl font-bold mb-3">Privacy Policy</h1>
+            <p className="text-sm text-slate-500 mb-4">Effective date: {EFFECTIVE_DATE}</p>
             <p className="text-slate-400">
-              BrainStack Studio is designed to minimize data exposure. We prioritize local storage
-              and deterministic outputs over invasive tracking.
+              This policy describes what data BrainStack Studio collects, how it is used, and your controls.
             </p>
           </div>
 
-          <Card>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Database className="w-5 h-5 text-cyan-400" />
-                <h2 className="text-lg font-semibold">What We Collect</h2>
-              </div>
-              <ul className="text-sm text-slate-300 space-y-2">
-                <li>Anonymous telemetry events (if enabled) to understand usage patterns.</li>
-                <li>Enterprise intake data submitted through the contact form.</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <EyeOff className="w-5 h-5 text-emerald-400" />
-                <h2 className="text-lg font-semibold">What We Do Not Collect</h2>
-              </div>
-              <ul className="text-sm text-slate-300 space-y-2">
-                <li>No hidden background recordings or undisclosed tracking.</li>
-                <li>No internal system data or customer data from BrainStack Studio deployments.</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-300" />
-                <h2 className="text-lg font-semibold">Your Controls</h2>
-              </div>
-              <p className="text-sm text-slate-300">
-                You can disable telemetry or clear local sessions in Settings. For data removal
-                requests, contact the BrainStack Studio team through the enterprise intake form.
-              </p>
-            </CardContent>
-          </Card>
+          {SECTIONS.map((section) => (
+            <Card key={section.title}>
+              <CardHeader>
+                <CardTitle>{section.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {section.body.map((paragraph) => (
+                  <p key={paragraph} className="text-sm text-slate-300">
+                    {paragraph}
+                  </p>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 

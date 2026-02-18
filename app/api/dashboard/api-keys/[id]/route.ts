@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getUserTier } from '@/lib/subscription';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function DELETE(
@@ -13,6 +14,18 @@ export async function DELETE(
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { tier } = await getUserTier();
+    if (tier !== 'pro') {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Pro subscription required for API key management',
+          code: 'PRO_REQUIRED',
+        },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;

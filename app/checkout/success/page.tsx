@@ -117,7 +117,7 @@ function CheckoutSuccessInner() {
 
               <p className="text-lg text-slate-400 max-w-lg mx-auto">
                 Your subscription is active. You now have access to advanced workflow templates,
-                team collaboration, exportable run summaries, and priority support.
+                cloud-synced sessions, API integrations, and priority support.
               </p>
 
               <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-left space-y-3">
@@ -132,11 +132,11 @@ function CheckoutSuccessInner() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    Team-shared saved sessions and collaboration
+                    Cloud-synced saved sessions across your devices
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    Exportable audit-ready run summaries (PDF/CSV)
+                    API key access for integrations and automation
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400" />

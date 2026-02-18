@@ -1,27 +1,31 @@
-import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover',
-  });
-}
-
-const PRICE_MAP: Record<string, string | undefined> = {
-  pro: process.env.STRIPE_PRICE_PRO,
-};
+import { getStripeProPlanConfig, getStripeServerClient } from '@/lib/stripe/config';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { plan } = body;
+    const proPlan = getStripeProPlanConfig();
+    const priceMap: Record<string, string> = {
+      pro: proPlan.priceId,
+    };
 
-    if (!plan || !PRICE_MAP[plan]) {
+    if (!plan || !priceMap[plan]) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    const priceId = PRICE_MAP[plan];
+    if (!proPlan.productIdMatchesExpected || !proPlan.priceIdMatchesExpected) {
+      return NextResponse.json(
+        {
+          error:
+            'Stripe Pro plan configuration mismatch. Check STRIPE_PRODUCT_PRO and STRIPE_PRICE_PRO.',
+        },
+        { status: 500 }
+      );
+    }
+
+    const priceId = priceMap[plan];
     if (!priceId) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 });
     }
@@ -40,7 +44,7 @@ export async function POST(request: NextRequest) {
       }, { status: 401 });
     }
 
-    const stripe = getStripe();
+    const stripe = getStripeServerClient();
 
     // Prevent duplicate Stripe customers — look up existing customer first
     let customerId: string | undefined;

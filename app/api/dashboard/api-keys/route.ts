@@ -1,8 +1,20 @@
 import { NextResponse } from 'next/server';
 import { buildKeyPrefix, generateApiKey, hashApiKey, normalizeApiKeyName } from '@/lib/apiKeys';
+import { getUserTier } from '@/lib/subscription';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
+
+function proRequiredResponse() {
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'Pro subscription required for API key management',
+      code: 'PRO_REQUIRED',
+    },
+    { status: 403 }
+  );
+}
 
 function handleApiKeyError(error: unknown) {
   const message = error instanceof Error ? error.message : 'Unknown error';
@@ -28,6 +40,11 @@ export async function GET() {
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { tier } = await getUserTier();
+    if (tier !== 'pro') {
+      return proRequiredResponse();
     }
 
     const { data, error } = await supabase
@@ -58,6 +75,11 @@ export async function POST(request: Request) {
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { tier } = await getUserTier();
+    if (tier !== 'pro') {
+      return proRequiredResponse();
     }
 
     const body = await request.json().catch(() => ({}));

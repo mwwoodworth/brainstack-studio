@@ -111,7 +111,7 @@ export default function SettingsPage() {
               <h1 className="text-4xl font-bold">Settings</h1>
             </div>
             <p className="text-slate-400">
-              Control local data retention and telemetry preferences for Guided Explorer sessions.
+              Control session retention and telemetry preferences for Guided Explorer runs.
             </p>
           </motion.div>
 
@@ -134,8 +134,10 @@ export default function SettingsPage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <label className="text-sm font-medium">Save Sessions Locally</label>
-                      <p className="text-xs text-slate-400">Store Guided Explorer sessions in your browser.</p>
+                      <label className="text-sm font-medium">Save Explorer Sessions</label>
+                      <p className="text-xs text-slate-400">
+                        Store sessions in your workspace (cloud when signed in, local when signed out).
+                      </p>
                     </div>
                     <button
                       onClick={() => handleToggle('saveSessions')}
@@ -233,7 +235,7 @@ export default function SettingsPage() {
                         <div>
                           <p className="font-medium text-slate-300">Free Plan</p>
                           <p className="text-xs text-slate-400">
-                            Upgrade to Pro for advanced workflows, team sessions, and PDF exports.
+                            Upgrade to Pro for cloud sessions, API key access, and billing controls.
                           </p>
                         </div>
                       </div>

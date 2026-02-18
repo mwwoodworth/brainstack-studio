@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { sanitizeRedirectPath } from "@/lib/authRedirect";
 
 const PROTECTED_ROUTES = ["/dashboard", "/settings", "/onboarding"];
 const AUTH_ROUTES = ["/auth"];
@@ -62,7 +63,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && onboardingCompleted && pathname.startsWith("/onboarding")) {
-    const redirectTarget = request.nextUrl.searchParams.get("redirect") || "/dashboard";
+    const redirectTarget = sanitizeRedirectPath(
+      request.nextUrl.searchParams.get("redirect"),
+      "/dashboard"
+    );
     return NextResponse.redirect(new URL(redirectTarget, request.url));
   }
 

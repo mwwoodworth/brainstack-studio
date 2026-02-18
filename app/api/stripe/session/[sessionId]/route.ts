@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
-import { createServiceRoleClient } from "@/lib/supabase/server";
-
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2026-01-28.clover",
-  });
-}
+import {
+  createServiceRoleClient,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
+import { getStripeServerClient } from "@/lib/stripe/config";
 
 export async function GET(
   _request: NextRequest,
@@ -15,10 +12,25 @@ export async function GET(
   const { sessionId } = await params;
 
   try {
-    const stripe = getStripe();
+    const userClient = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await userClient.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const stripe = getStripeServerClient();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (session.payment_status !== "paid") {
+    if (
+      session.payment_status !== "paid" &&
+      session.payment_status !== "no_payment_required"
+    ) {
       return NextResponse.json({
         status: "pending",
         message: "Payment not yet confirmed",
@@ -26,6 +38,13 @@ export async function GET(
     }
 
     const userId = session.metadata?.user_id;
+    if (userId && userId !== user.id) {
+      return NextResponse.json(
+        { status: "error", message: "Forbidden" },
+        { status: 403 }
+      );
+    }
+
     if (!userId) {
       return NextResponse.json({
         status: "provisioned",
@@ -38,7 +57,7 @@ export async function GET(
     const { data: sub } = await supabase
       .from("bss_subscriptions")
       .select("status, tier")
-      .eq("user_id", userId)
+      .eq("user_id", user.id)
       .in("status", ["active", "trialing"])
       .order("created_at", { ascending: false })
       .limit(1)
