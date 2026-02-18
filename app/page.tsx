@@ -22,6 +22,10 @@ import {
   FileText,
   Activity,
   ShieldCheck,
+  Building2,
+  Briefcase,
+  Globe,
+  Server,
 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -33,10 +37,37 @@ import { ToolCard } from '@/components/tools';
 import { getFeaturedTools } from '@/lib/tools';
 
 const METRICS = [
-  { value: '15+', label: 'Free Tools', icon: Calculator },
-  { value: '12', label: 'Industries', icon: Target },
-  { value: '5+', label: 'Solution Patterns', icon: ClipboardList },
-  { value: '100%', label: 'Audit-Ready', icon: Shield },
+  { value: '15+', label: 'Free AI Tools', icon: Calculator },
+  { value: '12', label: 'Industries Served', icon: Globe },
+  { value: '100%', label: 'Audit-Ready Trace', icon: ShieldCheck },
+  { value: '50+', label: 'Solution Patterns', icon: ClipboardList },
+];
+
+const USE_CASES = [
+  {
+    title: 'Finance Operations',
+    description: 'Automate invoice reconciliation, expense approvals, and audit prep.',
+    icon: TrendingUp,
+    color: 'text-emerald-400',
+  },
+  {
+    title: 'HR & People Ops',
+    description: 'Streamline onboarding, benefits enrollment, and compliance checks.',
+    icon: Users,
+    color: 'text-violet-400',
+  },
+  {
+    title: 'IT Service Management',
+    description: 'Auto-triage tickets, provision access, and manage asset lifecycles.',
+    icon: Server,
+    color: 'text-cyan-400',
+  },
+  {
+    title: 'Sales Operations',
+    description: 'Enrich leads, generate contracts, and automate deal desk approvals.',
+    icon: Briefcase,
+    color: 'text-amber-400',
+  },
 ];
 
 const TRUST_MECHANISMS = [
@@ -171,11 +202,12 @@ function ProofArtifactStrip() {
   };
 
   return (
-    <section className="py-16 px-6 bg-white/[0.02]">
+    <section className="py-16 px-6 bg-white/[0.02] border-y border-white/5">
       <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="text-center mb-8"
         >
           <Badge variant="default" className="mb-4">
@@ -189,10 +221,12 @@ function ProofArtifactStrip() {
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex justify-center gap-2 mb-8">
+        <div className="flex flex-wrap justify-center gap-2 mb-8" role="tablist">
           {PROOF_TABS.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
                 activeTab === tab.id
@@ -222,14 +256,16 @@ function ProofArtifactStrip() {
               <p className="text-sm text-slate-400">{activeProof.description}</p>
             </CardHeader>
             <CardContent>
-              <div className="font-mono text-sm space-y-1 bg-black/30 rounded-lg p-4 border border-white/5">
-                {activeProof.content.map((line, i) => (
-                  <div key={i} className="flex gap-3">
-                    <span className="text-slate-500 w-32 shrink-0 text-right">{line.label}</span>
-                    <span className="text-slate-600">|</span>
-                    <span className={typeStyles[line.type] || 'text-slate-300'}>{line.value}</span>
-                  </div>
-                ))}
+              <div className="font-mono text-sm space-y-1 bg-black/30 rounded-lg p-4 border border-white/5 overflow-x-auto">
+                <div className="min-w-[600px]">
+                  {activeProof.content.map((line, i) => (
+                    <div key={i} className="flex gap-3">
+                      <span className="text-slate-500 w-32 shrink-0 text-right">{line.label}</span>
+                      <span className="text-slate-600">|</span>
+                      <span className={typeStyles[line.type] || 'text-slate-300'}>{line.value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <p className="text-xs text-slate-500 mt-3 text-center">
                 Sample data. Real deployments connect to your systems with full governance controls.
@@ -250,9 +286,9 @@ export default function Home() {
       {/* Hero */}
       <section className="pt-32 pb-24 px-6 relative overflow-hidden">
         {/* Background gradient effects */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-[100px]" />
         </div>
 
         <div className="max-w-6xl mx-auto text-center">
@@ -265,48 +301,48 @@ export default function Home() {
               <Brain className="w-3 h-3 mr-1" />
               Operational AI Platform
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
               AI that runs your
               <br />
-              <span className="text-gradient">operations</span>, end-to-end.
+              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">operations</span>, end-to-end.
             </h1>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-4">
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-6">
               BrainStack Studio turns real workflows into reliable AI automation.
               Deterministic. Auditable. Measurable.
             </p>
-            <p className="text-sm text-slate-400 max-w-2xl mx-auto mb-10">
+            <p className="text-sm text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
               Deterministic = bounded outputs + explicit rules + approval gates + full traceability.
               No hallucinations. No black boxes. Start free with 15 tools and a guided explorer across 12 industries.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/explorer">
-                <Button size="xl">
+                <Button size="xl" aria-label="Try the Explorer Free">
                   Try the Explorer Free
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button variant="secondary" size="xl">
+                <Button variant="secondary" size="xl" aria-label="View Pricing">
                   View Pricing
                 </Button>
               </Link>
             </div>
 
             {/* Metrics bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto border-t border-white/5 pt-10">
               {METRICS.map((stat, idx) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + idx * 0.1 }}
-                  className="text-center"
+                  className="text-center group"
                 >
-                  <div className="flex items-center justify-center gap-2 mb-1">
+                  <div className="flex items-center justify-center gap-2 mb-1 group-hover:scale-105 transition-transform">
                     <stat.icon className="w-5 h-5 text-cyan-400" />
-                    <span className="text-3xl font-bold text-white">{stat.value}</span>
+                    <span className="text-2xl md:text-3xl font-bold text-white">{stat.value}</span>
                   </div>
-                  <div className="text-sm text-slate-300">{stat.label}</div>
+                  <div className="text-sm text-slate-400">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -314,15 +350,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Use Cases Grid */}
+      <section className="py-20 px-6 bg-white/[0.02]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Enterprise Use Cases</h2>
+            <p className="text-slate-400">Proven automation patterns for every department.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {USE_CASES.map((useCase, idx) => (
+              <motion.div
+                key={useCase.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="h-full hover:bg-white/5 transition-colors">
+                  <CardHeader>
+                    <div className="mb-4">
+                      <useCase.icon className={`w-8 h-8 ${useCase.color}`} />
+                    </div>
+                    <CardTitle className="text-lg">{useCase.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-slate-400">{useCase.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Proof Artifact Strip */}
       <ProofArtifactStrip />
 
       {/* Pain Points */}
-      <section className="py-16 px-6 border-y border-white/5">
+      <section className="py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-10"
           >
             <h2 className="text-2xl md:text-3xl font-bold mb-3">Sound familiar?</h2>
@@ -333,28 +403,30 @@ export default function Home() {
                 key={pain.text}
                 initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="flex items-center gap-4 bg-white/[0.03] border border-white/5 rounded-xl px-6 py-4"
+                className="flex items-center gap-4 bg-white/[0.03] border border-white/5 rounded-xl px-6 py-5 hover:border-white/10 transition-colors"
               >
                 <pain.icon className="w-6 h-6 text-amber-400 shrink-0" />
-                <p className="text-slate-300">{pain.text}</p>
+                <p className="text-slate-300 font-medium">{pain.text}</p>
               </motion.div>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <p className="text-slate-300">
-              BrainStack Studio was built to solve exactly these problems. <span className="text-cyan-400">Here&apos;s how.</span>
+          <div className="text-center mt-10">
+            <p className="text-slate-400">
+              BrainStack Studio was built to solve exactly these problems. <span className="text-cyan-400 font-medium">Here&apos;s how.</span>
             </p>
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <Badge variant="default" className="mb-4">How It Works</Badge>
@@ -370,16 +442,17 @@ export default function Home() {
                 key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
               >
-                <Card className="h-full group hover:border-white/20 transition-colors">
-                  <CardContent>
-                    <div className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center mb-4`}>
+                <Card className="h-full group hover:border-white/20 transition-colors border-t-4 border-t-transparent hover:border-t-cyan-500/50">
+                  <CardContent className="pt-6">
+                    <div className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                       <item.icon className={`w-6 h-6 ${item.color}`} />
                     </div>
                     <div className="text-xs font-mono text-slate-500 mb-2">STEP {item.step}</div>
                     <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                    <p className="text-sm text-slate-300">{item.description}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">{item.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -389,11 +462,12 @@ export default function Home() {
       </section>
 
       {/* Free Tools Showcase */}
-      <section className="py-20 px-6 bg-white/[0.02]">
+      <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <Badge variant="primary" className="mb-4">
@@ -412,6 +486,7 @@ export default function Home() {
                 key={tool.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
               >
                 <ToolCard tool={tool} />
@@ -419,10 +494,10 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-12">
             <Link href="/tools">
-              <Button size="lg" variant="secondary">
-                <Calculator className="w-5 h-5" />
+              <Button size="lg" variant="secondary" aria-label="Browse all tools">
+                <Calculator className="w-5 h-5 mr-2" />
                 Browse All 15 Tools
               </Button>
             </Link>
@@ -431,11 +506,12 @@ export default function Home() {
       </section>
 
       {/* Solutions Preview */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Solution Gallery</h2>
@@ -450,34 +526,39 @@ export default function Home() {
                 key={solution.slug}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
               >
-                <Card className="h-full hover:border-white/20 transition-colors">
+                <Card className="h-full hover:border-white/20 transition-colors flex flex-col">
                   <CardHeader>
-                    <CardTitle>{solution.name}</CardTitle>
-                    <p className="text-sm text-slate-300">{solution.industry}</p>
+                    <div className="flex justify-between items-start mb-2">
+                      <CardTitle className="text-xl">{solution.name}</CardTitle>
+                      <Badge variant="default" className="text-xs">{solution.industry}</Badge>
+                    </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-slate-300">{solution.problem}</p>
+                  <CardContent className="space-y-4 flex-1 flex flex-col">
+                    <p className="text-sm text-slate-300 flex-1">{solution.problem}</p>
                     <div className="flex flex-wrap gap-2">
                       {solution.outputs.slice(0, 3).map((output) => (
-                        <Badge key={output} variant="default" className="text-xs">
+                        <Badge key={output} variant="default" className="text-xs bg-white/10 hover:bg-white/20">
                           {output}
                         </Badge>
                       ))}
                     </div>
-                    <Link href={`/solutions/${solution.slug}`} className="inline-flex items-center text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
-                      View solution <ArrowRight className="w-4 h-4 ml-1" />
-                    </Link>
+                    <div className="pt-2">
+                      <Link href={`/solutions/${solution.slug}`} className="inline-flex items-center text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
+                        View solution <ArrowRight className="w-4 h-4 ml-1" />
+                      </Link>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
           </div>
 
-          <div className="text-center mt-10">
+          <div className="text-center mt-12">
             <Link href="/solutions">
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" aria-label="Browse all solutions">
                 Browse All Solutions
               </Button>
             </Link>
@@ -486,11 +567,12 @@ export default function Home() {
       </section>
 
       {/* Trust Mechanisms */}
-      <section className="py-20 px-6 bg-white/[0.02]">
+      <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <Badge variant="default" className="mb-4">
@@ -509,16 +591,17 @@ export default function Home() {
                 key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
               >
-                <Card>
-                  <CardContent className="flex gap-4">
+                <Card className="hover:border-emerald-500/30 transition-colors">
+                  <CardContent className="flex gap-4 items-start pt-6">
                     <div className="w-10 h-10 rounded-lg bg-emerald-400/10 flex items-center justify-center shrink-0">
                       <item.icon className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{item.title}</h3>
-                      <p className="text-sm text-slate-300">{item.description}</p>
+                      <h3 className="font-semibold mb-2 text-lg">{item.title}</h3>
+                      <p className="text-sm text-slate-300 leading-relaxed">{item.description}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -529,11 +612,11 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-6 relative overflow-hidden">
+      <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-transparent to-cyan-900/10">
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-3xl" />
         </div>
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
           <Badge variant="primary">
             <Sparkles className="w-3 h-3 mr-1" />
             Get Started
@@ -541,21 +624,21 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-bold">
             Ready to automate
             <br />
-            <span className="text-gradient">real operations?</span>
+            <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">real operations?</span>
           </h2>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
             Start free with the Explorer and 15 business tools. No signup required.
             Upgrade to Pro at $99/mo when you need team collaboration and advanced workflows.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link href="/explorer">
-              <Button size="xl">
+              <Button size="xl" aria-label="Try Explorer Free">
                 Try the Explorer Free
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
             <Link href="/pricing">
-              <Button variant="secondary" size="xl">
+              <Button variant="secondary" size="xl" aria-label="Subscribe to Pro">
                 Subscribe to Pro - $99/mo
               </Button>
             </Link>

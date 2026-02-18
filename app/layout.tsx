@@ -37,11 +37,10 @@ export const metadata: Metadata = {
     template: '%s | BrainStack Studio',
   },
   description:
-    'Operational AI workflows and enterprise automation that integrate with how your business runs: secure, governed, and measurable.',
+    'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales. Start free with our AI Explorer.',
   applicationName: 'BrainStack Studio',
   keywords: [
     'Operational AI Platform',
-    'Operational AI',
     'Enterprise Automation',
     'Workflow Automation',
     'Business Process Automation',
@@ -49,6 +48,11 @@ export const metadata: Metadata = {
     'AI Agents',
     'Audit Trails',
     'BrainStack Studio',
+    'AI for Finance',
+    'HR Automation',
+    'ITSM AI',
+    'Sales Operations AI',
+    'Secure AI',
   ],
   authors: [{ name: 'BrainStack Studio' }],
   category: 'Technology',
@@ -77,7 +81,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'BrainStack Studio | Operational AI Platform',
     description:
-      'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
+      'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales.',
     type: 'website',
     url: siteUrl,
     siteName: 'BrainStack Studio',
@@ -95,7 +99,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'BrainStack Studio | Operational AI Platform',
     description:
-      'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
+      'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales.',
     images: ['/opengraph-image'],
   },
 };
