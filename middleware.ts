@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-const PROTECTED_ROUTES = ["/dashboard", "/settings"];
+const PROTECTED_ROUTES = ["/dashboard", "/settings", "/onboarding"];
 const AUTH_ROUTES = ["/auth"];
 
 export async function middleware(request: NextRequest) {
@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+  const onboardingCompleted = Boolean(user?.user_metadata?.bss_onboarding_completed);
 
   // Protect /dashboard and /settings — redirect to /auth
   if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !user) {
@@ -51,9 +52,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  if (user && !onboardingCompleted) {
+    const onboardingProtected = pathname.startsWith("/dashboard") || pathname.startsWith("/settings");
+    if (onboardingProtected) {
+      const redirectUrl = new URL("/onboarding", request.url);
+      redirectUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  if (user && onboardingCompleted && pathname.startsWith("/onboarding")) {
+    const redirectTarget = request.nextUrl.searchParams.get("redirect") || "/dashboard";
+    return NextResponse.redirect(new URL(redirectTarget, request.url));
+  }
+
   // Auth routes — redirect logged-in users to /dashboard
   if (AUTH_ROUTES.some((route) => pathname.startsWith(route)) && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const target = onboardingCompleted ? "/dashboard" : "/onboarding";
+    return NextResponse.redirect(new URL(target, request.url));
   }
 
   return response;

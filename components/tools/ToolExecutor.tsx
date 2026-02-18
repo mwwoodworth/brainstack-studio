@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Play, RotateCcw, Share2, Download, Lightbulb, ListChecks, GitBranch } from 'lucide-react';
-import { Tool, ToolResult, executeTool, validateInputs } from '@/lib/tools';
+import { Tool, ToolResult, validateInputs } from '@/lib/tools';
 import { ToolInput } from './ToolInput';
 import { ToolOutputGrid } from './ToolOutput';
 import { ToolChart } from './ToolChart';
@@ -14,6 +14,13 @@ import { Button } from '@/components/ui/Button';
 interface ToolExecutorProps {
   tool: Tool;
 }
+
+type ExecuteToolResponse = {
+  success: boolean;
+  result?: ToolResult;
+  error?: string;
+  message?: string;
+};
 
 export function ToolExecutor({ tool }: ToolExecutorProps) {
   const [inputs, setInputs] = useState<Record<string, string | number>>(() => {
@@ -58,12 +65,19 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
     setIsCalculating(true);
     setErrors({});
 
-    // Small delay for UX
-    await new Promise(resolve => setTimeout(resolve, 300));
-
     try {
-      const toolResult = executeTool(tool.id, inputs);
-      setResult(toolResult);
+      const response = await fetch(`/api/tools/${tool.id}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inputs }),
+      });
+
+      const data = (await response.json()) as ExecuteToolResponse;
+      if (!response.ok || !data.success || !data.result) {
+        throw new Error(data.error || data.message || 'Tool execution failed');
+      }
+
+      setResult(data.result);
     } catch (error) {
       console.error('Tool execution error:', error);
       setErrors({ _general: 'An error occurred while calculating. Please check your inputs.' });

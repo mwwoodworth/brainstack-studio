@@ -1,113 +1,92 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import type { FeatureComparisonRow, PlanId, PricingPlan } from '@/lib/pricing';
 import {
   Check,
   ArrowRight,
-  Zap,
-  Shield,
-  Users,
-  BarChart3,
   Loader2,
   Star,
   Building2,
   Rocket,
+  RefreshCw,
 } from 'lucide-react';
 
-const PLANS = [
-  {
-    name: 'Free',
-    description: 'Explore operational AI at your own pace',
-    price: '$0',
-    period: 'forever',
-    icon: Rocket,
-    features: [
-      'Guided Explorer with 12 industries',
-      '15 interactive business tools',
-      'Solution gallery with previews',
-      'Audit-ready run summaries',
-      'Local saved sessions',
-    ],
-    cta: 'Start Free',
-    href: '/explorer',
-    stripeplan: null,
-  },
-  {
-    name: 'Pro',
-    description: 'For teams ready to operationalize AI',
-    price: '$99',
-    period: '/month',
-    icon: Star,
-    features: [
-      'Everything in Free, plus:',
-      'Advanced workflow templates',
-      'Team-shared saved sessions',
-      'Exportable run summaries (PDF/CSV)',
-      'Priority support (24hr SLA)',
-      'API access for integrations',
-      'Custom industry configurations',
-    ],
-    cta: 'Subscribe to Pro',
-    href: null,
-    stripeplan: 'pro',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    description: 'Custom implementation and deployment',
-    price: 'Custom',
-    period: 'per engagement',
-    icon: Building2,
-    features: [
-      'Everything in Pro, plus:',
-      'Dedicated implementation team',
-      'System integration and onboarding',
-      'Custom governance and audit trails',
-      'SLA-backed reliability guarantees',
-      'White-label deployment option',
-      'On-premise / VPC available',
-    ],
-    cta: 'Request Implementation',
-    href: '/contact',
-    stripeplan: null,
-  },
-];
+type PricingResponse = {
+  success: boolean;
+  updatedAt: string;
+  plans: PricingPlan[];
+  comparison: FeatureComparisonRow[];
+};
+
+const PLAN_ICONS = {
+  free: Rocket,
+  pro: Star,
+  enterprise: Building2,
+} as const;
 
 const VALUE_PROPS = [
   {
-    icon: BarChart3,
-    title: 'Measurable ROI',
-    description: 'Every workflow shows projected time saved, error reduction, and revenue impact before you commit.',
+    title: 'Real capability data',
+    description: 'Plan details hydrate from live pricing APIs and capability counts.',
   },
   {
-    icon: Shield,
-    title: 'Audit-Ready',
-    description: 'Full decision trails and run summaries that satisfy compliance and governance requirements.',
+    title: 'Deterministic outputs',
+    description: 'All tiers use bounded workflows with explicit confidence signaling.',
   },
   {
-    icon: Users,
-    title: 'Team Collaboration',
-    description: 'Share sessions, templates, and insights across your organization with role-based access.',
-  },
-  {
-    icon: Zap,
-    title: 'No Lock-In',
-    description: 'Cancel anytime. Export your data. We earn your business every month through results, not contracts.',
+    title: 'Operational scale path',
+    description: 'Start self-serve, then expand to team workflows and enterprise deployment.',
   },
 ];
 
 export default function PricingPage() {
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
+  const [selectedComparisonPlan, setSelectedComparisonPlan] = useState<'all' | PlanId>('all');
+
+  const comparisonRows = pricingData?.comparison ?? [];
+
+  const sortedPlans = useMemo(() => {
+    const order: PlanId[] = ['free', 'pro', 'enterprise'];
+    const plans = pricingData?.plans ?? [];
+    return [...plans].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  }, [pricingData]);
+
+  async function loadPricingData() {
+    setDataLoading(true);
+    setDataError(null);
+    try {
+      const response = await fetch('/api/pricing', { cache: 'no-store' });
+      const data = (await response.json()) as PricingResponse;
+
+      if (!response.ok || !data.success) {
+        throw new Error('Failed to load pricing');
+      }
+
+      setPricingData(data);
+    } catch (error) {
+      setDataError(error instanceof Error ? error.message : 'Failed to load pricing');
+    } finally {
+      setDataLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadPricingData();
+  }, []);
 
   async function handleCheckout(plan: string) {
-    setLoading(plan);
+    setLoadingPlan(plan);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -120,12 +99,10 @@ export default function PricingPage() {
       } else if (data.authRedirect) {
         window.location.href = data.authRedirect;
       } else {
-        console.error('Checkout error:', data.error);
-        setLoading(null);
+        setLoadingPlan(null);
       }
-    } catch (err) {
-      console.error('Checkout failed:', err);
-      setLoading(null);
+    } catch {
+      setLoadingPlan(null);
     }
   }
 
@@ -133,185 +110,217 @@ export default function PricingPage() {
     <main id="main-content" className="min-h-screen">
       <Navigation />
 
-      {/* Hero */}
       <section className="pt-28 pb-12 px-6">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Badge variant="primary" className="mb-4">Pricing</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Start free. Scale when ready.
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Start free. Scale when ready.</h1>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              No credit card for free tier. No lock-in contracts.
-              Upgrade to Pro when you need advanced workflows, team collaboration, and priority support.
+              Compare plans with live product and pricing data. Choose the level that matches your current
+              operating complexity, then upgrade without migration friction.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Plans */}
-      <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-          {PLANS.map((plan, idx) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card className={`h-full flex flex-col ${plan.popular
-                ? 'border-cyan-500 ring-2 ring-cyan-500/30 relative'
-                : ''
-              }`}>
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge variant="primary" className="shadow-lg shadow-cyan-500/20">
-                      Most Popular
-                    </Badge>
-                  </div>
-                )}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'
-                    }`}>
-                      <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-300'}`} />
-                    </div>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  </div>
-                  <p className="text-sm text-slate-300">{plan.description}</p>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-sm text-slate-300 ml-1">{plan.period}</span>
-                  </div>
+      <section className="pb-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Plans</h2>
+            <Button variant="ghost" size="sm" onClick={loadPricingData} disabled={dataLoading}>
+              {dataLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              Refresh
+            </Button>
+          </div>
 
-                  <ul className="space-y-3 text-sm flex-1">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex gap-2.5">
-                        <Check className={`w-4 h-4 mt-0.5 shrink-0 ${
-                          feature.startsWith('Everything') ? 'text-cyan-400' : 'text-emerald-400'
-                        }`} />
-                        <span className={feature.startsWith('Everything') ? 'text-cyan-300 font-medium' : 'text-slate-300'}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+          {dataError && (
+            <div className="mb-6 text-sm text-amber-300 border border-amber-500/20 bg-amber-500/10 rounded-lg px-3 py-2">
+              {dataError}
+            </div>
+          )}
 
-                  <div className="mt-6">
-                    {plan.stripeplan ? (
-                      <Button
-                        size="lg"
-                        className="w-full"
-                        onClick={() => handleCheckout(plan.stripeplan!)}
-                        disabled={loading !== null}
+          {dataLoading && sortedPlans.length === 0 ? (
+            <div className="text-sm text-slate-500 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading plans...
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {sortedPlans.map((plan, idx) => {
+                const PlanIcon = PLAN_ICONS[plan.id];
+                return (
+                  <motion.div
+                    key={plan.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                  >
+                    <Card className={`h-full flex flex-col ${plan.popular ? 'border-cyan-500 ring-2 ring-cyan-500/30 relative' : ''}`}>
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <Badge variant="primary">Most Popular</Badge>
+                        </div>
+                      )}
+
+                      <CardHeader>
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'}`}>
+                            <PlanIcon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-300'}`} />
+                          </div>
+                          <CardTitle className="text-xl">{plan.name}</CardTitle>
+                        </div>
+                        <p className="text-sm text-slate-300">{plan.description}</p>
+                      </CardHeader>
+
+                      <CardContent className="flex-1 flex flex-col">
+                        <div className="mb-6">
+                          <span className="text-4xl font-bold">{plan.price.display}</span>
+                        </div>
+
+                        <ul className="space-y-2 text-sm flex-1">
+                          {plan.features.map((feature) => (
+                            <li key={feature} className="flex gap-2">
+                              <Check className="w-4 h-4 mt-0.5 text-emerald-400 shrink-0" />
+                              <span className="text-slate-300">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="mt-6">
+                          {plan.stripePlan ? (
+                            <Button
+                              size="lg"
+                              className="w-full"
+                              onClick={() => handleCheckout(plan.stripePlan as string)}
+                              disabled={loadingPlan !== null}
+                            >
+                              {loadingPlan === plan.stripePlan ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  Processing...
+                                </>
+                              ) : (
+                                <>
+                                  {plan.cta}
+                                  <ArrowRight className="w-4 h-4" />
+                                </>
+                              )}
+                            </Button>
+                          ) : (
+                            <Button asChild size="lg" className="w-full" variant={plan.popular ? 'primary' : 'secondary'}>
+                              <Link href={plan.href || '/pricing'}>
+                                {plan.cta}
+                                <ArrowRight className="w-4 h-4" />
+                              </Link>
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="pb-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <h2 className="text-2xl font-bold">Interactive Feature Comparison</h2>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedComparisonPlan('all')}
+                className={`px-3 py-1.5 rounded-full text-xs border ${
+                  selectedComparisonPlan === 'all'
+                    ? 'border-cyan-500 text-cyan-300 bg-cyan-500/10'
+                    : 'border-white/10 text-slate-300'
+                }`}
+              >
+                Show all
+              </button>
+              {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+                <button
+                  key={planId}
+                  type="button"
+                  onClick={() => setSelectedComparisonPlan(planId)}
+                  className={`px-3 py-1.5 rounded-full text-xs border capitalize ${
+                    selectedComparisonPlan === planId
+                      ? 'border-cyan-500 text-cyan-300 bg-cyan-500/10'
+                      : 'border-white/10 text-slate-300'
+                  }`}
+                >
+                  Focus {planId}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Card>
+            <CardContent className="overflow-x-auto">
+              <table className="w-full min-w-[720px] text-sm">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 pr-4 text-slate-400 font-medium">Capability</th>
+                    {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+                      <th
+                        key={planId}
+                        className={`text-left py-3 px-4 capitalize font-medium ${
+                          selectedComparisonPlan === 'all' || selectedComparisonPlan === planId
+                            ? 'text-white'
+                            : 'text-slate-500'
+                        }`}
                       >
-                        {loading === plan.stripeplan ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            {plan.cta}
-                            <ArrowRight className="w-4 h-4" />
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button asChild size="lg" className="w-full" variant={plan.popular ? 'primary' : 'secondary'}>
-                        <Link href={plan.href!}>
-                          {plan.cta}
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                        {planId}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row) => (
+                    <tr key={row.id} className="border-b border-white/5">
+                      <td className="py-3 pr-4 text-slate-300">{row.label}</td>
+                      {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+                        <td
+                          key={`${row.id}-${planId}`}
+                          className={`py-3 px-4 ${
+                            selectedComparisonPlan === 'all' || selectedComparisonPlan === planId
+                              ? 'text-slate-200'
+                              : 'text-slate-500'
+                          }`}
+                        >
+                          {row.values[planId]}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="pb-12 px-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-4">
+          {VALUE_PROPS.map((item) => (
+            <Card key={item.title}>
+              <CardContent>
+                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <p className="text-sm text-slate-300">{item.description}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Value Props */}
-      <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {VALUE_PROPS.map((prop, idx) => (
-              <motion.div
-                key={prop.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Card className="h-full">
-                  <CardContent>
-                    <prop.icon className="w-8 h-8 text-cyan-400 mb-3" />
-                    <h3 className="font-semibold mb-1">{prop.title}</h3>
-                    <p className="text-sm text-slate-300">{prop.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="pb-20 px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            {[
-              {
-                q: 'What does "deterministic" mean for AI workflows?',
-                a: 'Every workflow runs with explicit inputs, bounded logic, and traceable outputs. There are no black-box decisions — you can audit exactly why a result was produced, what data was used, and what confidence level was assigned.',
-              },
-              {
-                q: 'Can I use the free tools without signing up?',
-                a: 'Yes. All 15 interactive tools and the Guided Explorer work immediately with no account required. Sign up when you want to save sessions or access Pro features.',
-              },
-              {
-                q: 'How is this different from ChatGPT or other AI chatbots?',
-                a: 'BrainStack Studio runs structured operational workflows, not open-ended conversations. Outputs are governed by explicit rules, confidence thresholds, and approval gates — designed for production use, not improvisation.',
-              },
-              {
-                q: 'What happens to my data?',
-                a: 'Free-tier tool calculations run entirely in your browser. No data is sent to any server. Pro features store encrypted session data with role-based access. See our Privacy page for details.',
-              },
-              {
-                q: 'Can I cancel Pro anytime?',
-                a: 'Yes. No contracts, no lock-in. Cancel from your dashboard and your subscription ends at the current billing period. You can export all your data before canceling.',
-              },
-              {
-                q: 'What does Enterprise implementation include?',
-                a: 'A dedicated team scopes your workflows, integrates with your existing systems, configures governance rules, and deploys with SLA-backed reliability. Every engagement is custom-quoted based on complexity.',
-              },
-            ].map((faq) => (
-              <details key={faq.q} className="group">
-                <summary className="flex items-center justify-between cursor-pointer p-4 rounded-lg bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-colors">
-                  <span className="text-sm font-medium text-white pr-4">{faq.q}</span>
-                  <ArrowRight className="w-4 h-4 text-slate-500 shrink-0 transition-transform group-open:rotate-90" />
-                </summary>
-                <div className="px-4 pb-4 pt-2">
-                  <p className="text-sm text-slate-400">{faq.a}</p>
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
       <section className="pb-20 px-6">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <h2 className="text-3xl font-bold">Ready to operationalize AI?</h2>
           <p className="text-slate-300">
-            Start with the free Explorer and tools. When you see the value, Pro gives you the power
-            to scale workflows across your entire team.
+            Start with the free Explorer. Upgrade when you need team workflows, integrations, and production support.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/explorer">

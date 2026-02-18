@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAllTools, getFeaturedTools, getToolsByCategory } from '@/lib/tools/registry';
 import { ToolCategory } from '@/lib/tools/types';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
+import { recordUsageEvent } from '@/lib/usageEvents';
 
 const VALID_CATEGORIES: ToolCategory[] = ['calculators', 'analyzers', 'generators', 'visualizers'];
 
@@ -59,6 +60,17 @@ export async function GET(request: Request) {
     featured: tool.featured ?? false,
     comingSoon: tool.comingSoon ?? false,
   }));
+
+  await recordUsageEvent({
+    eventName: 'tools_list',
+    category: 'tools',
+    path: '/api/tools',
+    metadata: {
+      count: toolList.length,
+      category: category ?? 'all',
+      featured: featured === 'true',
+    },
+  });
 
   return NextResponse.json({
     success: true,

@@ -8,6 +8,7 @@ import {
   type ExplorerPainPoint,
   type ExplorerRole,
 } from '@/lib/explorer';
+import { recordUsageEvent } from '@/lib/usageEvents';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,9 +23,9 @@ export async function GET() {
       status: 'ok',
       deterministic: true,
       confidenceThreshold: CONFIDENCE_THRESHOLD,
-      industries: Array.from(validIndustries),
-      roles: Array.from(validRoles),
-      painPoints: Array.from(validPainPoints),
+      industries: INDUSTRIES,
+      roles: ROLES,
+      painPoints: PAIN_POINTS,
     }),
     { headers: { 'Content-Type': 'application/json' } }
   );
@@ -61,6 +62,18 @@ export async function POST(request: Request) {
         { status: 422, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    await recordUsageEvent({
+      eventName: 'explorer_run',
+      category: 'explorer',
+      path: '/api/capability',
+      metadata: {
+        industry,
+        role,
+        painPoint,
+        confidence: result.confidence,
+      },
+    });
 
     return new Response(
       JSON.stringify({

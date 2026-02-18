@@ -1,8 +1,8 @@
 // API: Execute a tool with provided inputs
 import { NextResponse } from 'next/server';
 import { getToolById, executeTool } from '@/lib/tools/registry';
-import { trackEvent } from '@/lib/telemetry';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
+import { recordUsageEvent } from '@/lib/usageEvents';
 
 // Validate tool ID format (alphanumeric, hyphens, underscores, max 50 chars)
 function isValidToolId(id: string): boolean {
@@ -111,15 +111,16 @@ export async function POST(
   try {
     const result = executeTool(id, inputs);
 
-    // Track usage (non-blocking)
-    trackEvent({
-      name: 'api_tool_execute',
-      payload: {
-        toolId: id,
+    await recordUsageEvent({
+      eventName: 'tool_execute',
+      category: 'tools',
+      path: `/api/tools/${id}/execute`,
+      toolId: id,
+      metadata: {
         inputCount: Object.keys(inputs).length,
         confidence: result.confidence,
       },
-    }).catch(() => {}); // Ignore telemetry errors
+    });
 
     return NextResponse.json({
       success: true,

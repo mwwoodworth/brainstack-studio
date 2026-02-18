@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { getToolById } from '@/lib/tools/registry';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
+import { recordUsageEvent } from '@/lib/usageEvents';
 
 // Validate tool ID format (alphanumeric, hyphens, underscores, max 50 chars)
 function isValidToolId(id: string): boolean {
@@ -42,6 +43,13 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    await recordUsageEvent({
+      eventName: 'tool_detail',
+      category: 'tools',
+      path: `/api/tools/${id}`,
+      toolId: id,
+    });
 
     return NextResponse.json({
       success: true,

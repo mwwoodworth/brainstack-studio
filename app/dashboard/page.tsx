@@ -1,17 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { useExplorerSessions } from '@/hooks/useExplorerSessions';
 import { INDUSTRIES, PAIN_POINTS, ROLES } from '@/lib/explorer';
-import { formatDate, truncateText } from '@/lib/utils';
+import { copyToClipboard, formatDate, truncateText } from '@/lib/utils';
 import {
   LayoutDashboard,
   Search,
@@ -20,14 +20,73 @@ import {
   Target,
   ClipboardList,
   ArrowRight,
+  Activity,
+  BarChart3,
+  KeyRound,
+  Plus,
+  Copy,
+  RefreshCw,
+  Loader2,
+  ShieldCheck,
 } from 'lucide-react';
+
+type UsageTotals = {
+  events: number;
+  explorerRuns: number;
+  toolExecutions: number;
+  apiCalls: number;
+};
+
+type UsageSeriesPoint = {
+  day: string;
+  total: number;
+  explorer: number;
+  tools: number;
+  api: number;
+};
+
+type UsageResponse = {
+  success: boolean;
+  totals?: UsageTotals;
+  dailySeries?: UsageSeriesPoint[];
+  topTools?: Array<{ toolId: string; count: number }>;
+  error?: string;
+};
+
+type ApiKeyRecord = {
+  id: string;
+  name: string;
+  key_prefix: string;
+  created_at: string;
+  last_used_at: string | null;
+};
 
 const getLabel = (list: Array<{ id: string; label: string }>, id?: string) =>
   list.find((item) => item.id === id)?.label ?? 'Unspecified';
 
+const EMPTY_USAGE: UsageTotals = {
+  events: 0,
+  explorerRuns: 0,
+  toolExecutions: 0,
+  apiCalls: 0,
+};
+
 export default function DashboardPage() {
   const { sessions, isLoaded, deleteSession, clearSessions } = useExplorerSessions();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [usageTotals, setUsageTotals] = useState<UsageTotals>(EMPTY_USAGE);
+  const [usageSeries, setUsageSeries] = useState<UsageSeriesPoint[]>([]);
+  const [topTools, setTopTools] = useState<Array<{ toolId: string; count: number }>>([]);
+  const [usageLoading, setUsageLoading] = useState(true);
+  const [usageError, setUsageError] = useState<string | null>(null);
+
+  const [apiKeys, setApiKeys] = useState<ApiKeyRecord[]>([]);
+  const [apiKeysLoading, setApiKeysLoading] = useState(true);
+  const [apiKeyName, setApiKeyName] = useState('');
+  const [apiKeyBusy, setApiKeyBusy] = useState(false);
+  const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const [apiKeysError, setApiKeysError] = useState<string | null>(null);
 
   const filteredSessions = useMemo(() => {
     if (!searchQuery) return sessions;
@@ -60,6 +119,103 @@ export default function DashboardPage() {
     return top ? getLabel(INDUSTRIES, top[0]) : 'N/A';
   }, [sessions]);
 
+  const peakSeriesValue = useMemo(() => {
+    return Math.max(1, ...usageSeries.map((point) => point.total));
+  }, [usageSeries]);
+
+  async function loadUsage() {
+    setUsageLoading(true);
+    setUsageError(null);
+    try {
+      const response = await fetch('/api/dashboard/usage', { cache: 'no-store' });
+      const data = (await response.json()) as UsageResponse;
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load usage analytics');
+      }
+      setUsageTotals(data.totals ?? EMPTY_USAGE);
+      setUsageSeries(data.dailySeries ?? []);
+      setTopTools(data.topTools ?? []);
+    } catch (error) {
+      setUsageTotals(EMPTY_USAGE);
+      setUsageSeries([]);
+      setTopTools([]);
+      setUsageError(error instanceof Error ? error.message : 'Failed to load usage analytics');
+    } finally {
+      setUsageLoading(false);
+    }
+  }
+
+  async function loadApiKeys() {
+    setApiKeysLoading(true);
+    setApiKeysError(null);
+    try {
+      const response = await fetch('/api/dashboard/api-keys', { cache: 'no-store' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load API keys');
+      }
+
+      setApiKeys((data.keys as ApiKeyRecord[]) ?? []);
+    } catch (error) {
+      setApiKeys([]);
+      setApiKeysError(error instanceof Error ? error.message : 'Failed to load API keys');
+    } finally {
+      setApiKeysLoading(false);
+    }
+  }
+
+  async function handleCreateApiKey() {
+    setApiKeyBusy(true);
+    setApiKeysError(null);
+    setCreatedKey(null);
+
+    try {
+      const response = await fetch('/api/dashboard/api-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: apiKeyName }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to create API key');
+      }
+
+      setCreatedKey(data.rawKey || null);
+      setApiKeyName('');
+      await loadApiKeys();
+    } catch (error) {
+      setApiKeysError(error instanceof Error ? error.message : 'Failed to create API key');
+    } finally {
+      setApiKeyBusy(false);
+    }
+  }
+
+  async function handleRevokeApiKey(id: string) {
+    setApiKeyBusy(true);
+    setApiKeysError(null);
+    try {
+      const response = await fetch(`/api/dashboard/api-keys/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to revoke API key');
+      }
+
+      await loadApiKeys();
+    } catch (error) {
+      setApiKeysError(error instanceof Error ? error.message : 'Failed to revoke API key');
+    } finally {
+      setApiKeyBusy(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadUsage();
+    void loadApiKeys();
+  }, []);
+
   if (!isLoaded) {
     return (
       <main className="min-h-screen">
@@ -88,7 +244,7 @@ export default function DashboardPage() {
                 <h1 className="text-4xl font-bold">Explorer Dashboard</h1>
               </div>
               <p className="text-slate-400">
-                Review saved Guided Explorer sessions and reuse them for implementation scope.
+                Track usage analytics, manage API keys, and review saved explorer sessions.
               </p>
             </div>
             <div className="flex gap-3">
@@ -110,7 +266,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
           >
             <Card>
               <CardContent className="py-4">
@@ -125,6 +281,7 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+
             <Card>
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
@@ -138,6 +295,7 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+
             <Card>
               <CardContent className="py-4">
                 <div className="flex items-center gap-3">
@@ -151,12 +309,221 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardContent className="py-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-fuchsia-500/10 rounded-lg">
+                    <Activity className="w-5 h-5 text-fuchsia-400" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{usageTotals.events}</div>
+                    <div className="text-xs text-slate-400">Tracked Events</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-3 gap-6 mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="lg:col-span-2"
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-cyan-400" />
+                      Usage Analytics
+                    </CardTitle>
+                    <CardDescription>Last 14 days of tracked workspace activity</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={loadUsage} disabled={usageLoading}>
+                    {usageLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                    Refresh
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {usageError ? (
+                    <div className="text-sm text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+                      {usageError}
+                    </div>
+                  ) : null}
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-white/5 rounded-lg p-3">
+                      <div className="text-xs text-slate-500">Explorer Runs</div>
+                      <div className="text-xl font-semibold">{usageTotals.explorerRuns}</div>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3">
+                      <div className="text-xs text-slate-500">Tool Executions</div>
+                      <div className="text-xl font-semibold">{usageTotals.toolExecutions}</div>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3">
+                      <div className="text-xs text-slate-500">API Calls</div>
+                      <div className="text-xl font-semibold">{usageTotals.apiCalls}</div>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3">
+                      <div className="text-xs text-slate-500">Total Events</div>
+                      <div className="text-xl font-semibold">{usageTotals.events}</div>
+                    </div>
+                  </div>
+
+                  <div className="h-44 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                    {usageSeries.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-sm text-slate-500">
+                        No usage events yet.
+                      </div>
+                    ) : (
+                      <div className="h-full flex items-end gap-2">
+                        {usageSeries.map((point) => {
+                          const height = Math.max(6, Math.round((point.total / peakSeriesValue) * 120));
+                          return (
+                            <div key={point.day} className="flex-1 flex flex-col items-center gap-2">
+                              <div
+                                className="w-full rounded-t-md bg-gradient-to-t from-cyan-600/80 to-cyan-300/80"
+                                style={{ height }}
+                                title={`${point.day}: ${point.total} events`}
+                              />
+                              <span className="text-[10px] text-slate-500">
+                                {point.day.slice(5)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    Top Tool Usage
+                  </CardTitle>
+                  <CardDescription>Most frequently executed tools</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {topTools.length === 0 ? (
+                    <p className="text-sm text-slate-500">No tool execution data yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {topTools.map((item) => (
+                        <div key={item.toolId} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                          <span className="text-sm text-slate-300">{item.toolId}</span>
+                          <Badge variant="default">{item.count}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-8"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <KeyRound className="w-5 h-5 text-cyan-400" />
+                  API Key Management
+                </CardTitle>
+                <CardDescription>Create and revoke keys for external integrations.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-3">
+                  <Input
+                    value={apiKeyName}
+                    onChange={(event) => setApiKeyName(event.target.value)}
+                    placeholder="Optional key name (e.g. Production MCP)"
+                  />
+                  <Button onClick={handleCreateApiKey} disabled={apiKeyBusy}>
+                    {apiKeyBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                    Create key
+                  </Button>
+                </div>
+
+                {createdKey && (
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 space-y-2">
+                    <p className="text-xs text-emerald-200">
+                      Copy this key now. It will not be shown again.
+                    </p>
+                    <div className="flex flex-col md:flex-row gap-2 md:items-center">
+                      <code className="flex-1 text-xs bg-black/40 rounded px-2 py-2 break-all">{createdKey}</code>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={async () => {
+                          await copyToClipboard(createdKey);
+                        }}
+                      >
+                        <Copy className="w-4 h-4" />
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {apiKeysError && (
+                  <div className="text-sm text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+                    {apiKeysError}
+                  </div>
+                )}
+
+                {apiKeysLoading ? (
+                  <div className="text-sm text-slate-500 flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading API keys...
+                  </div>
+                ) : apiKeys.length === 0 ? (
+                  <p className="text-sm text-slate-500">No active API keys.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {apiKeys.map((key) => (
+                      <div key={key.id} className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div>
+                          <p className="font-medium">{key.name}</p>
+                          <p className="text-xs text-slate-500">
+                            Prefix {key.key_prefix}... • Created {formatDate(Date.parse(key.created_at))}
+                            {key.last_used_at ? ` • Last used ${formatDate(Date.parse(key.last_used_at))}` : ''}
+                          </p>
+                        </div>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleRevokeApiKey(key.id)}
+                          disabled={apiKeyBusy}
+                        >
+                          Revoke
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="mb-6"
           >
             <div className="relative">
@@ -173,7 +540,7 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.35 }}
           >
             {filteredSessions.length === 0 ? (
               <Card>
@@ -231,7 +598,7 @@ export default function DashboardPage() {
                             </div>
 
                             <p className="text-sm text-slate-300">
-                              {truncateText(session.result.identifiedPain, 140)}
+                              {truncateText(session.result.identifiedPain, 160)}
                             </p>
 
                             <div className="flex flex-wrap gap-2">

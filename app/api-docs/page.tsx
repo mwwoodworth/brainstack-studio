@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -8,240 +8,322 @@ import { CodeBlock } from '@/components/CodeBlock';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Terminal, Copy, Check, Lock, Shield } from 'lucide-react';
-import { copyToClipboard } from '@/lib/utils';
+import { Input } from '@/components/ui/Input';
+import { Terminal, Zap, Loader2, RefreshCw } from 'lucide-react';
 
-const ENDPOINTS = [
-  {
-    method: 'POST',
-    path: '/api/capability/explorer',
-    description: 'Deterministic explorer mapping (safe preview)',
-    badge: 'Core',
-  },
-  {
-    method: 'GET',
-    path: '/api/capability/explorer',
-    description: 'Capability facade status and allowed inputs',
-    badge: 'Utility',
-  },
-  {
-    method: 'POST',
-    path: '/api/lead',
-    description: 'Enterprise intake form submission',
-    badge: 'Lead',
-  },
-  {
-    method: 'POST',
-    path: '/api/telemetry',
-    description: 'Anonymous usage telemetry',
-    badge: 'Internal',
-  },
-];
+type CapabilityOption = {
+  id: string;
+  label: string;
+  description?: string;
+};
+
+type CapabilitySpec = {
+  status: string;
+  confidenceThreshold: number;
+  industries: CapabilityOption[];
+  roles: CapabilityOption[];
+  painPoints: CapabilityOption[];
+};
+
+type EndpointState = {
+  status: 'idle' | 'loading' | 'success' | 'error';
+  payload: unknown;
+  error: string | null;
+};
+
+const DEFAULT_ENDPOINT_STATE: EndpointState = {
+  status: 'idle',
+  payload: null,
+  error: null,
+};
 
 export default function APIDocsPage() {
-  const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
+  const [baseUrl, setBaseUrl] = useState('https://brainstackstudio.com');
+  const [spec, setSpec] = useState<CapabilitySpec | null>(null);
+  const [loadingSpec, setLoadingSpec] = useState(true);
 
-  const handleCopy = async (text: string, id: string) => {
-    await copyToClipboard(text);
-    setCopiedEndpoint(id);
-    setTimeout(() => setCopiedEndpoint(null), 2000);
-  };
+  const [industry, setIndustry] = useState('');
+  const [role, setRole] = useState('');
+  const [painPoint, setPainPoint] = useState('');
+
+  const [getState, setGetState] = useState<EndpointState>(DEFAULT_ENDPOINT_STATE);
+  const [postState, setPostState] = useState<EndpointState>(DEFAULT_ENDPOINT_STATE);
+  const [toolsState, setToolsState] = useState<EndpointState>(DEFAULT_ENDPOINT_STATE);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
+
+  async function loadCapabilitySpec() {
+    setLoadingSpec(true);
+    try {
+      const response = await fetch('/api/capability', { cache: 'no-store' });
+      const data = (await response.json()) as CapabilitySpec;
+      if (!response.ok || data.status !== 'ok') {
+        throw new Error('Failed to load capability schema');
+      }
+      setSpec(data);
+      setIndustry(data.industries[0]?.id ?? '');
+      setRole(data.roles[0]?.id ?? '');
+      setPainPoint(data.painPoints[0]?.id ?? '');
+    } catch {
+      setSpec(null);
+    } finally {
+      setLoadingSpec(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadCapabilitySpec();
+  }, []);
+
+  async function runCapabilityGet() {
+    setGetState({ status: 'loading', payload: null, error: null });
+    try {
+      const response = await fetch('/api/capability');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'GET /api/capability failed');
+      setGetState({ status: 'success', payload: data, error: null });
+    } catch (error) {
+      setGetState({
+        status: 'error',
+        payload: null,
+        error: error instanceof Error ? error.message : 'Request failed',
+      });
+    }
+  }
+
+  async function runCapabilityPost() {
+    setPostState({ status: 'loading', payload: null, error: null });
+    try {
+      const response = await fetch('/api/capability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ industry, role, painPoint }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'POST /api/capability failed');
+      setPostState({ status: 'success', payload: data, error: null });
+    } catch (error) {
+      setPostState({
+        status: 'error',
+        payload: null,
+        error: error instanceof Error ? error.message : 'Request failed',
+      });
+    }
+  }
+
+  async function runToolsGet() {
+    setToolsState({ status: 'loading', payload: null, error: null });
+    try {
+      const response = await fetch('/api/tools?featured=true');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'GET /api/tools failed');
+      setToolsState({ status: 'success', payload: data, error: null });
+    } catch (error) {
+      setToolsState({
+        status: 'error',
+        payload: null,
+        error: error instanceof Error ? error.message : 'Request failed',
+      });
+    }
+  }
+
+  const capabilityCurl = useMemo(() => {
+    return `curl -X POST ${baseUrl}/api/capability \\
+  -H "Content-Type: application/json" \\
+  -d '${JSON.stringify({ industry, role, painPoint })}'`;
+  }, [baseUrl, industry, role, painPoint]);
 
   return (
     <main id="main-content" className="min-h-screen">
       <Navigation />
 
       <div className="pt-24 pb-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
-          >
+        <div className="max-w-5xl mx-auto space-y-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center gap-3 mb-4">
               <Terminal className="w-10 h-10 text-cyan-400" />
               <h1 className="text-4xl font-bold">API Reference</h1>
             </div>
-            <p className="text-xl text-slate-400 max-w-2xl">
-              BrainStack Studio exposes safe capability facades. These endpoints are deterministic
-              and intentionally limited to prevent IP exposure.
+            <p className="text-xl text-slate-400 max-w-3xl">
+              Interactive endpoint docs backed by live responses. Run requests below to inspect current
+              capability schema and deterministic output behavior.
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="grid md:grid-cols-2 gap-4 mb-12"
-          >
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <Shield className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-                <h3 className="font-semibold mb-1">Deterministic</h3>
-                <p className="text-sm text-slate-400">Bounded outputs, no hallucinated promises</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <Lock className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-                <h3 className="font-semibold mb-1">Safe Facades</h3>
-                <p className="text-sm text-slate-400">No internal orchestration exposed</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Base URL</CardTitle>
+                <p className="text-sm text-slate-400 mt-1">{baseUrl}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={loadCapabilitySpec} disabled={loadingSpec}>
+                {loadingSpec ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                Reload schema
+              </Button>
+            </CardHeader>
+          </Card>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mb-8"
-          >
+          <div className="grid md:grid-cols-3 gap-3">
             <Card>
-              <CardContent className="flex items-center justify-between">
+              <CardContent className="pt-6">
+                <Badge variant="success" className="mb-2">GET</Badge>
+                <h3 className="font-semibold">/api/capability</h3>
+                <p className="text-sm text-slate-400 mt-1">Capability schema and allowed options.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <Badge variant="success" className="mb-2">POST</Badge>
+                <h3 className="font-semibold">/api/capability</h3>
+                <p className="text-sm text-slate-400 mt-1">Deterministic explorer output for context inputs.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <Badge variant="success" className="mb-2">GET</Badge>
+                <h3 className="font-semibold">/api/tools</h3>
+                <p className="text-sm text-slate-400 mt-1">Tool catalog for calculators and generators.</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-cyan-400" />
+                Interactive Capability Runner
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-3 gap-3">
                 <div>
-                  <h3 className="font-semibold mb-1">Base URL</h3>
-                  <code className="text-cyan-400">https://brainstackstudio.com</code>
+                  <label className="text-sm font-medium mb-2 block">Industry</label>
+                  <select
+                    className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
+                    value={industry}
+                    onChange={(event) => setIndustry(event.target.value)}
+                    disabled={loadingSpec || !spec}
+                  >
+                    {spec?.industries.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleCopy('https://brainstackstudio.com', 'base')}
-                >
-                  {copiedEndpoint === 'base' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Role</label>
+                  <select
+                    className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
+                    value={role}
+                    onChange={(event) => setRole(event.target.value)}
+                    disabled={loadingSpec || !spec}
+                  >
+                    {spec?.roles.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Pain point</label>
+                  <select
+                    className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm"
+                    value={painPoint}
+                    onChange={(event) => setPainPoint(event.target.value)}
+                    disabled={loadingSpec || !spec}
+                  >
+                    {spec?.painPoints.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={runCapabilityGet} disabled={getState.status === 'loading'}>
+                  {getState.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Run GET /api/capability
                 </Button>
-              </CardContent>
-            </Card>
-          </motion.div>
+                <Button onClick={runCapabilityPost} variant="secondary" disabled={postState.status === 'loading'}>
+                  {postState.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Run POST /api/capability
+                </Button>
+                <Button onClick={runToolsGet} variant="secondary" disabled={toolsState.status === 'loading'}>
+                  {toolsState.status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Run GET /api/tools
+                </Button>
+              </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mb-12"
-          >
-            <h2 className="text-2xl font-bold mb-6">Endpoints</h2>
-            <div className="space-y-4">
-              {ENDPOINTS.map((endpoint) => (
-                <Card key={`${endpoint.method}-${endpoint.path}`}>
-                  <CardContent className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <Badge variant={endpoint.method === 'POST' ? 'success' : 'primary'}>
-                        {endpoint.method}
-                      </Badge>
-                      <div>
-                        <code className="text-cyan-400 font-mono">{endpoint.path}</code>
-                        <p className="text-sm text-slate-400 mt-1">{endpoint.description}</p>
-                      </div>
-                    </div>
-                    <Badge variant="default">{endpoint.badge}</Badge>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
+              <div>
+                <h3 className="text-sm font-medium mb-2">cURL Example</h3>
+                <CodeBlock language="bash" showLineNumbers={false} code={capabilityCurl} />
+              </div>
+            </CardContent>
+          </Card>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="space-y-6 mb-12"
-          >
-            <div className="flex items-center gap-3">
-              <Badge variant="success" className="text-sm">POST</Badge>
-              <h2 className="text-2xl font-bold">/api/capability/explorer</h2>
-            </div>
-
-            <p className="text-slate-400">
-              Returns a deterministic workflow preview for a given industry, role, and pain point.
-            </p>
-
+          <div className="grid lg:grid-cols-3 gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>Request Body</CardTitle>
+                <CardTitle className="text-base">GET /api/capability Response</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
+                {getState.error && <p className="text-sm text-red-300">{getState.error}</p>}
                 <CodeBlock
                   language="json"
-                  code={`{
-  "industry": "construction",
-  "role": "ops-manager",
-  "painPoint": "money"
-}`}
+                  showLineNumbers={false}
+                  code={JSON.stringify(getState.payload ?? { info: 'Run GET request to view response' }, null, 2)}
                 />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Response</CardTitle>
+                <CardTitle className="text-base">POST /api/capability Response</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
+                {postState.error && <p className="text-sm text-red-300">{postState.error}</p>}
                 <CodeBlock
                   language="json"
-                  code={`{
-  "status": "ok",
-  "confidenceThreshold": 0.65,
-  "result": {
-    "identifiedPain": "Margin erosion from estimate drift",
-    "workflow": ["Capture change orders", "Escalate approvals", "Publish variance report"],
-    "confidence": 0.82,
-    "confidenceLabel": "High"
-  }
-}`}
+                  showLineNumbers={false}
+                  code={JSON.stringify(postState.payload ?? { info: 'Run POST request to view response' }, null, 2)}
                 />
               </CardContent>
             </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="space-y-6 mb-12"
-          >
-            <div className="flex items-center gap-3">
-              <Badge variant="primary" className="text-sm">GET</Badge>
-              <h2 className="text-2xl font-bold">/api/capability/explorer</h2>
-            </div>
 
             <Card>
               <CardHeader>
-                <CardTitle>Response</CardTitle>
+                <CardTitle className="text-base">GET /api/tools Response</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
+                {toolsState.error && <p className="text-sm text-red-300">{toolsState.error}</p>}
                 <CodeBlock
                   language="json"
-                  code={`{
-  "status": "ok",
-  "industries": ["operations", "construction", "saas", "finance", "supply-chain"],
-  "roles": ["owner", "ops-manager", "engineer", "analyst"],
-  "painPoints": ["money", "labor", "process", "compliance", "scale", "visibility"]
-}`}
+                  showLineNumbers={false}
+                  code={JSON.stringify(toolsState.payload ?? { info: 'Run tools request to view response' }, null, 2)}
                 />
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="space-y-6"
-          >
-            <h2 className="text-2xl font-bold">Error Handling</h2>
-
-            <Card>
-              <CardContent>
-                <h3 className="font-semibold mb-4">Error Response Format</h3>
-                <CodeBlock
-                  language="json"
-                  code={`{
-  "error": "Missing required fields."
-}`}
-                />
-              </CardContent>
-            </Card>
-          </motion.div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Auth Header Example</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-slate-400 mb-3">
+                For future authenticated endpoints, pass your key in the `Authorization` header.
+              </p>
+              <Input readOnly value="Authorization: Bearer bss_live_xxxxxxxxxxxxx" />
+            </CardContent>
+          </Card>
         </div>
       </div>
 

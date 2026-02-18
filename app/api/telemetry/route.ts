@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
+import { recordUsageEvent } from '@/lib/usageEvents';
 
 export async function POST(request: Request) {
   try {
@@ -15,17 +16,25 @@ export async function POST(request: Request) {
     }
 
     const payload = await request.json();
-    const { name, ts, path } = payload || {};
+    const { name, ts, path, payload: eventPayload } = payload || {};
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json({ error: 'Missing or invalid event name.' }, { status: 400 });
     }
 
-    // Log only non-PII metadata - never log payload contents
-    console.log('[BSS Telemetry]', {
-      name,
-      ts: ts || Date.now(),
-      path: path || 'unknown',
+    const metadata =
+      eventPayload && typeof eventPayload === 'object'
+        ? { payloadKeys: Object.keys(eventPayload as Record<string, unknown>).slice(0, 20) }
+        : {};
+
+    await recordUsageEvent({
+      eventName: name.trim(),
+      category: name.startsWith('explorer_') ? 'explorer' : 'api',
+      path: typeof path === 'string' ? path : undefined,
+      metadata: {
+        ts: ts || Date.now(),
+        ...metadata,
+      },
     });
 
     return NextResponse.json({ status: 'ok' });

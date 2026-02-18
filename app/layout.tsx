@@ -4,14 +4,41 @@ import { ClientProviders } from '@/components/ClientProviders';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
 
+const organizationStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'BrainStack Studio',
+  url: siteUrl,
+  logo: `${siteUrl}/icon.svg`,
+  sameAs: ['https://github.com/mwwoodworth', 'https://linkedin.com/in/mattwoodworth'],
+};
+
+const softwareStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'BrainStack Studio',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'USD',
+    price: '99',
+    category: 'subscription',
+  },
+  url: siteUrl,
+  description:
+    'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'BrainStack Studio | Operational AI & Enterprise Automation',
+    default: 'BrainStack Studio | Operational AI Platform',
     template: '%s | BrainStack Studio',
   },
   description:
-    'Move beyond chatbots. BrainStack Studio designs operational AI workflows and automation that integrate with how your business runs—secure, governed, and built for measurable results.',
+    'Operational AI workflows and enterprise automation that integrate with how your business runs: secure, governed, and measurable.',
+  applicationName: 'BrainStack Studio',
   keywords: [
     'Operational AI Platform',
     'Operational AI',
@@ -24,6 +51,18 @@ export const metadata: Metadata = {
     'BrainStack Studio',
   ],
   authors: [{ name: 'BrainStack Studio' }],
+  category: 'Technology',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   alternates: {
     canonical: siteUrl,
   },
@@ -36,27 +75,28 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'BrainStack Studio | Operational AI & Enterprise Automation',
+    title: 'BrainStack Studio | Operational AI Platform',
     description:
       'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
     type: 'website',
     url: siteUrl,
     siteName: 'BrainStack Studio',
+    locale: 'en_US',
     images: [
       {
-        url: '/og-image.png',
+        url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'BrainStack Studio - Operational AI for the Real World',
+        alt: 'BrainStack Studio - Operational AI Platform',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BrainStack Studio | Operational AI & Enterprise Automation',
+    title: 'BrainStack Studio | Operational AI Platform',
     description:
       'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image'],
   },
 };
 
@@ -74,6 +114,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareStructuredData) }}
+        />
         {/* Skip link for accessibility */}
         <a
           href="#main-content"
