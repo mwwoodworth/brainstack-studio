@@ -99,7 +99,6 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
   }, [tool]);
 
   const handleShare = useCallback(() => {
-    // Create shareable URL with encoded inputs
     const params = new URLSearchParams();
     Object.entries(inputs).forEach(([key, value]) => {
       if (value !== '' && value !== undefined) {
@@ -108,8 +107,28 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
     });
     const url = `${window.location.origin}/tools/${tool.slug}?${params.toString()}`;
     navigator.clipboard.writeText(url);
-    // Could add toast notification here
   }, [tool.slug, inputs]);
+
+  const handleDownload = useCallback(() => {
+    if (!result) return;
+    const exportData = {
+      tool: tool.name,
+      generatedAt: new Date().toISOString(),
+      inputs,
+      confidence: result.confidence,
+      confidenceLevel: result.confidenceLevel,
+      summary: result.summary,
+      outputs: result.outputs.map(o => ({ label: o.label, value: o.value })),
+      recommendations: result.recommendations,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tool.slug}-results.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [tool.name, tool.slug, inputs, result]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -199,7 +218,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
                   <Button variant="ghost" size="sm" onClick={handleShare} aria-label="Share results link">
                     <Share2 className="w-4 h-4" aria-hidden="true" />
                   </Button>
-                  <Button variant="ghost" size="sm" aria-label="Download results">
+                  <Button variant="ghost" size="sm" onClick={handleDownload} aria-label="Download results">
                     <Download className="w-4 h-4" aria-hidden="true" />
                   </Button>
                 </div>
