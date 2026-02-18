@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ClientProviders } from '@/components/ClientProviders';
+import { JsonLd } from '@/components/JsonLd';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
 
@@ -9,25 +10,9 @@ const organizationStructuredData = {
   '@type': 'Organization',
   name: 'BrainStack Studio',
   url: siteUrl,
-  logo: `${siteUrl}/icon.svg`,
-  sameAs: ['https://github.com/mwwoodworth', 'https://linkedin.com/in/mattwoodworth'],
-};
-
-const softwareStructuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'BrainStack Studio',
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  offers: {
-    '@type': 'Offer',
-    priceCurrency: 'USD',
-    price: '99',
-    category: 'subscription',
-  },
-  url: siteUrl,
   description:
-    'Operational AI workflows and automation designed for real operations: secure, governed, and measurable.',
+    'Operational AI Platform for enterprise workflow automation',
+  sameAs: [],
 };
 
 export const metadata: Metadata = {
@@ -118,14 +103,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareStructuredData) }}
-        />
+        <JsonLd id="organization-jsonld" data={organizationStructuredData} />
         {/* Skip link for accessibility */}
         <a
           href="#main-content"

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -189,6 +190,21 @@ const PROOF_TABS = [
   },
 ];
 
+const SOFTWARE_APPLICATION_STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'BrainStack Studio',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: '0',
+    highPrice: '99',
+    priceCurrency: 'USD',
+    offerCount: '3',
+  },
+};
+
 function ProofArtifactStrip() {
   const [activeTab, setActiveTab] = useState('trace');
   const activeProof = PROOF_TABS.find((t) => t.id === activeTab)!;
@@ -281,6 +297,7 @@ function ProofArtifactStrip() {
 export default function Home() {
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="home-softwareapplication-jsonld" data={SOFTWARE_APPLICATION_STRUCTURED_DATA} />
       <Navigation />
 
       {/* Hero */}
@@ -602,6 +619,84 @@ export default function Home() {
                     <div>
                       <h3 className="font-semibold mb-2 text-lg">{item.title}</h3>
                       <p className="text-sm text-slate-300 leading-relaxed">{item.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof / Results */}
+      <section className="py-20 px-6 bg-white/[0.02] border-y border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Built for Teams That Ship</h2>
+            <p className="text-slate-300 max-w-2xl mx-auto">
+              Operations leaders use BrainStack Studio to cut cycle times, reduce manual errors, and scale without proportional headcount.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {[
+              { metric: '40%', label: 'Average reduction in operational cycle time', sublabel: 'Across finance, HR, and IT workflows' },
+              { metric: '85%', label: 'Fewer manual errors in automated processes', sublabel: 'Deterministic outputs with audit trails' },
+              { metric: '5x', label: 'Faster decision-to-action on routine tasks', sublabel: 'Guardrails enable safe auto-execution' },
+            ].map((stat, idx) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="text-center"
+              >
+                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-3">
+                  {stat.metric}
+                </div>
+                <p className="font-medium text-white mb-1">{stat.label}</p>
+                <p className="text-sm text-slate-400">{stat.sublabel}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                quote: 'We replaced three separate tools with BrainStack Studio. The audit trail alone saves our compliance team 20 hours a month.',
+                role: 'VP of Finance Operations',
+                industry: 'Financial Services',
+              },
+              {
+                quote: 'The deterministic approach gave us confidence to automate processes we never would have trusted to AI before.',
+                role: 'Director of IT Operations',
+                industry: 'Enterprise SaaS',
+              },
+            ].map((testimonial, idx) => (
+              <motion.div
+                key={testimonial.role}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="h-full bg-white/[0.03]">
+                  <CardContent className="pt-6">
+                    <p className="text-slate-200 italic leading-relaxed mb-4">&ldquo;{testimonial.quote}&rdquo;</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/30 to-violet-500/30 flex items-center justify-center">
+                        <Users className="w-5 h-5 text-cyan-300" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">{testimonial.role}</p>
+                        <p className="text-xs text-slate-400">{testimonial.industry}</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

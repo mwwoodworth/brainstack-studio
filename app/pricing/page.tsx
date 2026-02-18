@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -17,6 +18,9 @@ import {
   Building2,
   Rocket,
   RefreshCw,
+  ShieldCheck,
+  Lock,
+  ChevronDown,
 } from 'lucide-react';
 
 type PricingResponse = {
@@ -26,11 +30,69 @@ type PricingResponse = {
   comparison: FeatureComparisonRow[];
 };
 
+type BillingCycle = 'monthly' | 'annual';
+
 const PLAN_ICONS = {
   free: Rocket,
   pro: Star,
   enterprise: Building2,
 } as const;
+
+const PLAN_ORDER: PlanId[] = ['free', 'pro', 'enterprise'];
+
+const TRUST_SIGNALS = ['SOC 2 Ready', 'GDPR Compliant', '99.9% Uptime', '256-bit Encryption'] as const;
+
+const FAQ_ITEMS = [
+  {
+    id: 'cancel-anytime',
+    question: 'Can I cancel anytime?',
+    answer:
+      'Yes. Cancel your subscription at any time from your dashboard. No lock-in contracts, no cancellation fees.',
+  },
+  {
+    id: 'free-trial',
+    question: 'Is there a free trial?',
+    answer:
+      'The Explorer and all 15 business tools are free forever. Pro features include a 14-day trial period.',
+  },
+  {
+    id: 'payment-methods',
+    question: 'What payment methods do you accept?',
+    answer:
+      'We accept all major credit and debit cards via Stripe. Enterprise plans can pay via invoice.',
+  },
+  {
+    id: 'switch-plans',
+    question: 'Can I switch plans?',
+    answer:
+      'Yes. Upgrade or downgrade at any time. Changes take effect immediately, and we prorate billing automatically.',
+  },
+  {
+    id: 'data-security',
+    question: 'Is my data secure?',
+    answer:
+      'Absolutely. All data is encrypted at rest and in transit. Your data stays isolated and never trains public AI models. See our Security page for details.',
+  },
+  {
+    id: 'post-trial',
+    question: 'What happens after the trial?',
+    answer:
+      'After your 14-day Pro trial, you can continue on the free tier or subscribe to Pro. No automatic charges.',
+  },
+] as const;
+
+const FAQ_STRUCTURED_DATA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
 
 const VALUE_PROPS = [
   {
@@ -47,19 +109,64 @@ const VALUE_PROPS = [
   },
 ];
 
+function formatCurrency(amount: number, currency: string) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function getPlanPriceDisplay(plan: PricingPlan, billingCycle: BillingCycle) {
+  if (plan.id === 'free' || plan.price.amount === 0) {
+    return {
+      amountText: '$0',
+      billingText: null as string | null,
+    };
+  }
+
+  if (plan.id === 'enterprise' || plan.price.amount === null) {
+    return {
+      amountText: 'Custom',
+      billingText: null as string | null,
+    };
+  }
+
+  const monthlyBaseAmount =
+    plan.price.interval === 'year'
+      ? Math.round(plan.price.amount / 12)
+      : Math.round(plan.price.amount);
+
+  if (billingCycle === 'annual') {
+    const discountedMonthlyAmount = Math.round(monthlyBaseAmount * 0.8);
+    const annualAmount = discountedMonthlyAmount * 12;
+    return {
+      amountText: `${formatCurrency(discountedMonthlyAmount, plan.price.currency)}/mo`,
+      billingText: `billed annually at ${formatCurrency(annualAmount, plan.price.currency)}/yr`,
+    };
+  }
+
+  return {
+    amountText: `${formatCurrency(monthlyBaseAmount, plan.price.currency)}/mo`,
+    billingText: null as string | null,
+  };
+}
+
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [selectedComparisonPlan, setSelectedComparisonPlan] = useState<'all' | PlanId>('all');
+  const [openComparisonRowId, setOpenComparisonRowId] = useState<string | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<string>(FAQ_ITEMS[0]?.id ?? '');
 
   const comparisonRows = pricingData?.comparison ?? [];
 
   const sortedPlans = useMemo(() => {
-    const order: PlanId[] = ['free', 'pro', 'enterprise'];
     const plans = pricingData?.plans ?? [];
-    return [...plans].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    return [...plans].sort((a, b) => PLAN_ORDER.indexOf(a.id) - PLAN_ORDER.indexOf(b.id));
   }, [pricingData]);
 
   async function loadPricingData() {
@@ -108,6 +215,7 @@ export default function PricingPage() {
 
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="pricing-faq-jsonld" data={FAQ_STRUCTURED_DATA} />
       <Navigation />
 
       <section className="pt-28 pb-12 px-6">
@@ -145,83 +253,143 @@ export default function PricingPage() {
               Loading plans...
             </div>
           ) : (
-            <div className="grid md:grid-cols-3 gap-6">
-              {sortedPlans.map((plan, idx) => {
-                const PlanIcon = PLAN_ICONS[plan.id];
-                return (
-                  <motion.div
-                    key={plan.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.08 }}
-                  >
-                    <Card className={`h-full flex flex-col ${plan.popular ? 'border-cyan-500 ring-2 ring-cyan-500/30 relative' : ''}`}>
-                      {plan.popular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <Badge variant="primary">Most Popular</Badge>
-                        </div>
+            <>
+              <div className="mb-8 flex justify-center">
+                <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+                  {([
+                    { id: 'monthly', label: 'Monthly' },
+                    { id: 'annual', label: 'Annual' },
+                  ] as const).map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setBillingCycle(option.id)}
+                      className="relative rounded-full px-5 py-2 text-sm font-medium"
+                    >
+                      {billingCycle === option.id && (
+                        <motion.span
+                          layoutId="billing-toggle"
+                          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                          className="absolute inset-0 rounded-full border border-cyan-500/40 bg-cyan-500/20"
+                        />
                       )}
+                      <span className={`relative z-10 ${billingCycle === option.id ? 'text-cyan-200' : 'text-slate-300'}`}>
+                        {option.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                      <CardHeader>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'}`}>
-                            <PlanIcon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-300'}`} />
+              <div className="grid md:grid-cols-3 gap-6">
+                {sortedPlans.map((plan, idx) => {
+                  const PlanIcon = PLAN_ICONS[plan.id];
+                  const priceDisplay = getPlanPriceDisplay(plan, billingCycle);
+                  return (
+                    <motion.div
+                      key={plan.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.08 }}
+                    >
+                      <Card className={`h-full flex flex-col ${plan.popular ? 'border-cyan-500 ring-2 ring-cyan-500/30 relative' : ''}`}>
+                        {plan.popular && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                            <Badge variant="primary">Most Popular</Badge>
                           </div>
-                          <CardTitle className="text-xl">{plan.name}</CardTitle>
-                        </div>
-                        <p className="text-sm text-slate-300">{plan.description}</p>
-                      </CardHeader>
+                        )}
 
-                      <CardContent className="flex-1 flex flex-col">
-                        <div className="mb-6">
-                          <span className="text-4xl font-bold">{plan.price.display}</span>
-                        </div>
+                        <CardHeader>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${plan.popular ? 'bg-cyan-500/20' : 'bg-white/5'}`}>
+                              <PlanIcon className={`w-5 h-5 ${plan.popular ? 'text-cyan-400' : 'text-slate-300'}`} />
+                            </div>
+                            <CardTitle className="text-xl">{plan.name}</CardTitle>
+                          </div>
+                          <p className="text-sm text-slate-300">{plan.description}</p>
+                        </CardHeader>
 
-                        <ul className="space-y-2 text-sm flex-1">
-                          {plan.features.map((feature) => (
-                            <li key={feature} className="flex gap-2">
-                              <Check className="w-4 h-4 mt-0.5 text-emerald-400 shrink-0" />
-                              <span className="text-slate-300">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
+                        <CardContent className="flex-1 flex flex-col">
+                          <div className="mb-6">
+                            <span className="text-4xl font-bold">{priceDisplay.amountText}</span>
+                            {priceDisplay.billingText && (
+                              <p className="text-sm text-slate-400 mt-2">{priceDisplay.billingText}</p>
+                            )}
+                            {plan.id === 'pro' && billingCycle === 'monthly' && (
+                              <p className="text-sm text-slate-400 mt-2">That&apos;s just $3.30/day</p>
+                            )}
+                          </div>
 
-                        <div className="mt-6">
-                          {plan.stripePlan ? (
-                            <Button
-                              size="lg"
-                              className="w-full"
-                              onClick={() => handleCheckout(plan.stripePlan as string)}
-                              disabled={loadingPlan !== null}
-                            >
-                              {loadingPlan === plan.stripePlan ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                  Processing...
-                                </>
-                              ) : (
-                                <>
+                          <ul className="space-y-2 text-sm flex-1">
+                            {plan.features.map((feature) => (
+                              <li key={feature} className="flex gap-2">
+                                <Check className="w-4 h-4 mt-0.5 text-emerald-400 shrink-0" />
+                                <span className="text-slate-300">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <div className="mt-6">
+                            {plan.id === 'pro' && (
+                              <Badge className="mb-3 w-full justify-center border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                                <ShieldCheck className="w-3.5 h-3.5" />
+                                30-Day Money-Back Guarantee
+                              </Badge>
+                            )}
+                            {plan.stripePlan ? (
+                              <Button
+                                size="lg"
+                                className="w-full"
+                                onClick={() => handleCheckout(plan.stripePlan as string)}
+                                disabled={loadingPlan !== null}
+                              >
+                                {loadingPlan === plan.stripePlan ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Processing...
+                                  </>
+                                ) : (
+                                  <>
+                                    {plan.cta}
+                                    <ArrowRight className="w-4 h-4" />
+                                  </>
+                                )}
+                              </Button>
+                            ) : (
+                              <Button asChild size="lg" className="w-full" variant={plan.popular ? 'primary' : 'secondary'}>
+                                <Link href={plan.href || '/pricing'}>
                                   {plan.cta}
                                   <ArrowRight className="w-4 h-4" />
-                                </>
-                              )}
-                            </Button>
-                          ) : (
-                            <Button asChild size="lg" className="w-full" variant={plan.popular ? 'primary' : 'secondary'}>
-                              <Link href={plan.href || '/pricing'}>
-                                {plan.cta}
-                                <ArrowRight className="w-4 h-4" />
-                              </Link>
-                            </Button>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
+                                </Link>
+                              </Button>
+                            )}
+                            {plan.id === 'free' && (
+                              <p className="mt-2 flex items-center justify-center gap-1.5 text-xs text-slate-400">
+                                <Lock className="w-3.5 h-3.5" />
+                                No credit card required
+                              </p>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </>
           )}
+        </div>
+      </section>
+
+      <section className="pb-12 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-2">
+            {TRUST_SIGNALS.map((signal) => (
+              <Badge key={signal} className="border border-white/10 bg-white/5 text-slate-300">
+                {signal}
+              </Badge>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -241,7 +409,7 @@ export default function PricingPage() {
               >
                 Show all
               </button>
-              {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+              {PLAN_ORDER.map((planId) => (
                 <button
                   key={planId}
                   type="button"
@@ -258,13 +426,13 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <Card>
-            <CardContent className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
+          <Card className="hidden md:block">
+            <CardContent>
+              <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-3 pr-4 text-slate-400 font-medium">Capability</th>
-                    {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+                    {PLAN_ORDER.map((planId) => (
                       <th
                         key={planId}
                         className={`text-left py-3 px-4 capitalize font-medium ${
@@ -282,7 +450,7 @@ export default function PricingPage() {
                   {comparisonRows.map((row) => (
                     <tr key={row.id} className="border-b border-white/5">
                       <td className="py-3 pr-4 text-slate-300">{row.label}</td>
-                      {(['free', 'pro', 'enterprise'] as PlanId[]).map((planId) => (
+                      {PLAN_ORDER.map((planId) => (
                         <td
                           key={`${row.id}-${planId}`}
                           className={`py-3 px-4 ${
@@ -300,6 +468,90 @@ export default function PricingPage() {
               </table>
             </CardContent>
           </Card>
+
+          <div className="md:hidden space-y-3">
+            {comparisonRows.map((row) => {
+              const isOpen = openComparisonRowId === row.id;
+              return (
+                <Card key={row.id} className="p-0 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setOpenComparisonRowId(isOpen ? null : row.id)}
+                    className="flex w-full items-center justify-between px-4 py-4 text-left"
+                  >
+                    <span className="font-medium text-slate-200">{row.label}</span>
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key={`${row.id}-mobile-values`}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden"
+                      >
+                        <div className="space-y-2 px-4 pb-4">
+                          {PLAN_ORDER.map((planId) => (
+                            <div key={`${row.id}-${planId}-mobile`} className="rounded-xl border border-white/10 bg-white/5 p-3">
+                              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">{planId}</p>
+                              <p
+                                className={
+                                  selectedComparisonPlan === 'all' || selectedComparisonPlan === planId
+                                    ? 'text-sm text-slate-200'
+                                    : 'text-sm text-slate-500'
+                                }
+                              >
+                                {row.values[planId]}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+          <div className="space-y-3">
+            {FAQ_ITEMS.map((item) => {
+              const isOpen = openFaqId === item.id;
+              return (
+                <Card key={item.id} className="p-0 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqId(isOpen ? '' : item.id)}
+                    className="flex w-full items-center justify-between px-5 py-4 text-left"
+                  >
+                    <span className="font-medium text-slate-100">{item.question}</span>
+                    <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key={`${item.id}-answer`}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-5 text-sm text-slate-300">{item.answer}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </section>
 

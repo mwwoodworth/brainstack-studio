@@ -13,6 +13,7 @@ const FOOTER_LINKS = {
   Resources: [
     { label: 'Documentation', href: '/docs' },
     { label: 'API Reference', href: '/api-docs' },
+    { label: 'Changelog', href: '/changelog' },
     { label: 'Platform Trust', href: '/technology' },
     { label: 'Implementation Guide', href: '/docs#implementation' },
   ],

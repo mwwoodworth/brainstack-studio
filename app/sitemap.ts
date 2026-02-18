@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getAllTools } from '@/lib/tools/registry';
 import { SOLUTIONS } from '@/lib/solutions';
+import { getAllBlogPosts } from '@/lib/blog';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
 
@@ -10,6 +11,8 @@ const STATIC_ROUTES = [
   '/tools',
   '/solutions',
   '/pricing',
+  '/blog',
+  '/changelog',
   '/docs',
   '/api-docs',
   '/technology',
@@ -46,5 +49,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.72,
   }));
 
-  return [...staticEntries, ...toolEntries, ...solutionEntries];
+  const blogEntries: MetadataRoute.Sitemap = getAllBlogPosts().map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.updatedAt ?? post.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.76,
+  }));
+
+  return [...staticEntries, ...toolEntries, ...solutionEntries, ...blogEntries];
 }
