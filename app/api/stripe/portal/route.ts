@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getStripeServerClient } from '@/lib/stripe/config';
+import { resolveTrustedAppOrigin } from '@/lib/url';
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://brainstackstudio.com';
+    const origin = resolveTrustedAppOrigin(request);
 
     const stripe = getStripeServerClient();
     const session = await stripe.billingPortal.sessions.create({

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { getStripeProPlanConfig, getStripeServerClient } from '@/lib/stripe/config';
+import { resolveTrustedAppOrigin } from '@/lib/url';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://brainstackstudio.com';
+    const origin = resolveTrustedAppOrigin(request);
 
     // If not logged in, return auth redirect
     if (!user) {
