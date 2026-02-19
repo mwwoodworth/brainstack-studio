@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Play, RotateCcw, Share2, Download, Lightbulb, ListChecks, GitBranch } from 'lucide-react';
+import { Play, RotateCcw, Share2, Download, Lightbulb, ListChecks, GitBranch, Check } from 'lucide-react';
 import { Tool, ToolResult, validateInputs } from '@/lib/tools';
 import { ToolInput } from './ToolInput';
 import { ToolOutputGrid } from './ToolOutput';
@@ -37,6 +37,7 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
   const [result, setResult] = useState<ToolResult | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCalculating, setIsCalculating] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const handleInputChange = useCallback((inputId: string, value: string | number) => {
     setInputs(prev => ({ ...prev, [inputId]: value }));
@@ -107,6 +108,8 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
     });
     const url = `${window.location.origin}/tools/${tool.slug}?${params.toString()}`;
     navigator.clipboard.writeText(url);
+    setShareCopied(true);
+    setTimeout(() => setShareCopied(false), 2000);
   }, [tool.slug, inputs]);
 
   const handleDownload = useCallback(() => {
@@ -216,7 +219,11 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
                 />
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" onClick={handleShare} aria-label="Share results link">
-                    <Share2 className="w-4 h-4" aria-hidden="true" />
+                    {shareCopied ? (
+                      <Check className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+                    ) : (
+                      <Share2 className="w-4 h-4" aria-hidden="true" />
+                    )}
                   </Button>
                   <Button variant="ghost" size="sm" onClick={handleDownload} aria-label="Download results">
                     <Download className="w-4 h-4" aria-hidden="true" />
