@@ -226,8 +226,10 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    void loadUsage();
-  }, []);
+    if (!subLoading) {
+      void loadUsage();
+    }
+  }, [subLoading]);
 
   useEffect(() => {
     if (subLoading) return;

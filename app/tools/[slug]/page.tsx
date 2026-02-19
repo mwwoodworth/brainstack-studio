@@ -11,8 +11,47 @@ import { Button } from '@/components/ui/Button';
 import { ToolExecutor } from '@/components/tools';
 import { getToolBySlug } from '@/lib/tools';
 import { trackEvent } from '@/lib/telemetry';
-import { ArrowLeft, Clock, Target, Zap, Building2 } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import {
+  ArrowLeft,
+  Clock,
+  Target,
+  Zap,
+  Building2,
+  TrendingUp,
+  Wallet,
+  DollarSign,
+  Users,
+  HeartPulse,
+  UserCheck,
+  AlertTriangle,
+  ClipboardCheck,
+  Activity,
+  FileText,
+  Mail,
+  Calendar,
+  Briefcase,
+  FileQuestion,
+  Calculator,
+} from 'lucide-react';
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  TrendingUp,
+  Wallet,
+  DollarSign,
+  Users,
+  Target,
+  HeartPulse,
+  UserCheck,
+  AlertTriangle,
+  ClipboardCheck,
+  Activity,
+  FileText,
+  Mail,
+  Calendar,
+  Briefcase,
+  FileQuestion,
+  Calculator,
+};
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -33,8 +72,8 @@ export default function ToolDetailPage({ params }: Props) {
 
   if (!tool) return notFound();
 
-  // Dynamic icon lookup
-  const IconComponent = (LucideIcons as any)[tool.icon] || LucideIcons.Calculator;
+  // Dynamic icon lookup via strict mapping
+  const IconComponent = ICON_MAP[tool.icon] || Calculator;
 
   return (
     <main id="main-content" className="min-h-screen">

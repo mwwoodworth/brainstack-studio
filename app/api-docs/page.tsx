@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
@@ -315,13 +316,15 @@ export default function APIDocsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Auth Header Example</CardTitle>
+              <CardTitle>Authentication</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-slate-400 mb-3">
-                For future authenticated endpoints, pass your key in the `Authorization` header.
+                Pro users can generate API keys from the{' '}
+                <Link href="/dashboard" className="text-cyan-400 hover:text-cyan-300 underline">Dashboard</Link>.
+                Pass your key via the <code className="text-cyan-300">X-API-Key</code> header.
               </p>
-              <Input readOnly value="Authorization: Bearer bss_live_xxxxxxxxxxxxx" />
+              <Input readOnly value="X-API-Key: bss_xxxxxxxxxxxxxxxx" />
             </CardContent>
           </Card>
         </div>
