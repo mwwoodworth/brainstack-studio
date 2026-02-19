@@ -14,6 +14,7 @@
     "verify:billing": "node scripts/verify-billing-env.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.77.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "class-variance-authority": "^0.7.0",
@@ -27,8 +28,8 @@
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
     "@playwright/test": "^1.58.2",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

@@ -3,12 +3,10 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Play, RotateCcw, Share2, Download, Lightbulb, ListChecks, GitBranch, Check } from 'lucide-react';
+import { Play, RotateCcw, ListChecks } from 'lucide-react';
 import { Tool, ToolResult, validateInputs } from '@/lib/tools';
 import { ToolInput } from './ToolInput';
-import { ToolOutputGrid } from './ToolOutput';
-import { ToolChart } from './ToolChart';
-import { ConfidenceBadge } from './ConfidenceBadge';
+import { ToolResultDisplay } from './ToolResultDisplay';
 import { Button } from '@/components/ui/Button';
 
 interface ToolExecutorProps {
@@ -35,9 +33,10 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
   });
 
   const [result, setResult] = useState<ToolResult | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCalculating, setIsCalculating] = useState(false);
-  const [shareCopied, setShareCopied] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   const handleInputChange = useCallback((inputId: string, value: string | number) => {
     setInputs(prev => ({ ...prev, [inputId]: value }));
@@ -73,12 +72,13 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
         body: JSON.stringify({ inputs }),
       });
 
-      const data = (await response.json()) as ExecuteToolResponse;
+      const data = (await response.json()) as ExecuteToolResponse & { sessionId?: string };
       if (!response.ok || !data.success || !data.result) {
         throw new Error(data.error || data.message || 'Tool execution failed');
       }
 
       setResult(data.result);
+      if (data.sessionId) setSessionId(data.sessionId);
     } catch (error) {
       console.error('Tool execution error:', error);
       setErrors({ _general: 'An error occurred while calculating. Please check your inputs.' });
@@ -86,6 +86,54 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
       setIsCalculating(false);
     }
   }, [tool, inputs]);
+
+  const handleEnhance = useCallback(async () => {
+    if (!result) return;
+    
+    // Find the primary text output (longest text field)
+    const textOutputs = result.outputs.filter(o => o.format === 'text' && String(o.value).length > 50);
+    const targetOutput = textOutputs.sort((a, b) => String(b.value).length - String(a.value).length)[0];
+
+    if (!targetOutput) return;
+
+    setIsEnhancing(true);
+    try {
+      const response = await fetch('/api/ai/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: targetOutput.value,
+          context: `Enhance this ${tool.name} output (${targetOutput.label}) to be more professional, clear, and impactful.`
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.enhanced) {
+        const newResult = {
+          ...result,
+          outputs: result.outputs.map(o => 
+            o.id === targetOutput.id ? { ...o, value: data.enhanced, description: 'Enhanced by AI' } : o
+          ),
+          decisionTrail: [...result.decisionTrail, 'Enhanced output with AI']
+        };
+        
+        setResult(newResult);
+
+        // Persist enhancement if session exists
+        if (sessionId) {
+          await fetch(`/api/dashboard/tool-sessions/${sessionId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ result: newResult, is_enhanced: true }),
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Enhancement failed:', error);
+    } finally {
+      setIsEnhancing(false);
+    }
+  }, [result, tool.name, sessionId]);
 
   const handleReset = useCallback(() => {
     const initial: Record<string, string | number> = {};
@@ -96,42 +144,9 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
     });
     setInputs(initial);
     setResult(null);
+    setSessionId(null);
     setErrors({});
   }, [tool]);
-
-  const handleShare = useCallback(() => {
-    const params = new URLSearchParams();
-    Object.entries(inputs).forEach(([key, value]) => {
-      if (value !== '' && value !== undefined) {
-        params.set(key, String(value));
-      }
-    });
-    const url = `${window.location.origin}/tools/${tool.slug}?${params.toString()}`;
-    navigator.clipboard.writeText(url);
-    setShareCopied(true);
-    setTimeout(() => setShareCopied(false), 2000);
-  }, [tool.slug, inputs]);
-
-  const handleDownload = useCallback(() => {
-    if (!result) return;
-    const exportData = {
-      tool: tool.name,
-      generatedAt: new Date().toISOString(),
-      inputs,
-      confidence: result.confidence,
-      confidenceLevel: result.confidenceLevel,
-      summary: result.summary,
-      outputs: result.outputs.map(o => ({ label: o.label, value: o.value })),
-      recommendations: result.recommendations,
-    };
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${tool.slug}-results.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [tool.name, tool.slug, inputs, result]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -209,82 +224,14 @@ export function ToolExecutor({ tool }: ToolExecutorProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-6"
             >
-              {/* Confidence & Actions */}
-              <div className="flex items-center justify-between">
-                <ConfidenceBadge
-                  confidence={result.confidence}
-                  level={result.confidenceLevel}
-                />
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={handleShare} aria-label="Share results link">
-                    {shareCopied ? (
-                      <Check className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-                    ) : (
-                      <Share2 className="w-4 h-4" aria-hidden="true" />
-                    )}
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={handleDownload} aria-label="Download results">
-                    <Download className="w-4 h-4" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Summary */}
-              <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700" role="status" aria-live="polite">
-                <p className="text-slate-300">{result.summary}</p>
-              </div>
-
-              {/* Outputs Grid */}
-              <ToolOutputGrid outputs={result.outputs} />
-
-              {/* Chart */}
-              {result.chart && (
-                <div className="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
-                  <h4 className="text-sm font-medium text-slate-400 mb-4">Projection</h4>
-                  <ToolChart data={result.chart} height={220} />
-                </div>
-              )}
-
-              {/* Recommendations */}
-              {result.recommendations.length > 0 && (
-                <div className="p-6 rounded-xl bg-slate-900/50 border border-slate-800">
-                  <h4 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4 text-amber-400" aria-hidden="true" />
-                    Recommendations
-                  </h4>
-                  <ul className="space-y-2">
-                    {result.recommendations.map((rec, i) => (
-                      <li key={i} className="flex gap-2 text-sm text-slate-300">
-                        <span className="text-cyan-400">•</span>
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Decision Trail */}
-              {result.decisionTrail.length > 0 && (
-                <details className="group">
-                  <summary className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer hover:text-slate-400">
-                    <GitBranch className="w-4 h-4" aria-hidden="true" />
-                    Decision Trail
-                    <span className="text-xs opacity-50">(click to expand)</span>
-                  </summary>
-                  <div className="mt-3 p-4 rounded-lg bg-slate-900/30 border border-slate-800">
-                    <ol className="space-y-1.5 text-xs text-slate-500">
-                      {result.decisionTrail.map((step, i) => (
-                        <li key={i} className="flex gap-2">
-                          <span className="text-slate-600 font-mono">{i + 1}.</span>
-                          {step}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                </details>
-              )}
+              <ToolResultDisplay 
+                tool={tool} 
+                result={result} 
+                inputs={inputs} 
+                onEnhance={handleEnhance}
+                isEnhancing={isEnhancing}
+              />
             </motion.div>
           ) : (
             <motion.div

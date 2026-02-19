@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getToolById, executeTool } from '@/lib/tools/registry';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 import { recordUsageEvent } from '@/lib/usageEvents';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 // Validate tool ID format (alphanumeric, hyphens, underscores, max 50 chars)
 function isValidToolId(id: string): boolean {
@@ -110,6 +111,30 @@ export async function POST(
   // Execute the tool
   try {
     const result = executeTool(id, inputs);
+    let sessionId: string | undefined;
+
+    // Persist to DB if user is authenticated
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: session, error } = await supabase
+        .from('bss_tool_sessions')
+        .insert({
+          user_id: user.id,
+          tool_id: id,
+          inputs,
+          result,
+        })
+        .select('id')
+        .single();
+      
+      if (!error && session) {
+        sessionId = session.id;
+      } else if (error) {
+        console.error('Failed to save tool session:', error);
+      }
+    }
 
     await recordUsageEvent({
       eventName: 'tool_execute',
@@ -119,6 +144,7 @@ export async function POST(
       metadata: {
         inputCount: Object.keys(inputs).length,
         confidence: result.confidence,
+        saved: !!sessionId
       },
     });
 
@@ -126,6 +152,7 @@ export async function POST(
       success: true,
       toolId: id,
       toolName: tool.name,
+      sessionId,
       result,
     });
   } catch (error) {

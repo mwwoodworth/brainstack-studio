@@ -13,6 +13,7 @@ import { useExplorerSessions } from '@/hooks/useExplorerSessions';
 import { useSubscription } from '@/hooks/useSubscription';
 import { INDUSTRIES, PAIN_POINTS, ROLES } from '@/lib/explorer';
 import { copyToClipboard, formatDate, truncateText } from '@/lib/utils';
+import { ToolSessionsList } from '@/components/dashboard/ToolSessionsList';
 import {
   LayoutDashboard,
   Search,
@@ -459,6 +460,15 @@ export default function DashboardPage() {
               </Card>
             </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22 }}
+            className="mb-8"
+          >
+            <ToolSessionsList />
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
