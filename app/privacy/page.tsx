@@ -49,7 +49,7 @@ const SECTIONS = [
     title: '6. Your Choices',
     body: [
       'You can manage telemetry preferences and session retention settings from the Settings page.',
-      'You may request account deletion or data access by contacting us at privacy@brainstackstudio.com.',
+      'You may request account deletion or data access by contacting us at matthew@brainstackstudio.com.',
     ],
   },
   {
@@ -61,7 +61,7 @@ const SECTIONS = [
   {
     title: '8. Contact',
     body: [
-      'Questions or requests about privacy can be sent to privacy@brainstackstudio.com.',
+      'Questions or requests about privacy can be sent to matthew@brainstackstudio.com.',
     ],
   },
 ];

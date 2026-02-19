@@ -102,6 +102,7 @@ export async function POST(request: Request) {
       },
     };
 
+    // Try webhook first
     if (WEBHOOK_URL) {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -118,10 +119,42 @@ export async function POST(request: Request) {
 
       if (!response.ok) {
         console.error('[BSS Lead] Webhook failed with status:', response.status);
-        return NextResponse.json({ error: 'Failed to submit lead. Please try again.' }, { status: 500 });
+      }
+    }
+
+    // Always send email notification as backup (never lose a lead)
+    const resendKey = process.env.RESEND_API_KEY;
+    const alertEmail = process.env.ALERT_EMAIL || 'matthew@brainstackstudio.com';
+    if (resendKey) {
+      try {
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: process.env.RESEND_FROM_EMAIL || 'BrainOps AI <ops@myroofgenius.com>',
+            to: [alertEmail],
+            subject: `[BSS Lead] ${name} — ${company} (${industry})`,
+            html: `<h2>New BrainStack Studio Lead</h2>
+              <p><strong>Name:</strong> ${name}</p>
+              <p><strong>Email:</strong> ${email}</p>
+              <p><strong>Company:</strong> ${company}</p>
+              <p><strong>Industry:</strong> ${industry}</p>
+              <p><strong>Role:</strong> ${role}</p>
+              <p><strong>Pain Point:</strong> ${painPoint}</p>
+              <p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
+              <p><strong>Message:</strong> ${message}</p>
+              <p><em>Submitted: ${new Date().toISOString()}</em></p>`,
+          }),
+        });
+      } catch (emailErr) {
+        console.error('[BSS Lead] Email notification failed:', emailErr);
       }
     } else {
-      console.log('[BSS Lead]', payload);
+      // Last resort: structured log that at least shows in Vercel logs
+      console.warn('[BSS Lead] NO RESEND_API_KEY — lead data:', JSON.stringify(payload));
     }
 
     return NextResponse.json({ status: 'ok' });

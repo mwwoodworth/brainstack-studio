@@ -40,7 +40,7 @@ const PLAN_ICONS = {
 
 const PLAN_ORDER: PlanId[] = ['free', 'pro', 'enterprise'];
 
-const TRUST_SIGNALS = ['SOC 2 Ready', 'GDPR Compliant', '99.9% Uptime', '256-bit Encryption'] as const;
+const TRUST_SIGNALS = ['Encrypted at Rest', 'Audit Trail on Every Action', 'Cancel Anytime', 'No Lock-in Contracts'] as const;
 
 const FAQ_ITEMS = [
   {
@@ -136,15 +136,6 @@ function getPlanPriceDisplay(plan: PricingPlan, billingCycle: BillingCycle) {
     plan.price.interval === 'year'
       ? Math.round(plan.price.amount / 12)
       : Math.round(plan.price.amount);
-
-  if (billingCycle === 'annual') {
-    const discountedMonthlyAmount = Math.round(monthlyBaseAmount * 0.8);
-    const annualAmount = discountedMonthlyAmount * 12;
-    return {
-      amountText: `${formatCurrency(discountedMonthlyAmount, plan.price.currency)}/mo`,
-      billingText: `billed annually at ${formatCurrency(annualAmount, plan.price.currency)}/yr`,
-    };
-  }
 
   return {
     amountText: `${formatCurrency(monthlyBaseAmount, plan.price.currency)}/mo`,
@@ -254,32 +245,7 @@ export default function PricingPage() {
             </div>
           ) : (
             <>
-              <div className="mb-8 flex justify-center">
-                <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
-                  {([
-                    { id: 'monthly', label: 'Monthly' },
-                    { id: 'annual', label: 'Annual' },
-                  ] as const).map((option) => (
-                    <button
-                      key={option.id}
-                      type="button"
-                      onClick={() => setBillingCycle(option.id)}
-                      className="relative rounded-full px-5 py-2 text-sm font-medium"
-                    >
-                      {billingCycle === option.id && (
-                        <motion.span
-                          layoutId="billing-toggle"
-                          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                          className="absolute inset-0 rounded-full border border-cyan-500/40 bg-cyan-500/20"
-                        />
-                      )}
-                      <span className={`relative z-10 ${billingCycle === option.id ? 'text-cyan-200' : 'text-slate-300'}`}>
-                        {option.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Monthly billing only — annual pricing will be added when Stripe annual price is configured */}
 
               <div className="grid md:grid-cols-3 gap-6">
                 {sortedPlans.map((plan, idx) => {
@@ -333,7 +299,7 @@ export default function PricingPage() {
                             {plan.id === 'pro' && (
                               <Badge className="mb-3 w-full justify-center border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
                                 <ShieldCheck className="w-3.5 h-3.5" />
-                                30-Day Money-Back Guarantee
+                                14-Day Free Trial — Cancel Anytime
                               </Badge>
                             )}
                             {plan.stripePlan ? (

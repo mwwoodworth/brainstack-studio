@@ -74,7 +74,7 @@ const SECTIONS = [
   {
     title: '10. Contact',
     body: [
-      'Questions about these Terms can be sent to legal@brainstackstudio.com.',
+      'Questions about these Terms can be sent to matthew@brainstackstudio.com.',
     ],
   },
 ];
