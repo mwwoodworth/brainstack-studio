@@ -145,6 +145,7 @@ function getPlanPriceDisplay(plan: PricingPlan, billingCycle: BillingCycle) {
 
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [pricingData, setPricingData] = useState<PricingResponse | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
@@ -185,6 +186,7 @@ export default function PricingPage() {
 
   async function handleCheckout(plan: string) {
     setLoadingPlan(plan);
+    setCheckoutError(null);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -197,9 +199,11 @@ export default function PricingPage() {
       } else if (data.authRedirect) {
         window.location.href = data.authRedirect;
       } else {
+        setCheckoutError('Unable to start checkout. Please try again or contact support.');
         setLoadingPlan(null);
       }
     } catch {
+      setCheckoutError('Something went wrong. Please try again.');
       setLoadingPlan(null);
     }
   }
@@ -342,6 +346,17 @@ export default function PricingPage() {
                   );
                 })}
               </div>
+              {checkoutError && (
+                <div className="mt-4 mx-auto max-w-md p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-center">
+                  <p className="text-sm text-red-400">{checkoutError}</p>
+                  <button
+                    onClick={() => setCheckoutError(null)}
+                    className="mt-1 text-xs text-slate-400 hover:text-slate-300"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
