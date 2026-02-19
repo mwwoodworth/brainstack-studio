@@ -2,92 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ClientProviders } from '@/components/ClientProviders';
 import { JsonLd } from '@/components/JsonLd';
+import { constructMetadata, constructOrganizationStructuredData } from '@/app/lib/metadata';
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
+const organizationStructuredData = constructOrganizationStructuredData();
 
-const organizationStructuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'BrainStack Studio',
-  url: siteUrl,
-  description:
-    'Operational AI Platform for enterprise workflow automation',
-  sameAs: [],
-};
-
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'BrainStack Studio | Operational AI Platform',
-    template: '%s | BrainStack Studio',
-  },
-  description:
-    'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales. Start free with our AI Explorer.',
-  applicationName: 'BrainStack Studio',
-  keywords: [
-    'Operational AI Platform',
-    'Enterprise Automation',
-    'Workflow Automation',
-    'Business Process Automation',
-    'AI Governance',
-    'AI Agents',
-    'Audit Trails',
-    'BrainStack Studio',
-    'AI for Finance',
-    'HR Automation',
-    'ITSM AI',
-    'Sales Operations AI',
-    'Secure AI',
-  ],
-  authors: [{ name: 'BrainStack Studio' }],
-  category: 'Technology',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-      'max-video-preview': -1,
-    },
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
-  icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-    ],
-    apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
-  openGraph: {
-    title: 'BrainStack Studio | Operational AI Platform',
-    description:
-      'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales.',
-    type: 'website',
-    url: siteUrl,
-    siteName: 'BrainStack Studio',
-    locale: 'en_US',
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: 'BrainStack Studio - Operational AI Platform',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'BrainStack Studio | Operational AI Platform',
-    description:
-      'Operational AI platform for enterprise automation. Secure, governed workflows for Finance, HR, IT, and Sales.',
-    images: ['/opengraph-image'],
-  },
-};
+export const metadata: Metadata = constructMetadata();
 
 export const viewport: Viewport = {
   width: 'device-width',

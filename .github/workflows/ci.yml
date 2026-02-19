@@ -26,10 +26,26 @@ jobs:
       - name: TypeScript check
         run: npx tsc --noEmit
 
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Critical coverage gate
+        run: npm run test:critical
+      - name: Unit tests with coverage
+        run: npm run test -- --coverage --runInBand
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: lint-and-typecheck
+    needs: unit-tests
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
