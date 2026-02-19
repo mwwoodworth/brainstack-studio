@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Platform Trust & Technology',
+  title: 'Platform Trust and Technology',
   description:
     'Secure operational AI built to ship. Controlled automation, governance, observability, and human-in-the-loop safety for enterprise workflows.',
   alternates: {
