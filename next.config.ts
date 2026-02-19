@@ -4,6 +4,15 @@ import path from 'path';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname),
+  async redirects() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: '/icon.svg',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

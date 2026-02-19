@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getAllBlogPosts, getBlogPostBySlug, getRelatedBlogPosts } from '@/lib/blog';
+import { JsonLd } from '@/components/JsonLd';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
 
@@ -95,8 +96,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     email: `mailto:?subject=${encodeURIComponent(post.title)}&body=${encodeURIComponent(`Thought this was useful: ${absolutePostUrl}`)}`,
   };
 
+  const breadcrumbData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: absolutePostUrl },
+    ],
+  };
+
+  const articleStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt ?? post.publishedAt,
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'BrainStack Studio',
+      url: siteUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': absolutePostUrl,
+    },
+    image: `${siteUrl}/opengraph-image`,
+    articleSection: post.category,
+    keywords: post.tags.join(', '),
+  };
+
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id={`breadcrumb-${post.slug}`} data={breadcrumbData} />
+      <JsonLd id={`article-${post.slug}`} data={articleStructuredData} />
       <Navigation />
 
       <section className="pt-28 pb-16 px-6">

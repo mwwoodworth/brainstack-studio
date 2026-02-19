@@ -131,12 +131,17 @@ export function constructMetadata({
 }
 
 export function constructOrganizationStructuredData() {
+  const siteUrl = resolveSiteUrl();
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: siteConfig.name,
-    url: resolveSiteUrl(),
+    url: siteUrl,
     description: 'Operational AI Platform for enterprise workflow automation',
-    sameAs: [],
+    logo: `${siteUrl}/icon.svg`,
+    sameAs: [
+      'https://github.com/mwwoodworth',
+      'https://linkedin.com/in/mattwoodworth',
+    ],
   };
 }
