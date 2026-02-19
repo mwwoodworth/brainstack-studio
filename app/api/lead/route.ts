@@ -16,6 +16,10 @@ const MAX_FIELD_LENGTHS = {
   message: 5000,
 } as const;
 
+// HTML-encode to prevent injection in email bodies
+const escHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 // RFC 5322 compliant email validation
 const isValidEmail = (value: string): boolean => {
   if (!value || value.length > 254) return false;
@@ -138,14 +142,14 @@ export async function POST(request: Request) {
             to: [alertEmail],
             subject: `[BSS Lead] ${name} — ${company} (${industry})`,
             html: `<h2>New BrainStack Studio Lead</h2>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Company:</strong> ${company}</p>
-              <p><strong>Industry:</strong> ${industry}</p>
-              <p><strong>Role:</strong> ${role}</p>
-              <p><strong>Pain Point:</strong> ${painPoint}</p>
-              <p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
-              <p><strong>Message:</strong> ${message}</p>
+              <p><strong>Name:</strong> ${escHtml(name)}</p>
+              <p><strong>Email:</strong> ${escHtml(email)}</p>
+              <p><strong>Company:</strong> ${escHtml(company)}</p>
+              <p><strong>Industry:</strong> ${escHtml(industry)}</p>
+              <p><strong>Role:</strong> ${escHtml(role)}</p>
+              <p><strong>Pain Point:</strong> ${escHtml(painPoint)}</p>
+              <p><strong>Budget:</strong> ${escHtml(budget || 'Not specified')}</p>
+              <p><strong>Message:</strong> ${escHtml(message)}</p>
               <p><em>Submitted: ${new Date().toISOString()}</em></p>`,
           }),
         });

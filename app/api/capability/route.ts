@@ -9,6 +9,7 @@ import {
   type ExplorerRole,
 } from '@/lib/explorer';
 import { recordUsageEvent } from '@/lib/usageEvents';
+import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -33,6 +34,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const clientIP = getClientIP(request);
+    const rateLimitResult = checkRateLimit(`capability:${clientIP}`, RATE_LIMITS.standard);
+    if (!rateLimitResult.success) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests.' }),
+        { status: 429, headers: { 'Content-Type': 'application/json', ...rateLimitHeaders(rateLimitResult) } }
+      );
+    }
+
     const body = await request.json();
     const { industry, role, painPoint } = body || {};
 

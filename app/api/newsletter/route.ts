@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
 
+const escHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 const isValidEmail = (value: string): boolean => {
   if (!value || value.length > 254) return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
@@ -60,7 +63,7 @@ export async function POST(request: Request) {
           from: process.env.RESEND_FROM_EMAIL || 'BrainOps AI <ops@myroofgenius.com>',
           to: [alertEmail],
           subject: `[BSS Newsletter] New subscriber: ${email}`,
-          html: `<h2>New Newsletter Subscriber</h2><p><strong>Email:</strong> ${email}</p><p><em>Subscribed: ${new Date().toISOString()}</em></p>`,
+          html: `<h2>New Newsletter Subscriber</h2><p><strong>Email:</strong> ${escHtml(email)}</p><p><em>Subscribed: ${new Date().toISOString()}</em></p>`,
         }),
       }).catch((err) => console.error('[BSS Newsletter] Email notification failed:', err));
     } else {

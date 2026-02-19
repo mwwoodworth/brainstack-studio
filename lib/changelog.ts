@@ -10,6 +10,31 @@ export type ChangelogEntry = {
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: 'v3.0.0',
+    date: 'February 2026',
+    title: 'SEO Perfection & Lead Capture',
+    items: [
+      { type: 'feature', text: 'Newsletter signup with email capture across blog, posts, and footer.' },
+      { type: 'feature', text: '8 solution blueprints covering Operations, Construction, SaaS, Finance, Supply Chain, HR, IT, and Marketing.' },
+      { type: 'feature', text: '8 blog posts with Article structured data and breadcrumb navigation.' },
+      { type: 'improvement', text: 'Full SEO metadata on every page including privacy, terms, and security.' },
+      { type: 'improvement', text: 'AI content enhancement upgraded to Claude Sonnet 4.5.' },
+      { type: 'fix', text: 'Rate limiting and input validation on AI enhance endpoint.' },
+      { type: 'fix', text: 'HTML injection protection in email notification bodies.' },
+    ],
+  },
+  {
+    version: 'v2.9.0',
+    date: 'February 2026',
+    title: 'Content & Structured Data',
+    items: [
+      { type: 'feature', text: 'Article JSON-LD and BreadcrumbList structured data on blog and solution pages.' },
+      { type: 'feature', text: 'Organization JSON-LD with logo and social profiles.' },
+      { type: 'improvement', text: 'Favicon redirect from .ico to SVG.' },
+      { type: 'improvement', text: 'Per-page SEO metadata via layout.tsx pattern for client components.' },
+    ],
+  },
+  {
     version: 'v2.8.0',
     date: 'February 2026',
     title: 'Blog & Content Hub',
@@ -36,7 +61,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     items: [
       { type: 'feature', text: 'Guided AI Explorer with deterministic capability mapping.' },
       { type: 'feature', text: '15 free business tools (ROI calculator, cash flow, pricing optimizer, and more).' },
-      { type: 'feature', text: 'Solution gallery with 50+ workflow patterns.' },
+      { type: 'feature', text: 'Solution gallery with production-ready workflow blueprints.' },
       { type: 'improvement', text: 'Enhanced onboarding flow.' },
     ],
   },

@@ -176,6 +176,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 [&_li]:text-slate-300 [&_li]:leading-7
                 [&_strong]:text-white
               "
+              // SAFE: content is hardcoded in lib/blog.ts, not user-supplied.
+              // If blog content source changes to CMS/DB, add sanitize-html here.
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 

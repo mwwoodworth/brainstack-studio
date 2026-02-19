@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     canonical: '/technology',
   },
   openGraph: {
-    title: 'Platform Trust & Technology | BrainStack Studio',
+    title: 'Platform Trust and Technology | BrainStack Studio',
     description:
       'Enterprise-grade operational AI with safety rails, audit trails, and secure integration by design.',
     url: '/technology',
