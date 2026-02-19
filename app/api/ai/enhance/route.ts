@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
 import { enhanceContent } from '@/lib/ai/anthropic';
 import { checkRateLimit, getClientIP, rateLimitHeaders, RATE_LIMITS } from '@/lib/rateLimit';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 const MAX_CONTENT_LENGTH = 10000;
 
 export async function POST(req: Request) {
   try {
+    // Auth required: this endpoint calls paid Anthropic API
+    const supabase = await createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required.' },
+        { status: 401 }
+      );
+    }
+
     // Rate limit: calls paid Anthropic API
     const clientIP = getClientIP(req);
     const rateLimitResult = checkRateLimit(`ai-enhance:${clientIP}`, RATE_LIMITS.form);
