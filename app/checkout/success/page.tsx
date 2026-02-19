@@ -9,7 +9,7 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/Button';
 
-type ProvisionStatus = 'verifying' | 'provisioned' | 'error';
+type ProvisionStatus = 'verifying' | 'provisioned' | 'pending' | 'error';
 
 export default function CheckoutSuccessPage() {
   return (
@@ -46,8 +46,8 @@ function CheckoutSuccessInner() {
 
         attempts++;
         if (attempts >= maxAttempts) {
-          // After max attempts, assume it worked (webhook may be slow)
-          setStatus('provisioned');
+          // Webhook may still be processing — show pending state instead of assuming success
+          setStatus('pending');
           return;
         }
 
@@ -84,6 +84,24 @@ function CheckoutSuccessInner() {
               <p className="text-slate-400">
                 Verifying your payment and activating Pro features. This usually takes a few seconds.
               </p>
+            </motion.div>
+          ) : status === 'pending' ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-6"
+            >
+              <div className="mx-auto w-20 h-20 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-cyan-400" />
+              </div>
+              <h1 className="text-3xl font-bold">Payment received</h1>
+              <p className="text-slate-400">
+                Your payment was successful. Account setup is still processing — this usually completes within a minute.
+                You can go to your dashboard now; Pro features will activate automatically.
+              </p>
+              <Link href="/dashboard">
+                <Button size="lg">Go to Dashboard <ArrowRight className="w-5 h-5" /></Button>
+              </Link>
             </motion.div>
           ) : status === 'error' ? (
             <motion.div
