@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { getAllBlogPosts, getBlogPostBySlug, getRelatedBlogPosts } from '@/lib/blog';
 import { JsonLd } from '@/components/JsonLd';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
 
@@ -204,6 +205,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
             </div>
           </article>
+
+          <div className="mt-10">
+            <NewsletterCTA variant="compact" />
+          </div>
 
           <section className="mt-12">
             <h2 className="text-2xl font-bold mb-6">Related Posts</h2>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { BlogListingClient } from '@/components/blog/BlogListingClient';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
 import { getAllBlogPosts } from '@/lib/blog';
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://brainstackstudio.com').replace(/\/$/, '');
@@ -52,6 +53,11 @@ export default function BlogPage() {
     <main id="main-content" className="min-h-screen">
       <Navigation />
       <BlogListingClient posts={posts} />
+      <section className="pb-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <NewsletterCTA />
+        </div>
+      </section>
       <Footer />
     </main>
   );

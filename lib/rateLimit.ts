@@ -1,5 +1,7 @@
-// Simple in-memory rate limiting for API routes
-// Note: For production at scale, use Redis-based rate limiting
+// In-memory rate limiting for API routes.
+// On Vercel serverless, each cold start gets a fresh Map, so this provides
+// best-effort protection within warm instances. Sufficient for current traffic
+// levels. For high-traffic production, migrate to Upstash Redis.
 
 interface RateLimitEntry {
   count: number;

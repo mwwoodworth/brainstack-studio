@@ -13,7 +13,7 @@ export async function enhanceContent(content: string, context: string): Promise<
 
   try {
     const msg = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250514',
       max_tokens: 2048,
       temperature: 0.7,
       system: "You are BrainStack AI, an expert operational consultant. Your goal is to improve, refine, and professionalize business content.",

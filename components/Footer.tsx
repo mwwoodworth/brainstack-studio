@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Brain, Github, Linkedin } from 'lucide-react';
+import { NewsletterCTA } from '@/components/NewsletterCTA';
 
 const FOOTER_LINKS = {
   Product: [
@@ -52,6 +53,9 @@ export function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Newsletter */}
+          <NewsletterCTA variant="footer" className="col-span-2 md:col-span-6 md:max-w-sm" />
 
           {/* Links */}
           {Object.entries(FOOTER_LINKS).map(([title, links]) => (

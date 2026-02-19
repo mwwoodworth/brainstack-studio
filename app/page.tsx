@@ -41,7 +41,7 @@ const METRICS = [
   { value: '15', label: 'Free AI Tools', icon: Calculator },
   { value: '12', label: 'Industries Supported', icon: Globe },
   { value: '100%', label: 'Deterministic Output', icon: ShieldCheck },
-  { value: '5', label: 'Solution Blueprints', icon: ClipboardList },
+  { value: '8', label: 'Solution Blueprints', icon: ClipboardList },
 ];
 
 const USE_CASES = [
