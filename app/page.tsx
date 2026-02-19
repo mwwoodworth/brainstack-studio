@@ -38,10 +38,10 @@ import { ToolCard } from '@/components/tools';
 import { getFeaturedTools } from '@/lib/tools';
 
 const METRICS = [
-  { value: '15+', label: 'Free AI Tools', icon: Calculator },
-  { value: '12', label: 'Industries Served', icon: Globe },
-  { value: '100%', label: 'Audit-Ready Trace', icon: ShieldCheck },
-  { value: '50+', label: 'Solution Patterns', icon: ClipboardList },
+  { value: '15', label: 'Free AI Tools', icon: Calculator },
+  { value: '12', label: 'Industries Supported', icon: Globe },
+  { value: '100%', label: 'Deterministic Output', icon: ShieldCheck },
+  { value: '5', label: 'Solution Blueprints', icon: ClipboardList },
 ];
 
 const USE_CASES = [
@@ -515,7 +515,7 @@ export default function Home() {
             <Link href="/tools">
               <Button size="lg" variant="secondary" aria-label="Browse all tools">
                 <Calculator className="w-5 h-5 mr-2" />
-                Browse All 15 Tools
+                Browse All Tools
               </Button>
             </Link>
           </div>

@@ -24,10 +24,9 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: 'February 2026',
     title: 'Pricing Optimization',
     items: [
-      { type: 'feature', text: 'Annual billing option with 20% savings.' },
       { type: 'feature', text: 'FAQ section on the pricing page.' },
       { type: 'improvement', text: 'Mobile-optimized feature comparison table.' },
-      { type: 'improvement', text: 'Added trust signals and money-back guarantee.' },
+      { type: 'improvement', text: 'Added trust signals (encryption, audit trail, cancel anytime).' },
     ],
   },
   {

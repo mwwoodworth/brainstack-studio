@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
+  const [portalError, setPortalError] = useState(false);
 
   const handleExport = () => {
     const payload = JSON.stringify(
@@ -54,14 +55,17 @@ export default function SettingsPage() {
 
   const handleManageSubscription = async () => {
     setPortalLoading(true);
+    setPortalError(false);
     try {
       const res = await fetch('/api/stripe/portal', { method: 'POST' });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        setPortalError(true);
       }
     } catch {
-      // silent fail — user can try again
+      setPortalError(true);
     } finally {
       setPortalLoading(false);
     }
@@ -227,6 +231,14 @@ export default function SettingsPage() {
                         )}
                         Manage Subscription
                       </Button>
+                      {portalError && (
+                        <p className="text-sm text-red-400">
+                          Unable to open billing portal. Please try again or contact{' '}
+                          <a href="mailto:matthew@brainstackstudio.com" className="underline hover:text-red-300">
+                            matthew@brainstackstudio.com
+                          </a>.
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-4">
