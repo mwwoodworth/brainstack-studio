@@ -6,6 +6,10 @@ import { getStripeProPlanConfig, getStripeServerClient } from '@/lib/stripe/conf
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// In-memory cache for Stripe price lookups (1 hour TTL)
+let priceCache: { data: StripePriceView; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
 const CONFIGURED_PRICE_KEYS = ['pro'] as const;
 type PriceKey = (typeof CONFIGURED_PRICE_KEYS)[number];
 
@@ -20,6 +24,11 @@ type StripePriceView = {
 };
 
 async function resolveProPrice(): Promise<StripePriceView> {
+  // Return cached price if fresh
+  if (priceCache && Date.now() - priceCache.timestamp < CACHE_TTL_MS) {
+    return priceCache.data;
+  }
+
   const { productId, priceId } = getStripeProPlanConfig();
   const fallbackAmount = 99;
   let amount: number | null = fallbackAmount;
@@ -34,7 +43,7 @@ async function resolveProPrice(): Promise<StripePriceView> {
     interval = price.recurring?.interval === 'year' ? 'year' : 'month';
   }
 
-  return {
+  const result: StripePriceView = {
     key: 'pro',
     productId,
     priceId,
@@ -43,6 +52,11 @@ async function resolveProPrice(): Promise<StripePriceView> {
     interval,
     display: formatPriceDisplay(amount, currency, interval),
   };
+
+  // Cache the result
+  priceCache = { data: result, timestamp: Date.now() };
+
+  return result;
 }
 
 function parseKeys(raw: string | null): string[] {

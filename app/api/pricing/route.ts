@@ -14,6 +14,10 @@ import { getStripeProPlanConfig, getStripeServerClient } from '@/lib/stripe/conf
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// In-memory cache for Stripe pricing data (1 hour TTL)
+let pricingCache: { data: unknown; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
 function getStripe() {
   if (!getOptionalEnv('STRIPE_SECRET_KEY')) return null;
   return getStripeServerClient();
@@ -81,6 +85,11 @@ function basePlans(toolCount: number, industryCount: number): PricingPlan[] {
 }
 
 export async function GET() {
+  // Return cached response if fresh
+  if (pricingCache && Date.now() - pricingCache.timestamp < CACHE_TTL_MS) {
+    return NextResponse.json(pricingCache.data);
+  }
+
   const toolCount = getAllTools().filter((tool) => !tool.comingSoon).length;
   const industryCount = INDUSTRIES.length;
   const plans = basePlans(toolCount, industryCount);
@@ -117,10 +126,15 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({
+  const responseData = {
     success: true,
     updatedAt: new Date().toISOString(),
     plans,
     comparison: FEATURE_COMPARISON_ROWS,
-  });
+  };
+
+  // Cache the response
+  pricingCache = { data: responseData, timestamp: Date.now() };
+
+  return NextResponse.json(responseData);
 }
