@@ -70,6 +70,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(redirectTarget, request.url));
   }
 
+  // Allow update-password page for authenticated users (password reset flow)
+  if (pathname.startsWith("/auth/update-password") && user) {
+    return response;
+  }
+
   // Auth routes — redirect logged-in users to /dashboard
   if (AUTH_ROUTES.some((route) => pathname.startsWith(route)) && user) {
     const target = onboardingCompleted ? "/dashboard" : "/onboarding";

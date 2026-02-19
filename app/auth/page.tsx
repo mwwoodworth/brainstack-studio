@@ -10,7 +10,7 @@ import { sanitizeRedirectPath } from '@/lib/authRedirect';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
-type AuthMode = 'signin' | 'signup' | 'magic-link';
+type AuthMode = 'signin' | 'signup' | 'magic-link' | 'forgot-password';
 
 export default function AuthPage() {
   return (
@@ -90,6 +90,24 @@ function AuthPageInner() {
     }
   }
 
+  async function handleForgotPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/update-password`,
+      });
+      if (resetError) throw resetError;
+      setMagicLinkSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send reset link');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   if (magicLinkSent) {
     return (
       <main className="min-h-screen flex items-center justify-center px-6">
@@ -103,7 +121,7 @@ function AuthPageInner() {
           </div>
           <h1 className="text-2xl font-bold">Check your email</h1>
           <p className="text-slate-400">
-            We sent a {mode === 'signup' ? 'confirmation' : 'sign-in'} link to{' '}
+            We sent a {mode === 'signup' ? 'confirmation' : mode === 'forgot-password' ? 'password reset' : 'sign-in'} link to{' '}
             <span className="text-white font-medium">{email}</span>.
             Click the link to continue.
           </p>
@@ -134,10 +152,13 @@ function AuthPageInner() {
             {mode === 'signin' && 'Sign in to your account'}
             {mode === 'signup' && 'Create your account'}
             {mode === 'magic-link' && 'Sign in with magic link'}
+            {mode === 'forgot-password' && 'Reset your password'}
           </h1>
           <p className="text-sm text-slate-400 text-center mb-6">
             {mode === 'magic-link'
               ? 'We\'ll email you a passwordless sign-in link.'
+              : mode === 'forgot-password'
+              ? 'Enter your email and we\'ll send you a reset link.'
               : 'Access your Pro dashboard, saved sessions, and tools.'}
           </p>
 
@@ -147,7 +168,7 @@ function AuthPageInner() {
             </div>
           )}
 
-          <form onSubmit={mode === 'magic-link' ? handleMagicLink : handleEmailPassword} className="space-y-4">
+          <form onSubmit={mode === 'magic-link' ? handleMagicLink : mode === 'forgot-password' ? handleForgotPassword : handleEmailPassword} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1.5">
                 Email
@@ -167,7 +188,7 @@ function AuthPageInner() {
               </div>
             </div>
 
-            {mode !== 'magic-link' && (
+            {mode !== 'magic-link' && mode !== 'forgot-password' && (
               <div>
                 <label htmlFor="password" className="block text-sm font-medium mb-1.5">
                   Password
@@ -193,13 +214,14 @@ function AuthPageInner() {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {mode === 'magic-link' ? 'Sending link...' : 'Signing in...'}
+                  {mode === 'magic-link' ? 'Sending link...' : mode === 'forgot-password' ? 'Sending reset link...' : 'Signing in...'}
                 </>
               ) : (
                 <>
                   {mode === 'signin' && 'Sign In'}
                   {mode === 'signup' && 'Create Account'}
                   {mode === 'magic-link' && 'Send Magic Link'}
+                  {mode === 'forgot-password' && 'Send Reset Link'}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -210,6 +232,13 @@ function AuthPageInner() {
           <div className="mt-6 space-y-3 text-center text-sm">
             {mode === 'signin' && (
               <>
+                <button
+                  type="button"
+                  onClick={() => { setMode('forgot-password'); setError(null); }}
+                  className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  Forgot your password?
+                </button>
                 <button
                   type="button"
                   onClick={() => { setMode('magic-link'); setError(null); }}
@@ -248,6 +277,15 @@ function AuthPageInner() {
                 className="text-cyan-400 hover:text-cyan-300 transition-colors"
               >
                 Sign in with password instead
+              </button>
+            )}
+            {mode === 'forgot-password' && (
+              <button
+                type="button"
+                onClick={() => { setMode('signin'); setError(null); }}
+                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                Back to sign in
               </button>
             )}
           </div>

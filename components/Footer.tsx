@@ -14,9 +14,9 @@ const FOOTER_LINKS = {
   Resources: [
     { label: 'Documentation', href: '/docs' },
     { label: 'API Reference', href: '/api-docs' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Changelog', href: '/changelog' },
     { label: 'Platform Trust', href: '/technology' },
-    { label: 'Implementation Guide', href: '/docs#implementation' },
   ],
   Company: [
     { label: 'About', href: '/about' },
