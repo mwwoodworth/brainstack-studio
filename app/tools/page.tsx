@@ -6,6 +6,8 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { JsonLd } from '@/components/JsonLd';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import { ToolCard } from '@/components/tools';
 import { getAllTools, getToolsByCategory, getFeaturedTools, ToolCategory } from '@/lib/tools';
 import { useState, useMemo } from 'react';
@@ -30,6 +32,11 @@ const CATEGORY_INFO: Partial<Record<ToolCategory, { label: string; icon: React.R
 };
 
 const CATEGORIES: ToolCategory[] = ['calculators', 'analyzers', 'generators'];
+
+const TOOLS_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+  { name: 'Tools', path: '/tools' },
+]);
 
 export default function ToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState<ToolCategory | 'all'>('all');
@@ -57,6 +64,7 @@ export default function ToolsPage() {
 
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="tools-breadcrumb-jsonld" data={TOOLS_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       {/* Hero Section */}
@@ -195,6 +203,9 @@ export default function ToolsPage() {
                 }}
               >
                 Clear filters
+              </Button>
+              <Button asChild size="sm" className="mt-2">
+                <Link href="/contact?subject=New%20Tool%20Request">Request this tool</Link>
               </Button>
             </div>
           )}

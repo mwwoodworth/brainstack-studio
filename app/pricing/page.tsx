@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { JsonLd } from '@/components/JsonLd';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -79,6 +80,12 @@ const FAQ_ITEMS = [
     answer:
       'After your 14-day Pro trial, you can continue on the free tier or subscribe to Pro. No automatic charges.',
   },
+  {
+    id: 'data-training',
+    question: 'Do you train public models on my data?',
+    answer:
+      'No. Your workspace data is isolated for your operational workflows and is not used to train public models.',
+  },
 ] as const;
 
 const FAQ_STRUCTURED_DATA = {
@@ -93,6 +100,11 @@ const FAQ_STRUCTURED_DATA = {
     },
   })),
 };
+
+const PRICING_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+  { name: 'Pricing', path: '/pricing' },
+]);
 
 const VALUE_PROPS = [
   {
@@ -211,6 +223,7 @@ export default function PricingPage() {
   return (
     <main id="main-content" className="min-h-screen">
       <JsonLd id="pricing-faq-jsonld" data={FAQ_STRUCTURED_DATA} />
+      <JsonLd id="pricing-breadcrumb-jsonld" data={PRICING_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       <section className="pt-28 pb-12 px-6">
@@ -301,10 +314,15 @@ export default function PricingPage() {
 
                           <div className="mt-6">
                             {plan.id === 'pro' && (
-                              <Badge className="mb-3 w-full justify-center border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-                                <ShieldCheck className="w-3.5 h-3.5" />
-                                14-Day Free Trial — Cancel Anytime
-                              </Badge>
+                              <>
+                                <Badge className="mb-3 w-full justify-center border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                                  <ShieldCheck className="w-3.5 h-3.5" />
+                                  14-Day Free Trial — Cancel Anytime
+                                </Badge>
+                                <p className="mb-3 rounded-lg border border-cyan-500/20 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-200">
+                                  Best for teams running recurring operational workflows with shared ownership and audit trails.
+                                </p>
+                              </>
                             )}
                             {plan.stripePlan ? (
                               <Button
@@ -565,6 +583,20 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
+
+      <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
+        <Card className="border-cyan-500/30 bg-slate-950/95 backdrop-blur">
+          <CardContent className="flex items-center justify-between gap-3 py-3">
+            <div className="min-w-0">
+              <p className="text-xs text-slate-400">New here?</p>
+              <p className="truncate text-sm font-semibold text-white">Start with the Free Explorer</p>
+            </div>
+            <Button asChild size="sm">
+              <Link href="/explorer">Try Free</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
       <Footer />
     </main>

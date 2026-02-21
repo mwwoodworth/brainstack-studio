@@ -1,11 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Card, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import {
   Book,
   Zap,
@@ -24,6 +28,11 @@ const SECTIONS = [
   { id: 'telemetry', label: 'Telemetry & Privacy', icon: Shield },
   { id: 'implementation', label: 'Implementation', icon: Compass },
 ];
+
+const DOCS_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+  { name: 'Documentation', path: '/docs' },
+]);
 
 export default function DocsPage() {
   const [activeSection, setActiveSection] = useState('getting-started');
@@ -49,6 +58,7 @@ export default function DocsPage() {
 
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="docs-breadcrumb-jsonld" data={DOCS_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       <div className="pt-24 pb-20 px-6">
@@ -72,6 +82,14 @@ export default function DocsPage() {
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className="lg:w-64 shrink-0">
               <div className="sticky top-24 space-y-2">
+                <div className="space-y-2 pb-3">
+                  <Button asChild size="sm" className="w-full">
+                    <Link href="/explorer">Launch Explorer</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="secondary" className="w-full">
+                    <Link href="/contact">Request Implementation</Link>
+                  </Button>
+                </div>
                 {SECTIONS.map((section) => (
                   <button
                     key={section.id}

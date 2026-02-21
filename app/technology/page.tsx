@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import {
   Shield,
   Target,
@@ -42,9 +44,15 @@ const SAFETY_RAILS = [
   'High-impact actions can require approvals and audit trails.',
 ];
 
+const TECHNOLOGY_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+  { name: 'Platform Trust', path: '/technology' },
+]);
+
 export default function TechnologyPage() {
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="technology-breadcrumb-jsonld" data={TECHNOLOGY_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       <section className="pt-28 pb-16 px-6">

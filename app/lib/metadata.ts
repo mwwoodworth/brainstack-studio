@@ -33,6 +33,11 @@ type ConstructMetadataInput = {
   path?: string;
 };
 
+type BreadcrumbItem = {
+  name: string;
+  path: string;
+};
+
 export function resolveSiteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL || siteConfig.url).replace(/\/$/, '');
 }
@@ -143,5 +148,25 @@ export function constructOrganizationStructuredData() {
       'https://github.com/mwwoodworth',
       'https://linkedin.com/in/mattwoodworth',
     ],
+  };
+}
+
+export function constructBreadcrumbStructuredData(items: BreadcrumbItem[]) {
+  const siteUrl = resolveSiteUrl();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => {
+      const itemUrl = /^https?:\/\//i.test(item.path)
+        ? item.path
+        : `${siteUrl}${item.path.startsWith('/') ? item.path : `/${item.path}`}`;
+
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: itemUrl,
+      };
+    }),
   };
 }

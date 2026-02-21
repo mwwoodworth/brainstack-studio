@@ -33,6 +33,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import { SOLUTIONS } from '@/lib/solutions';
 import { ToolCard } from '@/components/tools';
 import { getFeaturedTools } from '@/lib/tools';
@@ -40,7 +41,7 @@ import { getFeaturedTools } from '@/lib/tools';
 const METRICS = [
   { value: '15', label: 'Free AI Tools', icon: Calculator },
   { value: '12', label: 'Industries Supported', icon: Globe },
-  { value: '100%', label: 'Deterministic Output', icon: ShieldCheck },
+  { value: 'Rule-Bounded', label: 'Deterministic Workflows', icon: ShieldCheck },
   { value: '8', label: 'Solution Blueprints', icon: ClipboardList },
 ];
 
@@ -205,6 +206,52 @@ const SOFTWARE_APPLICATION_STRUCTURED_DATA = {
   },
 };
 
+const HOME_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+]);
+
+const ROLE_PATHS = [
+  {
+    title: 'Operations Leaders',
+    description: 'Improve decision speed, exception ownership, and daily execution visibility.',
+    href: '/solutions/operations-control-room',
+    cta: 'View Ops Control Room',
+    icon: Briefcase,
+  },
+  {
+    title: 'Finance & Revenue Teams',
+    description: 'Deploy deterministic forecasting and retention workflows with clear action trails.',
+    href: '/solutions/finance-forecast-core',
+    cta: 'View Finance Workflow',
+    icon: TrendingUp,
+  },
+  {
+    title: 'IT & Governance Teams',
+    description: 'Review controls, approval gates, and audit-ready run traces before deployment.',
+    href: '/technology',
+    cta: 'Review Trust Model',
+    icon: ShieldCheck,
+  },
+];
+
+const PILOT_OUTCOMES = [
+  {
+    metric: 'Decision Cycle Time',
+    label: 'Measure how fast critical workflows move from trigger to owner action.',
+    sublabel: 'Baseline vs post-pilot throughput',
+  },
+  {
+    metric: 'Exception Resolution',
+    label: 'Track SLA adherence and escalation latency on high-priority events.',
+    sublabel: 'Queue health and owner accountability',
+  },
+  {
+    metric: 'Manual Rework Rate',
+    label: 'Quantify how much repeat manual handling is removed by automation.',
+    sublabel: 'Operational quality and consistency',
+  },
+];
+
 function ProofArtifactStrip() {
   const [activeTab, setActiveTab] = useState('trace');
   const activeProof = PROOF_TABS.find((t) => t.id === activeTab)!;
@@ -298,6 +345,7 @@ export default function Home() {
   return (
     <main id="main-content" className="min-h-screen">
       <JsonLd id="home-softwareapplication-jsonld" data={SOFTWARE_APPLICATION_STRUCTURED_DATA} />
+      <JsonLd id="home-breadcrumb-jsonld" data={HOME_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       {/* Hero */}
@@ -319,17 +367,15 @@ export default function Home() {
               Operational AI Platform
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
-              AI that runs your
+              Deterministic AI for
               <br />
-              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">operations</span>, end-to-end.
+              <span className="bg-gradient-to-r from-cyan-400 to-violet-400 bg-clip-text text-transparent">operational teams</span>.
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-6">
-              BrainStack Studio turns real workflows into reliable AI automation.
-              Deterministic. Auditable. Measurable.
+              Build governed workflows that execute business logic with explicit rules, approval gates, and auditable outcomes.
             </p>
             <p className="text-sm text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Deterministic = bounded outputs + explicit rules + approval gates + full traceability.
-              No hallucinations. No black boxes. Start free with 15 tools and a guided explorer across 12 industries.
+              Map your process, validate the run trace, and scale only what proves value. Start with the Explorer and free tools, then move into production workflows.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/explorer">
@@ -338,9 +384,9 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link href="/pricing">
-                <Button variant="secondary" size="xl" aria-label="View Pricing">
-                  View Pricing
+              <Link href="/solutions">
+                <Button variant="secondary" size="xl" aria-label="Explore Solution Gallery">
+                  Explore Solution Gallery
                 </Button>
               </Link>
             </div>
@@ -361,6 +407,24 @@ export default function Home() {
                   </div>
                   <div className="text-sm text-slate-400">{stat.label}</div>
                 </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-12 grid md:grid-cols-3 gap-4 text-left">
+              {ROLE_PATHS.map((path) => (
+                <Card key={path.title} className="bg-white/[0.03] border-white/10">
+                  <CardContent className="pt-6 space-y-3">
+                    <div className="flex items-center gap-2 text-cyan-300">
+                      <path.icon className="w-4 h-4" />
+                      <p className="text-sm font-semibold">{path.title}</p>
+                    </div>
+                    <p className="text-sm text-slate-300 leading-relaxed">{path.description}</p>
+                    <Link href={path.href} className="inline-flex items-center text-sm font-medium text-cyan-400 hover:text-cyan-300">
+                      {path.cta}
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </motion.div>
@@ -628,7 +692,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof / Results */}
+      {/* Pilot Outcomes */}
       <section className="py-20 px-6 bg-white/[0.02] border-y border-white/5">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -637,20 +701,16 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Built for Teams That Ship</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Proof in Your Environment</h2>
             <p className="text-slate-300 max-w-2xl mx-auto">
-              Operations leaders use BrainStack Studio to cut cycle times, reduce manual errors, and scale without proportional headcount.
+              We run scoped pilots against your workflows and measure operational deltas before any broad rollout.
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {[
-              { metric: '15', label: 'Free AI-powered business tools', sublabel: 'No signup required to get started' },
-              { metric: '100%', label: 'Deterministic, auditable outputs', sublabel: 'Every result includes a full trace' },
-              { metric: '12', label: 'Industries with tailored solutions', sublabel: 'Finance, HR, IT, Sales, and more' },
-            ].map((stat, idx) => (
+            {PILOT_OUTCOMES.map((stat, idx) => (
               <motion.div
-                key={stat.label}
+                key={stat.metric}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -658,9 +718,10 @@ export default function Home() {
                 className="text-center"
               >
                 <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent mb-3">
-                  {stat.metric}
+                  {idx + 1}
                 </div>
-                <p className="font-medium text-white mb-1">{stat.label}</p>
+                <p className="font-medium text-white mb-1">{stat.metric}</p>
+                <p className="text-sm text-slate-300">{stat.label}</p>
                 <p className="text-sm text-slate-400">{stat.sublabel}</p>
               </motion.div>
             ))}
@@ -701,6 +762,15 @@ export default function Home() {
                 </Card>
               </motion.div>
             ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/contact">
+              <Button size="lg" aria-label="Start a scoped pilot">
+                Start a Scoped Pilot
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

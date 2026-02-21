@@ -4,15 +4,35 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { constructBreadcrumbStructuredData } from '@/app/lib/metadata';
 import { SOLUTIONS } from '@/lib/solutions';
+import { getToolBySlug } from '@/lib/tools';
 import { ArrowRight } from 'lucide-react';
+
+const RELATED_TOOL_BY_SOLUTION: Record<string, string> = {
+  'operations-control-room': 'project-health-check',
+  'construction-crew-optimizer': 'workforce-planner',
+  'saas-retention-guard': 'customer-health-scorer',
+  'finance-forecast-core': 'cash-flow-forecaster',
+  'supply-chain-visibility': 'risk-assessment-matrix',
+  'hr-onboarding-orchestrator': 'workforce-planner',
+  'it-incident-resolution': 'risk-assessment-matrix',
+  'marketing-campaign-optimizer': 'pricing-optimizer',
+};
+
+const SOLUTIONS_BREADCRUMB_STRUCTURED_DATA = constructBreadcrumbStructuredData([
+  { name: 'Home', path: '/' },
+  { name: 'Solutions', path: '/solutions' },
+]);
 
 export default function SolutionsPage() {
   return (
     <main id="main-content" className="min-h-screen">
+      <JsonLd id="solutions-breadcrumb-jsonld" data={SOLUTIONS_BREADCRUMB_STRUCTURED_DATA} />
       <Navigation />
 
       <section className="pt-28 pb-20 px-6">
@@ -52,6 +72,22 @@ export default function SolutionsPage() {
                         </Badge>
                       ))}
                     </div>
+                    {(() => {
+                      const relatedToolSlug = RELATED_TOOL_BY_SOLUTION[solution.slug];
+                      const relatedTool = relatedToolSlug ? getToolBySlug(relatedToolSlug) : undefined;
+
+                      if (!relatedTool) return null;
+
+                      return (
+                        <Link
+                          href={`/tools/${relatedTool.slug}`}
+                          className="inline-flex items-center text-xs font-medium text-emerald-300 hover:text-emerald-200 transition-colors"
+                        >
+                          Try related tool: {relatedTool.name}
+                          <ArrowRight className="w-3 h-3 ml-1" />
+                        </Link>
+                      );
+                    })()}
                     <Button asChild size="sm" className="mt-2">
                       <Link href={`/solutions/${solution.slug}`}>
                         View Solution
